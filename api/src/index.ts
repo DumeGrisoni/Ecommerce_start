@@ -1,5 +1,6 @@
 import express, { json, urlencoded } from 'express';
-import productsRouter from './routes/products';
+import productsRouter from './routes/products/index';
+import authRouter from './routes/auth/index';
 
 const app = express();
 const port = 3000;
@@ -15,6 +16,9 @@ app.get('/', (req, res) => {
 
 // Utiliser le router des produits
 app.use('/products', productsRouter);
+
+// Utiliser le router de l'authentification
+app.use('/auth', authRouter);
 
 // Reponse pour le lancement de l'API
 app.listen(port, () => {

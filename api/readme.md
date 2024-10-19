@@ -7,3 +7,4 @@
 - Utiliser Thunder Client pour tester les routes.
 - Modifier les noms des routes si besoin.
 - Creer ou modifier les modèles si besoin et modifier drizzle.config.json dans l'array schema.
+- Modifier les middlewares si besoin de vérification de token et de role.
