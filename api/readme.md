@@ -5,3 +5,4 @@
 - L'API utilise Node.js et Express.js pour le serveur.
 - Drizzle ORM est utiliser pour créer les modèles.
 - Utiliser Thunder Client pour tester les routes.
+- Modifier les noms des routes si besoin.
