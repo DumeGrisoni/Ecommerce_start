@@ -1,5 +1,6 @@
 import express, { json, urlencoded } from 'express';
 import productsRouter from './routes/products/index.js';
+import ordersRouter from './routes/orders/index.js';
 import authRouter from './routes/auth/index.js';
 import serverless from 'serverless-http';
 
@@ -17,6 +18,7 @@ app.get('/', (req, res) => {
 
 // Utiliser le router des produits
 app.use('/products', productsRouter);
+app.use('/orders', ordersRouter);
 
 // Utiliser le router de l'authentification
 app.use('/auth', authRouter);
