@@ -8,3 +8,5 @@
 - Modifier les noms des routes si besoin.
 - Creer ou modifier les modèles si besoin et modifier drizzle.config.json dans l'array schema.
 - Modifier les middlewares si besoin de vérification de token et de role.
+- Une fois que tout est bon executer npm run:build pour compiler le projet.
+- Tester le server avec node --env-file=.env dist/src/index.js

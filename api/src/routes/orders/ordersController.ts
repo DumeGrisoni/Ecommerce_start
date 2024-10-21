@@ -1,7 +1,7 @@
 import { eq } from 'drizzle-orm';
 import { Request, Response } from 'express';
-import { db } from '../../db/index';
-import { ordersTable } from '../../db/ordersSchema';
+import { db } from '../../db/index.js';
+import { ordersTable } from '../../db/ordersSchema.js';
 
 // Recupérer la liste des commandes
 export async function listOrders(req: Request, res: Response) {
