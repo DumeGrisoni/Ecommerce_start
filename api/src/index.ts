@@ -1,6 +1,7 @@
 import express, { json, urlencoded } from 'express';
 import productsRouter from './routes/products/index.js';
 import authRouter from './routes/auth/index.js';
+import serverless from 'serverless-http';
 
 const app = express();
 const port = 3000;
@@ -21,6 +22,10 @@ app.use('/products', productsRouter);
 app.use('/auth', authRouter);
 
 // Reponse pour le lancement de l'API
-app.listen(port, () => {
-  console.log(`App listening at http://localhost:${port} ! c'est top`);
-});
+if (process.env.NODE_ENV === 'dev') {
+  app.listen(port, () => {
+    console.log(`App listening at http://localhost:${port} ! c'est top`);
+  });
+}
+
+export const handler = serverless(app);
