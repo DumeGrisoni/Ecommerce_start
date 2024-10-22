@@ -8,7 +8,10 @@ import {
   deleteOrder,
 } from './ordersController.js';
 import { validateData } from '../../middlewares/validationMiddleware.js';
-import { insertOrderWithItemSchema } from '../../db/ordersSchema.js';
+import {
+  insertOrderWithItemSchema,
+  updateOrderSchema,
+} from '../../db/ordersSchema.js';
 import { verifyToken } from '../../middlewares/authMiddleware.js';
 
 const router = Router();
@@ -19,5 +22,11 @@ router.post(
   validateData(insertOrderWithItemSchema),
   createOrder
 );
+
+router.get('/', verifyToken, listOrders);
+
+router.get('/:id', verifyToken, getOrderById);
+
+router.put('/:id', verifyToken, validateData(updateOrderSchema), updateOrder);
 
 export default router;

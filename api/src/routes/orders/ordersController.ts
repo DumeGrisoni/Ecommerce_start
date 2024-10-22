@@ -3,11 +3,11 @@ import { Request, Response } from 'express';
 import { db } from '../../db/index.js';
 import { orderItemsTable, ordersTable } from '../../db/ordersSchema.js';
 
-// Recupérer la liste des commandes
+// Recupérer la liste des commandes de l'user, si c'est un admin retourner toutes les commandes
 export async function listOrders(req: Request, res: Response) {
   try {
     const orders = await db.select().from(ordersTable);
-    res.json(orders);
+    res.status(200).json(orders);
   } catch (error) {
     res.status(500).send(error);
   }
@@ -15,18 +15,27 @@ export async function listOrders(req: Request, res: Response) {
 
 // Recupérer une commande par son id
 export async function getOrderById(req: Request, res: Response) {
-  const id = Number(req.params.id);
+  const id = parseInt(req.params.id);
   try {
-    const [order] = await db
+    const orderWithItems = await db
       .select()
       .from(ordersTable)
+      .leftJoin(orderItemsTable, eq(ordersTable.id, orderItemsTable.orderId))
       .where(eq(ordersTable.id, id));
 
-    if (!order || order === undefined) {
+    if (
+      !orderWithItems ||
+      orderWithItems === undefined ||
+      orderWithItems.length === 0
+    ) {
       res.status(404).send('Aucune commande trouvée');
-    } else {
-      res.status(200).json(order);
     }
+
+    const mergedOrder = {
+      ...orderWithItems[0].orders,
+      items: orderWithItems.map((item: any) => item.order_items),
+    };
+    res.status(200).json(mergedOrder);
   } catch (error) {
     res.status(500).send(error);
   }
