@@ -1,13 +1,13 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { FlatList, StyleSheet } from 'react-native';
+import products from '../assets/products.json';
+import ProductListItem from './components/products/ProductListItem';
 
 export default function HomeScreen() {
   return (
-    <View style={styles.container}>
-      <View style={styles.main}>
-        <Text style={styles.title}>Accueil</Text>
-        <Text style={styles.subtitle}>This is the first page of your app.</Text>
-      </View>
-    </View>
+    <FlatList
+      data={products}
+      renderItem={({ item }) => <ProductListItem product={item} />}
+    />
   );
 }
 
