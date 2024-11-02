@@ -1,6 +1,6 @@
 import { View } from 'react-native';
 import React from 'react';
-import { useLocalSearchParams } from 'expo-router';
+import { Stack, useLocalSearchParams } from 'expo-router';
 
 // ---------------- Imports personnels ---------------
 import { Text } from '@/components/ui/text';
@@ -27,6 +27,7 @@ export default function ProductDetailScreen() {
       className="p-3 rounded-lg max-w-full flex-1 items-center justify-center "
       variant="elevated"
     >
+      <Stack.Screen options={{ title: product.name }} />
       <Image
         source={{
           uri: product.image,

@@ -8,7 +8,16 @@ import { Image } from './ui/image';
 import { Heading } from './ui/heading';
 import { Text } from './ui/text';
 
-export default function ProductListItem({ product }) {
+// ---------------- Types ---------------
+type ProductType = {
+  id: number;
+  name: string;
+  description: string;
+  image: string;
+  price: number;
+};
+
+export default function ProductListItem({ product }: { product: ProductType }) {
   return (
     <Link href={`/product/${product.id}`} asChild>
       <Pressable className="flex-1">
@@ -21,12 +30,10 @@ export default function ProductListItem({ product }) {
             alt="Image du produit"
             resizeMode="contain"
           />
-
-          <Text size="md" className=" flex-1">
+          <Text size="md" className="flex-1">
             {product.name}
           </Text>
-
-          <Heading size="lg" className=" mt-6 font-bold">
+          <Heading size="lg" className="mt-2 font-bold">
             {product.price} €
           </Heading>
         </Card>
