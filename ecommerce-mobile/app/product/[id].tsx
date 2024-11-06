@@ -1,28 +1,41 @@
-import { View } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
 import React from 'react';
 import { Stack, useLocalSearchParams } from 'expo-router';
 
 // ---------------- Imports personnels ---------------
 import { Text } from '@/components/ui/text';
-import products from '@/assets/products.json';
 import { Card } from '@/components/ui/card';
 import { Image } from '@/components/ui/image';
 import { VStack } from '@/components/ui/vstack';
 import { Heading } from '@/components/ui/heading';
 import { Button, ButtonText } from '@/components/ui/button';
 import { Box } from '@/components/ui/box';
+import { getProductById } from '@/api/products';
+import { useQuery } from '@tanstack/react-query';
 
 export default function ProductDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const product = products.find((product) => product.id === Number(id));
+  const {
+    data: product,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ['product', id],
+    queryFn: () => getProductById(Number(id)),
+  });
 
-  if (!product) {
+  if (isLoading) {
     return (
-      <View className=" items-center justify-center">
-        <Text className="font-bold text-xl">Ooops! Aucun produit trouvé</Text>
+      <View className=" flex-1 h-full w-full items-center justify-center">
+        <ActivityIndicator size="large" />
       </View>
     );
   }
+
+  if (error) {
+    return <Text>Une erreur est survenue lors du chargement du produit.</Text>;
+  }
+
   return (
     <Box
       key={product.id + product.name}
