@@ -4,6 +4,7 @@ import products from '../assets/products.json';
 import ProductListItem from '../components/ProductListItem';
 import { useEffect, useState } from 'react';
 import { listProducts } from '@/api/products';
+import { useBreakpointValue } from '@/components/ui/utils/use-break-point-value';
 
 export default function HomeScreen() {
   // const [products, setProducts] = useState([]);
@@ -15,8 +16,8 @@ export default function HomeScreen() {
   //   fetchProducts();
   // }, []);
 
-  const { width } = useWindowDimensions();
-  const numColumns = width > 768 ? 4 : 2;
+  // Changer ici le nombre de colonnes en fonction de la largeur de l'écran
+  const numColumns = useBreakpointValue({ default: 2, sm: 3, lg: 4 });
 
   return (
     <FlatList

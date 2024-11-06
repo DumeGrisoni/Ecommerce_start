@@ -29,7 +29,9 @@ export default function ProductDetailScreen() {
       className="flex-1 items-center justify-center p-6"
     >
       <Card className="p-3 rounded-lg max-w-[960px] w-full items-center justify-center flex-1">
-        <Stack.Screen options={{ title: product.name }} />
+        <Stack.Screen
+          options={{ title: product.name, headerTitleAlign: 'center' }}
+        />
         <Image
           source={{
             uri: product.image,
