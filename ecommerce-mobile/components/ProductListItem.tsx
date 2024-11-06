@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'expo-router';
-import { Pressable } from 'react-native';
+import { Platform, Pressable } from 'react-native';
 
 // ---------------- Imports personnels ---------------
 import { Card } from './ui/card';
@@ -17,11 +17,15 @@ type ProductType = {
   price: number;
 };
 
+const isWeb = Platform.OS === 'web' ? true : false;
+
 export default function ProductListItem({ product }: { product: ProductType }) {
   return (
     <Link href={`/product/${product.id}`} key={product.id} asChild>
       <Pressable className="flex-1">
-        <Card className="p-3 rounded-lg flex-1" variant="elevated">
+        <Card
+          className={`${isWeb && 'hover:border-slate-400 border-2 border-transparent'} p-3 rounded-lg flex-1`}
+        >
           <Image
             source={{
               uri: product.image,

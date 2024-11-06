@@ -1,26 +1,31 @@
-import { FlatList } from 'react-native';
-// import products from '../assets/products.json';
+import { FlatList, useWindowDimensions } from 'react-native';
+import React from 'react';
+import products from '../assets/products.json';
 import ProductListItem from '../components/ProductListItem';
 import { useEffect, useState } from 'react';
 import { listProducts } from '@/api/products';
 
 export default function HomeScreen() {
-  const [products, setProducts] = useState([]);
-  const fetchProducts = async () => {
-    const productsData = await listProducts();
-    setProducts(productsData);
-  };
-  useEffect(() => {
-    fetchProducts();
-  }, []);
+  // const [products, setProducts] = useState([]);
+  // const fetchProducts = async () => {
+  //   const productsData = await listProducts();
+  //   setProducts(productsData);
+  // };
+  // useEffect(() => {
+  //   fetchProducts();
+  // }, []);
+
+  const { width } = useWindowDimensions();
+  const numColumns = width > 768 ? 4 : 2;
 
   return (
     <FlatList
+      key={numColumns}
       data={products}
-      numColumns={2}
-      contentContainerClassName="gap-2"
-      columnWrapperClassName="gap-2"
-      className="my-2 flex-1"
+      numColumns={numColumns}
+      contentContainerClassName="gap-2 max-w-[960px] mx-auto w-full"
+      columnWrapperClassName="gap-2 mx-2"
+      className="my-2 flex-1 "
       renderItem={({ item }) => <ProductListItem product={item} />}
     />
   );
