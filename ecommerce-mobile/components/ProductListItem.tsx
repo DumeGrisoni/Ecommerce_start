@@ -19,7 +19,7 @@ type ProductType = {
 
 export default function ProductListItem({ product }: { product: ProductType }) {
   return (
-    <Link href={`/product/${product.id}`} asChild>
+    <Link href={`/product/${product.id}`} key={product.id} asChild>
       <Pressable className="flex-1">
         <Card className="p-3 rounded-lg flex-1" variant="elevated">
           <Image
