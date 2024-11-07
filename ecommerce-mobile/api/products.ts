@@ -5,7 +5,7 @@ export const listProducts = async () => {
   const products = await response.json();
   if (!response.ok) {
     const errorMessage =
-      'Une erreur est survenue lors de la récupération des produits';
+      'Une erreur est survenue lors de la récupération de la liste des produits';
     throw new Error(errorMessage);
   }
   return products;

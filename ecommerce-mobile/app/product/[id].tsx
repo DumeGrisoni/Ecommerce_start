@@ -1,6 +1,6 @@
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator, Alert, View } from 'react-native';
 import React from 'react';
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 
 // ---------------- Imports personnels ---------------
 import { Text } from '@/components/ui/text';
@@ -12,9 +12,14 @@ import { Button, ButtonText } from '@/components/ui/button';
 import { Box } from '@/components/ui/box';
 import { getProductById } from '@/api/products';
 import { useQuery } from '@tanstack/react-query';
+import { useCart } from '@/store/cartStore';
 
 export default function ProductDetailScreen() {
+  // ----------------- Récupération de l'id du produit -----------------
   const { id } = useLocalSearchParams<{ id: string }>();
+
+  // ----------------- Récupération du produit -----------------
+
   const {
     data: product,
     isLoading,
@@ -24,6 +29,20 @@ export default function ProductDetailScreen() {
     queryFn: () => getProductById(Number(id)),
   });
 
+  // ----------------- Fonction Panier -----------------
+
+  const addProduct = useCart((state) => state.addProduct);
+  const router = useRouter();
+
+  const addToCart = () => {
+    addProduct(product);
+    return Alert.alert(
+      'Produit ajouté au panier',
+      'Votre produit a bien été ajouté au panier'
+    );
+  };
+
+  // ----------------- Affichage -----------------
   if (isLoading) {
     return (
       <View className=" flex-1 h-full w-full items-center justify-center">
@@ -42,9 +61,7 @@ export default function ProductDetailScreen() {
       className="flex-1 items-center justify-center p-6"
     >
       <Card className="p-3 rounded-lg max-w-[960px] w-full items-center justify-center flex-1">
-        <Stack.Screen
-          options={{ title: product.name, headerTitleAlign: 'center' }}
-        />
+        <Stack.Screen options={{ title: product.name }} />
         <Image
           source={{
             uri: product.image,
@@ -65,7 +82,7 @@ export default function ProductDetailScreen() {
           </Text>
         </VStack>
 
-        <Button className=" mt-3">
+        <Button className=" mt-3" onPress={addToCart}>
           <ButtonText size="sm">Ajouter au panier</ButtonText>
         </Button>
       </Card>
