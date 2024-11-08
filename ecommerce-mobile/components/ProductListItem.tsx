@@ -28,7 +28,7 @@ export default function ProductListItem({ product }: { product: ProductType }) {
             alt="Image du produit"
             resizeMode="contain"
           />
-          <Text size="md" className="flex-1">
+          <Text size="md" className="flex-1 text-center md:text-left">
             {product.name}
           </Text>
           <Heading size="lg" className="mt-2 font-bold">

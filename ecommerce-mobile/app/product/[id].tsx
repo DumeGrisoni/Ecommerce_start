@@ -13,6 +13,7 @@ import { Box } from '@/components/ui/box';
 import { getProductById } from '@/api/products';
 import { useQuery } from '@tanstack/react-query';
 import { useCart } from '@/store/cartStore';
+import { isWeb } from '@gluestack-ui/nativewind-utils/IsWeb';
 
 export default function ProductDetailScreen() {
   // ----------------- Récupération de l'id du produit -----------------
@@ -32,14 +33,17 @@ export default function ProductDetailScreen() {
   // ----------------- Fonction Panier -----------------
 
   const addProduct = useCart((state) => state.addProduct);
-  const router = useRouter();
 
   const addToCart = () => {
     addProduct(product);
-    return Alert.alert(
-      'Produit ajouté au panier',
-      'Votre produit a bien été ajouté au panier'
-    );
+    if (isWeb) {
+      alert('Votre produit a bien été ajouté au panier');
+    } else {
+      return Alert.alert(
+        'Produit ajouté au panier',
+        'Votre produit a bien été ajouté au panier'
+      );
+    }
   };
 
   // ----------------- Affichage -----------------
