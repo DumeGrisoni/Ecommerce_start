@@ -13,5 +13,7 @@ export type CartItemType = {
 
 export type CartStateType = {
   items: CartItemType[];
-  addProduct: (product: ProductType) => void;
+  addProduct: (product: ProductType, quantity: number) => void;
+  incrementQuantity: (productId: number) => void;
+  decrementQuantity: (productId: number) => void;
 };

@@ -10,9 +10,9 @@ import { AddIcon, Icon, RemoveIcon } from '@/components/ui/icon';
 import { Image } from '@/components/ui/image';
 import { Text } from '@/components/ui/text';
 import { useCart } from '@/store/cartStore';
-import { CartItemType } from '@/types/types';
+import { CartItemType, CartStateType } from '@/types/types';
 import { Stack } from 'expo-router';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 export default function CartScreen() {
   // Vérifier si l'application est en mode web
@@ -20,12 +20,22 @@ export default function CartScreen() {
 
   // Récupérer les éléments du panier
   const cartItems: CartItemType[] = useCart((state) => state.items);
+  const incrementQuantity = useCart(
+    (state: CartStateType) => state.incrementQuantity
+  );
+  const decrementQuantity = useCart(
+    (state: CartStateType) => state.decrementQuantity
+  );
 
   // Calculer le prix total du panier
   const total = cartItems.reduce(
     (sum, item) => sum + item.product.price * item.quantity,
     0
   );
+
+  useEffect(() => {
+    console.log('quantity', cartItems);
+  }, [cartItems]);
 
   return (
     <Box
@@ -59,13 +69,13 @@ export default function CartScreen() {
                   {item.product.price}
                 </Text>
                 <HStack className="flex-1 mt-3 lg:mt-2 justify-center flex-col md:flex-row items-center gap-1 md:gap-3">
-                  <Pressable>
+                  <Pressable onPress={() => decrementQuantity(item.product.id)}>
                     <Icon as={RemoveIcon} />
                   </Pressable>
                   <Text className="text-center mx-4 text-sm md:text-base lg:text-lg">
                     {item.quantity}
                   </Text>
-                  <Pressable>
+                  <Pressable onPress={() => incrementQuantity(item.product.id)}>
                     <Icon as={AddIcon} />
                   </Pressable>
                 </HStack>
@@ -106,6 +116,17 @@ export default function CartScreen() {
                 <Text className="flex-1 font-bold">{item.product.name}</Text>
                 <Text className="flex-1">{item.product.price}</Text>
               </Box>
+              <HStack className="flex-1 justify-center flex-row items-center gap-1 mr-5">
+                <Pressable onPress={() => decrementQuantity(item.product.id)}>
+                  <Icon as={RemoveIcon} />
+                </Pressable>
+                <Text className="text-center mx-4 text-sm md:text-base lg:text-lg">
+                  {item.quantity}
+                </Text>
+                <Pressable onPress={() => incrementQuantity(item.product.id)}>
+                  <Icon as={AddIcon} />
+                </Pressable>
+              </HStack>
               <Box className=" items-center justify-center mr-2">
                 <Text className="text-center">
                   {item.quantity * item.product.price} €
@@ -152,12 +173,18 @@ export default function CartScreen() {
           </Box>
         </Card>
       ) : (
-        <Box className="mb-10 w-[50%] mx-auto">
-          <Box className="flex-row w-full items-center justify-center">
-            <Text className="font-bold flex-1 text-xl mb-3">Sous-total : </Text>
-            <Text className="text-xl mb-3">{total.toFixed(2)} €</Text>
+        <Box className="mb-10 w-[90%] mx-auto border-t border-gray-300">
+          <Box className="flex-col mb-2 mt-3 w-full items-center justify-center">
+            <HStack className="flex-row items-center justify-center gap-2">
+              <Text className="font-bold text-xl mb-2"> Sous-total :</Text>
+              <Text className="text-xl mb-2">
+                ({cartItems.length}{' '}
+                {cartItems.length > 1 ? 'articles' : 'article'})
+              </Text>
+            </HStack>
+            <Text className="text-xl mb-2">{total.toFixed(2)} €</Text>
           </Box>
-          <Button className={`h-[50px] rounded-full`}>
+          <Button className={`h-[50px] mt-3 w-[70%] mx-auto rounded-full`}>
             <ButtonText>Valider mon panier</ButtonText>
           </Button>
         </Box>

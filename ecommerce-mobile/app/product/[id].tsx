@@ -1,5 +1,5 @@
-import { ActivityIndicator, Alert, View } from 'react-native';
-import React from 'react';
+import { ActivityIndicator, Alert, Pressable, View } from 'react-native';
+import React, { useState } from 'react';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 
 // ---------------- Imports personnels ---------------
@@ -14,6 +14,8 @@ import { getProductById } from '@/api/products';
 import { useQuery } from '@tanstack/react-query';
 import { useCart } from '@/store/cartStore';
 import { isWeb } from '@gluestack-ui/nativewind-utils/IsWeb';
+import { HStack } from '@/components/ui/hstack';
+import { AddIcon, Icon, RemoveIcon } from '@/components/ui/icon';
 
 export default function ProductDetailScreen() {
   // ----------------- Récupération de l'id du produit -----------------
@@ -33,9 +35,10 @@ export default function ProductDetailScreen() {
   // ----------------- Fonction Panier -----------------
 
   const addProduct = useCart((state) => state.addProduct);
+  const [quantity, setQuantity] = useState(1);
 
   const addToCart = () => {
-    addProduct(product);
+    addProduct(product, quantity);
     if (isWeb) {
       alert('Votre produit a bien été ajouté au panier');
     } else {
@@ -44,6 +47,13 @@ export default function ProductDetailScreen() {
         'Votre produit a bien été ajouté au panier'
       );
     }
+  };
+  const decrementQuantity = () => {
+    setQuantity((prev) => Math.max(prev - 1, 1));
+  };
+
+  const incrementQuantity = () => {
+    setQuantity((prev) => prev + 1);
   };
 
   // ----------------- Affichage -----------------
@@ -74,7 +84,7 @@ export default function ProductDetailScreen() {
           alt="Image du produit"
           resizeMode="contain"
         />
-        <VStack className="mb-6">
+        <VStack className="mb-1">
           <Heading size="md" className="mb-4 text-center">
             {product.name}
           </Heading>
@@ -86,7 +96,24 @@ export default function ProductDetailScreen() {
           </Text>
         </VStack>
 
-        <Button className=" mt-3" onPress={addToCart}>
+        <HStack className=" mt-6 mb-6 border p-2 max-w-[120px] w-auto h-auto max-h-[50px] border-black rounded-lg justify-center flex-row items-center gap-3">
+          <Pressable
+            onPress={decrementQuantity}
+            className="flex-1 justify-center items-center h-full"
+          >
+            <Icon as={RemoveIcon} />
+          </Pressable>
+          <Text className="text-center mx-2 text-sm md:text-base lg:text-lg">
+            {quantity}
+          </Text>
+          <Pressable
+            onPress={incrementQuantity}
+            className="flex-1 items-center justify-center"
+          >
+            <Icon as={AddIcon} />
+          </Pressable>
+        </HStack>
+        <Button className="mb-6" onPress={addToCart}>
           <ButtonText size="sm">Ajouter au panier</ButtonText>
         </Button>
       </Card>
