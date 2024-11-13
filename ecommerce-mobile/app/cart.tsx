@@ -1,4 +1,7 @@
 import { FlatList, Platform, Pressable } from 'react-native';
+import { Stack, useRouter } from 'expo-router';
+import React from 'react';
+import { Trash2 } from 'lucide-react-native';
 
 // ------------------Imports Personnel------------------
 
@@ -11,21 +14,26 @@ import { Image } from '@/components/ui/image';
 import { Text } from '@/components/ui/text';
 import { useCart } from '@/store/cartStore';
 import { CartItemType, CartStateType } from '@/types/types';
-import { Stack } from 'expo-router';
-import React, { useEffect, useState } from 'react';
 
 export default function CartScreen() {
+  const router = useRouter();
   // Vérifier si l'application est en mode web
   const isWeb = Platform.OS === 'web' ? true : false;
 
   // Récupérer les éléments du panier
   const cartItems: CartItemType[] = useCart((state) => state.items);
+  // Mettre le panier a zéro
+  const resetCart = useCart((state: CartStateType) => state.resetCart);
+  // Ajouter une quantité d'un produit au panier
   const incrementQuantity = useCart(
     (state: CartStateType) => state.incrementQuantity
   );
+  // Enlever une quantité d'un produit au panier
   const decrementQuantity = useCart(
     (state: CartStateType) => state.decrementQuantity
   );
+  // Enlever un produit du panier
+  const removeProduct = useCart((state: CartStateType) => state.removeProduct);
 
   // Calculer le prix total du panier
   const total = cartItems.reduce(
@@ -33,9 +41,45 @@ export default function CartScreen() {
     0
   );
 
-  useEffect(() => {
-    console.log('quantity', cartItems);
-  }, [cartItems]);
+  // ------------------Fonctions------------------
+
+  const checkOut = async () => {
+    resetCart();
+  };
+
+  const backToHome = () => {
+    router.push('/');
+  };
+
+  const removeToCart = (productId: number) => {
+    removeProduct(productId);
+  };
+
+  // ------------------Rendu------------------
+
+  if (cartItems.length === 0) {
+    return (
+      <Card className="lg:w-[70%] w-[90%] mx-auto h-auto my-10  ">
+        <Text className="font-bold w-full text-center text-xl mb-3">
+          Mes Articles
+        </Text>
+        <Text className="my-10 mx-auto">Votre panier est vide</Text>
+        <Button
+          className={`md:h-[50px] md:rounded-full ${isWeb ? 'w-[30%]' : 'w-[70%]'}  mx-auto`}
+          onPress={backToHome}
+        >
+          <ButtonText
+            adjustsFontSizeToFit
+            allowFontScaling
+            maxFontSizeMultiplier={0}
+            className="text-center text-sm lg:text-base"
+          >
+            Continuer votre shopping
+          </ButtonText>
+        </Button>
+      </Card>
+    );
+  }
 
   return (
     <Box
@@ -79,6 +123,9 @@ export default function CartScreen() {
                     <Icon as={AddIcon} />
                   </Pressable>
                 </HStack>
+                <Pressable onPress={() => removeToCart(item.product.id)}>
+                  <Icon as={Trash2} />
+                </Pressable>
 
                 <Text className="text-center text-sm lg:text-base flex-1">
                   {item.quantity * item.product.price} €
@@ -86,6 +133,27 @@ export default function CartScreen() {
               </Box>
             )}
             className="border-b border-gray-300 "
+            ListEmptyComponent={
+              <Card className="lg:w-[70%] w-[90%] mx-auto h-auto my-10  ">
+                <Text className="font-bold w-full text-center text-xl mb-3">
+                  Mes Articles
+                </Text>
+                <Text className="my-10 mx-auto">Votre panier est vide</Text>
+                <Button
+                  className={`md:h-[50px] md:rounded-full ${isWeb ? 'w-[30%]' : 'w-[70%]'}  mx-auto`}
+                  onPress={backToHome}
+                >
+                  <ButtonText
+                    adjustsFontSizeToFit
+                    allowFontScaling
+                    maxFontSizeMultiplier={0}
+                    className="text-center text-sm lg:text-base"
+                  >
+                    Continuer votre shopping
+                  </ButtonText>
+                </Button>
+              </Card>
+            }
           />
           <Box className="justify-center mt-6 flex-col lg:flex-row">
             <Text className="font-bold text-center text-sm md:text-xl">
@@ -113,10 +181,12 @@ export default function CartScreen() {
                 resizeMode="contain"
               />
               <Box className="flex-1 ml-2">
-                <Text className="flex-1 font-bold">{item.product.name}</Text>
+                <Text className="flex-1 tex-center font-bold">
+                  {item.product.name}
+                </Text>
                 <Text className="flex-1">{item.product.price}</Text>
               </Box>
-              <HStack className="flex-1 justify-center flex-row items-center gap-1 mr-5">
+              <HStack className="flex-1  justify-center flex-row items-center gap-1 ">
                 <Pressable onPress={() => decrementQuantity(item.product.id)}>
                   <Icon as={RemoveIcon} />
                 </Pressable>
@@ -127,6 +197,12 @@ export default function CartScreen() {
                   <Icon as={AddIcon} />
                 </Pressable>
               </HStack>
+              <Pressable
+                className="flex-1 justify-center items-center"
+                onPress={() => removeToCart(item.product.id)}
+              >
+                <Icon as={Trash2} />
+              </Pressable>
               <Box className=" items-center justify-center mr-2">
                 <Text className="text-center">
                   {item.quantity * item.product.price} €
@@ -150,7 +226,10 @@ export default function CartScreen() {
             </Text>
           </Box>
           <Box className="gap-2 mt-5 md:mt-10">
-            <Button className={`md:h-[50px] md:rounded-full w-[70%] mx-auto`}>
+            <Button
+              className={`md:h-[50px] md:rounded-full w-[70%] mx-auto`}
+              onPress={backToHome}
+            >
               <ButtonText
                 adjustsFontSizeToFit
                 allowFontScaling
@@ -160,16 +239,21 @@ export default function CartScreen() {
                 Continuer votre shopping
               </ButtonText>
             </Button>
-            <Button className={`md:h-[50px] md:rounded-full w-[70%] mx-auto`}>
-              <ButtonText
-                adjustsFontSizeToFit
-                allowFontScaling
-                maxFontSizeMultiplier={0}
-                className="text-center  text-sm lg:text-base"
+            {cartItems.length === 0 ? null : (
+              <Button
+                className={`md:h-[50px] md:rounded-full w-[70%] mx-auto`}
+                onPress={checkOut}
               >
-                Valider mon panier
-              </ButtonText>
-            </Button>
+                <ButtonText
+                  adjustsFontSizeToFit
+                  allowFontScaling
+                  maxFontSizeMultiplier={0}
+                  className="text-center  text-sm lg:text-base"
+                >
+                  Valider mon panier
+                </ButtonText>
+              </Button>
+            )}
           </Box>
         </Card>
       ) : (
@@ -184,9 +268,22 @@ export default function CartScreen() {
             </HStack>
             <Text className="text-xl mb-2">{total.toFixed(2)} €</Text>
           </Box>
-          <Button className={`h-[50px] mt-3 w-[70%] mx-auto rounded-full`}>
-            <ButtonText>Valider mon panier</ButtonText>
-          </Button>
+          <Box className="gap-3">
+            {cartItems.length === 0 ? null : (
+              <Button
+                className={`h-[50px] mt-3 w-[70%] mx-auto rounded-full`}
+                onPress={checkOut}
+              >
+                <ButtonText>Valider mon panier</ButtonText>
+              </Button>
+            )}
+            <Button
+              className={`h-[50px] mt-3 w-[70%] mx-auto rounded-full`}
+              onPress={backToHome}
+            >
+              <ButtonText>Continuer votre shopping</ButtonText>
+            </Button>
+          </Box>
         </Box>
       )}
     </Box>

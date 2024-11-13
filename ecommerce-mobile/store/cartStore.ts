@@ -20,6 +20,11 @@ export const useCart = create<CartStateType>((set) => ({
         return { items: [...state.items, { product, quantity }] };
       }
     }),
+  removeProduct: (productId: number) =>
+    set((state) => ({
+      items: state.items.filter((item) => item.product.id !== productId),
+    })),
+  resetCart: () => set({ items: [] }),
   incrementQuantity: (productId: number) =>
     set((state) => ({
       items: state.items.map((item) =>
