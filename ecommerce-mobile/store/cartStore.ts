@@ -3,6 +3,8 @@ import { create } from 'zustand';
 
 export const useCart = create<CartStateType>((set) => ({
   items: [],
+
+  // Ajouter un produit au panier
   addProduct: (product: ProductType, quantity: number) =>
     set((state) => {
       const existingItem = state.items.find(
@@ -20,11 +22,17 @@ export const useCart = create<CartStateType>((set) => ({
         return { items: [...state.items, { product, quantity }] };
       }
     }),
+
+  // Supprimer un produit du panier
   removeProduct: (productId: number) =>
     set((state) => ({
       items: state.items.filter((item) => item.product.id !== productId),
     })),
+
+  // Réinitialiser le panier
   resetCart: () => set({ items: [] }),
+
+  // Incrémenter la quantité d'un produit
   incrementQuantity: (productId: number) =>
     set((state) => ({
       items: state.items.map((item) =>
@@ -33,6 +41,8 @@ export const useCart = create<CartStateType>((set) => ({
           : item
       ),
     })),
+
+  // Décrémenter la quantité d'un produit
   decrementQuantity: (productId: number) =>
     set((state) => ({
       items: state.items.map((item) =>

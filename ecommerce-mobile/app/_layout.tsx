@@ -6,7 +6,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 // ------------ Imports Personnelles -----------------
 import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
 import { Icon } from '@/components/ui/icon';
-import { ShoppingCart } from 'lucide-react-native';
+import { ShoppingCart, User } from 'lucide-react-native';
 import { useCart } from '@/store/cartStore';
 import { Pressable } from 'react-native';
 import { Text } from '@/components/ui/text';
@@ -29,10 +29,21 @@ export default function RootLayout() {
                 >
                   <Pressable>
                     <Icon as={ShoppingCart} />
-                    <Text className="font-bold mr-6 ml-2">{cartItemsNum}</Text>
+                    <Text className="font-bold ml-6 mr-2">{cartItemsNum}</Text>
                   </Pressable>
                 </Link>
               ),
+            headerLeft: () => (
+              <Link
+                href={'/login'}
+                asChild
+                className="flex-row items-center justify-center ml-6"
+              >
+                <Pressable>
+                  <Icon as={User} />
+                </Pressable>
+              </Link>
+            ),
           }}
         >
           <Stack.Screen
@@ -42,6 +53,10 @@ export default function RootLayout() {
           <Stack.Screen
             name="cart"
             options={{ title: 'Mon Panier', headerTitleAlign: 'center' }}
+          />
+          <Stack.Screen
+            name="login"
+            options={{ title: 'Connexion', headerTitleAlign: 'center' }}
           />
         </Stack>
       </GluestackUIProvider>
