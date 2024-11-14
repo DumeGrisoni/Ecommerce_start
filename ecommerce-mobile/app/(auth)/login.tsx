@@ -6,8 +6,9 @@ import { Heading } from '@/components/ui/heading';
 import { Input, InputField, InputIcon, InputSlot } from '@/components/ui/input';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
+import { useAuth } from '@/store/authStore';
 import { useMutation } from '@tanstack/react-query';
-import { Link, Stack } from 'expo-router';
+import { Link, Redirect, Stack } from 'expo-router';
 import { EyeIcon, EyeOffIcon } from 'lucide-react-native';
 import React from 'react';
 import { Platform } from 'react-native';
@@ -18,11 +19,21 @@ export default function Login() {
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
 
+  const setUser = useAuth((state) => state.setUser);
+  const setToken = useAuth((state) => state.setToken);
+  const isLoggedIn = useAuth((state) => !!state.token);
+
   // ------------ Mutations -----------------
 
   const loginMutation = useMutation({
     mutationFn: () => login(email, password),
-    onSuccess: () => console.log('Success'),
+    onSuccess: (data) => {
+      console.log('Success');
+      if (data.user && data.token) {
+        setUser(data.user);
+        setToken(data.token);
+      }
+    },
     onError: () => console.log('Error'),
   });
 
@@ -36,6 +47,10 @@ export default function Login() {
       return !showState;
     });
   };
+
+  if (isLoggedIn) {
+    return <Redirect href={'/'} />;
+  }
 
   return (
     <Box className="flex-1 items-center justify-center w-full h-full p-6">

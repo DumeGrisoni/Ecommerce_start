@@ -19,3 +19,35 @@ export type CartStateType = {
   incrementQuantity: (productId: number) => void;
   decrementQuantity: (productId: number) => void;
 };
+
+export type userType = {
+  id: number;
+  email: string;
+  name: string;
+  surname: string;
+  adress: string;
+  postalCode: number;
+  city: string;
+};
+
+export type authStateType = {
+  user: userType | null;
+  token: string | null;
+  login: (email: string, password: string) => void;
+  logout: () => void;
+  register: (
+    email: string,
+    password: string,
+    name: string,
+    surname: string,
+    adress: string,
+    postalCode: number,
+    city: string
+  ) => void;
+};
+export type AuthActionsType = {
+  setUser: (user: UserType) => void;
+  setToken: (token: string) => void;
+};
+
+type AuthStoreType = AuthStateType & AuthActionsType;

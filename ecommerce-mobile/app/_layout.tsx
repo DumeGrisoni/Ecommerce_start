@@ -11,11 +11,13 @@ import { useCart } from '@/store/cartStore';
 import { Pressable } from 'react-native';
 import { Text } from '@/components/ui/text';
 import { HStack } from '@/components/ui/hstack';
+import { useAuth } from '@/store/authStore';
 
 const queryClient = new QueryClient();
 
 export default function RootLayout() {
   const cartItemsNum = useCart((state) => state.items.length);
+  const isLoggedIn = useAuth((state) => !!state.token);
   return (
     <QueryClientProvider client={queryClient}>
       <GluestackUIProvider mode="system">
@@ -37,7 +39,7 @@ export default function RootLayout() {
                   </Link>
                 )}
                 <Link
-                  href="/login"
+                  href={isLoggedIn ? '/profil' : '/login'}
                   asChild
                   className="flex-row items-center justify-center "
                 >

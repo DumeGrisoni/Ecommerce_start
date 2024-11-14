@@ -7,6 +7,7 @@ import { HStack } from '@/components/ui/hstack';
 import { Input, InputField, InputIcon, InputSlot } from '@/components/ui/input';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
+import { useAuth } from '@/store/authStore';
 import { useMutation } from '@tanstack/react-query';
 import { Link, Stack } from 'expo-router';
 import { EyeIcon, EyeOffIcon } from 'lucide-react-native';
@@ -23,6 +24,9 @@ export default function Register() {
   const [adress, setAdress] = React.useState('');
   const [postalCode, setPostalCode] = React.useState('');
   const [city, setCity] = React.useState('');
+
+  const setUser = useAuth((state) => state.setUser);
+  const setToken = useAuth((state) => state.setToken);
 
   // ------------ Constants -----------------
 
@@ -46,7 +50,13 @@ export default function Register() {
         Number(postalCode),
         city
       ),
-    onSuccess: () => console.log('Success register'),
+    onSuccess: (data) => {
+      console.log('Success register');
+      if (data.user && data.token) {
+        setUser(data.user);
+        setToken(data.token);
+      }
+    },
     onError: (err) => {
       console.log(err);
     },
