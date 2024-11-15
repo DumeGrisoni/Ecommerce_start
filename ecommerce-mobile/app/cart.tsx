@@ -1,4 +1,4 @@
-import { Alert, FlatList, Platform, Pressable } from 'react-native';
+import { FlatList, Modal, Platform, Pressable } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
 import React from 'react';
 import { Trash2 } from 'lucide-react-native';
@@ -15,9 +15,13 @@ import { Text } from '@/components/ui/text';
 import { useCart } from '@/store/cartStore';
 import { CartItemType, CartStateType } from '@/types/types';
 import { useAuth } from '@/store/authStore';
+import { Heading } from '@/components/ui/heading';
+import { VStack } from '@/components/ui/vstack';
 
 export default function CartScreen() {
   // ------------------Hooks------------------
+
+  const [modalVisible, setModalVisible] = React.useState(false);
 
   const cartItems: CartItemType[] = useCart((state) => state.items);
 
@@ -42,27 +46,17 @@ export default function CartScreen() {
     if (isLoggedIn) {
       resetCart();
     } else {
-      Alert.alert(
-        'Confirmation du panier',
-        'Vous devez être connecté pour valider votre panier',
-        [
-          {
-            text: 'Se connecter',
-            onPress: () => router.push('/login'),
-          },
-          {
-            text: 'Continuer mes achats',
-            onPress: () => {
-              router.push('/'), router.dismissAll();
-            },
-          },
-        ]
-      );
+      setModalVisible(true);
     }
   };
 
+  const goToLogin = () => {
+    router.replace('/login');
+    router.dismissAll();
+  };
+
   const backToHome = () => {
-    router.push('/');
+    router.replace('/');
     router.dismissAll();
   };
 
@@ -310,6 +304,35 @@ export default function CartScreen() {
           </Box>
         </Box>
       )}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+        className="flex-1 items-center justify-center"
+      >
+        <Box
+          style={{
+            backgroundColor: 'rgba(0,0,0,0.5)',
+          }}
+          className="flex-1"
+        >
+          <Box className="bg-white w-[50%] h-[50%] mx-auto my-auto justify-center items-center">
+            <VStack space="xl" className="p-4 items-center justify-center">
+              <Heading>Confirmation du panier</Heading>
+              <Text>Vous devez être connecté pour valider votre panier</Text>
+              <HStack space="md">
+                <Button onPress={goToLogin}>
+                  <ButtonText>Se connecter</ButtonText>
+                </Button>
+                <Button onPress={backToHome}>
+                  <ButtonText>Continuer mes achats</ButtonText>
+                </Button>
+              </HStack>
+            </VStack>
+          </Box>
+        </Box>
+      </Modal>
     </Box>
   );
 }

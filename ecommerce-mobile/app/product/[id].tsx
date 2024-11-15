@@ -16,6 +16,7 @@ import { useCart } from '@/store/cartStore';
 import { isWeb } from '@gluestack-ui/nativewind-utils/IsWeb';
 import { HStack } from '@/components/ui/hstack';
 import { AddIcon, Icon, RemoveIcon } from '@/components/ui/icon';
+import { useToastNotification } from '@/components/toast';
 
 export default function ProductDetailScreen() {
   // ----------------- Récupération de l'id du produit -----------------
@@ -36,17 +37,19 @@ export default function ProductDetailScreen() {
 
   const addProduct = useCart((state) => state.addProduct);
   const [quantity, setQuantity] = useState(1);
+  const { showNewToast } = useToastNotification();
 
   const addToCart = () => {
     addProduct(product, quantity);
-    if (isWeb) {
-      alert('Votre produit a bien été ajouté au panier');
-    } else {
-      return Alert.alert(
-        'Produit ajouté au panier',
-        'Votre produit a bien été ajouté au panier'
-      );
-    }
+    // if (isWeb) {
+    //   alert('Votre produit a bien été ajouté au panier');
+    // } else {
+    //   Alert.alert(
+    //     'Produit ajouté au panier',
+    //     'Votre produit a bien été ajouté au panier'
+    //   );
+    // }
+    showNewToast();
   };
   const decrementQuantity = () => {
     setQuantity((prev) => Math.max(prev - 1, 1));
