@@ -1,4 +1,4 @@
-import { FlatList, Platform, Pressable } from 'react-native';
+import { Alert, FlatList, Platform, Pressable } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
 import React from 'react';
 import { Trash2 } from 'lucide-react-native';
@@ -14,28 +14,23 @@ import { Image } from '@/components/ui/image';
 import { Text } from '@/components/ui/text';
 import { useCart } from '@/store/cartStore';
 import { CartItemType, CartStateType } from '@/types/types';
+import { useAuth } from '@/store/authStore';
 
 export default function CartScreen() {
+  // ------------------Hooks------------------
+
+  const cartItems: CartItemType[] = useCart((state) => state.items);
+
+  const resetCart = useCart((state: CartStateType) => state.resetCart);
+
+  const isLoggedIn = useAuth((state) => !!state.token);
+
+  // ------------------Variables------------------
+
   const router = useRouter();
-  // Vérifier si l'application est en mode web
+
   const isWeb = Platform.OS === 'web' ? true : false;
 
-  // Récupérer les éléments du panier
-  const cartItems: CartItemType[] = useCart((state) => state.items);
-  // Mettre le panier a zéro
-  const resetCart = useCart((state: CartStateType) => state.resetCart);
-  // Ajouter une quantité d'un produit au panier
-  const incrementQuantity = useCart(
-    (state: CartStateType) => state.incrementQuantity
-  );
-  // Enlever une quantité d'un produit au panier
-  const decrementQuantity = useCart(
-    (state: CartStateType) => state.decrementQuantity
-  );
-  // Enlever un produit du panier
-  const removeProduct = useCart((state: CartStateType) => state.removeProduct);
-
-  // Calculer le prix total du panier
   const total = cartItems.reduce(
     (sum, item) => sum + item.product.price * item.quantity,
     0
@@ -44,16 +39,45 @@ export default function CartScreen() {
   // ------------------Fonctions------------------
 
   const checkOut = async () => {
-    resetCart();
+    if (isLoggedIn) {
+      resetCart();
+    } else {
+      Alert.alert(
+        'Confirmation du panier',
+        'Vous devez être connecté pour valider votre panier',
+        [
+          {
+            text: 'Se connecter',
+            onPress: () => router.push('/login'),
+          },
+          {
+            text: 'Continuer mes achats',
+            onPress: () => {
+              router.push('/'), router.dismissAll();
+            },
+          },
+        ]
+      );
+    }
   };
 
   const backToHome = () => {
     router.push('/');
+    router.dismissAll();
   };
+
+  const removeProduct = useCart((state: CartStateType) => state.removeProduct);
 
   const removeToCart = (productId: number) => {
     removeProduct(productId);
   };
+  const incrementQuantity = useCart(
+    (state: CartStateType) => state.incrementQuantity
+  );
+
+  const decrementQuantity = useCart(
+    (state: CartStateType) => state.decrementQuantity
+  );
 
   // ------------------Rendu------------------
 

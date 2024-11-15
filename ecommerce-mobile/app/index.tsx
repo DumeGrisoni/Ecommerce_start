@@ -1,12 +1,14 @@
 import { ActivityIndicator, FlatList, View } from 'react-native';
-import React from 'react';
+import React, { useEffect } from 'react';
 import ProductListItem from '../components/ProductListItem';
 import { listProducts } from '@/api/products';
 import { useBreakpointValue } from '@/components/ui/utils/use-break-point-value';
 import { useQuery } from '@tanstack/react-query';
 import { Text } from '@/components/ui/text/index.web';
+import { useRouter } from 'expo-router';
 
 export default function HomeScreen() {
+  const router = useRouter();
   const { data, isLoading, error } = useQuery({
     queryKey: ['products'],
     queryFn: listProducts,

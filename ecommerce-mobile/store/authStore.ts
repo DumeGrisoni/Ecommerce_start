@@ -7,4 +7,5 @@ export const useAuth = create<AuthStoreType>((set) => ({
 
   setUser: (user: userType) => set({ user }),
   setToken: (token: string) => set({ token }),
+  clearUser: () => set({ user: null, token: null }),
 }));

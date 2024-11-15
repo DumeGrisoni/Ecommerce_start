@@ -8,7 +8,7 @@ import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
 import { useAuth } from '@/store/authStore';
 import { useMutation } from '@tanstack/react-query';
-import { Link, Redirect, Stack } from 'expo-router';
+import { Link, Redirect, Stack, useRouter } from 'expo-router';
 import { EyeIcon, EyeOffIcon } from 'lucide-react-native';
 import React from 'react';
 import { Platform } from 'react-native';
@@ -22,6 +22,7 @@ export default function Login() {
   const setUser = useAuth((state) => state.setUser);
   const setToken = useAuth((state) => state.setToken);
   const isLoggedIn = useAuth((state) => !!state.token);
+  const router = useRouter();
 
   // ------------ Mutations -----------------
 
@@ -32,6 +33,8 @@ export default function Login() {
       if (data.user && data.token) {
         setUser(data.user);
         setToken(data.token);
+        setEmail('');
+        setPassword('');
       }
     },
     onError: () => console.log('Error'),
@@ -49,7 +52,8 @@ export default function Login() {
   };
 
   if (isLoggedIn) {
-    return <Redirect href={'/'} />;
+    router.dismissAll();
+    router.replace('/');
   }
 
   return (

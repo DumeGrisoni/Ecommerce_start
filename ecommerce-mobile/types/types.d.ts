@@ -48,6 +48,7 @@ export type authStateType = {
 export type AuthActionsType = {
   setUser: (user: UserType) => void;
   setToken: (token: string) => void;
+  clearUser: () => void;
 };
 
 type AuthStoreType = AuthStateType & AuthActionsType;
