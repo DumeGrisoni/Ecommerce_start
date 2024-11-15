@@ -49,12 +49,12 @@ export default function profil() {
   return (
     <Box className="w-[90%] h-[90%] md:w-[70%] lg:w-[50%] mx-auto my-auto">
       <Card className="h-full">
-        <Stack.Screen
+        {/* <Stack.Screen
           options={{
             title: userFullName,
             headerTitleAlign: 'center',
           }}
-        />
+        /> */}
         <VStack className="flex-1 gap-4">
           <Heading>Informations personnelles</Heading>
           <HStack className=" justify-start items-center my-2">

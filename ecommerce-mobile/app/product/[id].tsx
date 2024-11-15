@@ -41,14 +41,6 @@ export default function ProductDetailScreen() {
 
   const addToCart = () => {
     addProduct(product, quantity);
-    // if (isWeb) {
-    //   alert('Votre produit a bien été ajouté au panier');
-    // } else {
-    //   Alert.alert(
-    //     'Produit ajouté au panier',
-    //     'Votre produit a bien été ajouté au panier'
-    //   );
-    // }
     showNewToast();
   };
   const decrementQuantity = () => {

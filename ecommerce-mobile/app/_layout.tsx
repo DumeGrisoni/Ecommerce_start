@@ -18,6 +18,12 @@ const queryClient = new QueryClient();
 export default function RootLayout() {
   const cartItemsNum = useCart((state) => state.items.length);
   const isLoggedIn = useAuth((state) => !!state.token);
+  const user = useAuth((state) => state.user);
+
+  let userFullName = '';
+  if (user) {
+    userFullName = user.name + ' ' + user.surname;
+  }
   return (
     <QueryClientProvider client={queryClient}>
       <GluestackUIProvider mode="system">
@@ -58,6 +64,10 @@ export default function RootLayout() {
           <Stack.Screen
             name="cart"
             options={{ title: 'Mon Panier', headerTitleAlign: 'center' }}
+          />
+          <Stack.Screen
+            name="(user)"
+            options={{ title: userFullName, headerTitleAlign: 'center' }}
           />
         </Stack>
       </GluestackUIProvider>

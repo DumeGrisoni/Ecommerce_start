@@ -10,6 +10,7 @@ export function useToastNotification() {
     toast.show({
       id: newId,
       placement: 'top',
+      containerStyle: { marginTop: 30 },
       duration: 3000,
       render: ({ id }) => {
         const uniqueToastId = 'toast-' + id;
