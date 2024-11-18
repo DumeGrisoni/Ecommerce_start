@@ -16,7 +16,9 @@ import { useAuth } from '@/store/authStore';
 const queryClient = new QueryClient();
 
 export default function RootLayout() {
-  const cartItemsNum = useCart((state) => state.items.length);
+  const cartItemProducts = useCart((state) =>
+    state.items.reduce((acc, item) => acc + item.quantity, 0)
+  );
   const isLoggedIn = useAuth((state) => !!state.token);
   const user = useAuth((state) => state.user);
 
@@ -32,7 +34,7 @@ export default function RootLayout() {
             headerBackVisible: true,
             headerRight: () => (
               <HStack className="mr-6 gap-2">
-                {cartItemsNum > 0 && (
+                {cartItemProducts > 0 && (
                   <Link
                     href="/cart"
                     asChild
@@ -40,7 +42,7 @@ export default function RootLayout() {
                   >
                     <Pressable>
                       <Icon as={ShoppingCart} size="xl" />
-                      <Text className="font-bold mr-1">{cartItemsNum}</Text>
+                      <Text className="font-bold mx-1">{cartItemProducts}</Text>
                     </Pressable>
                   </Link>
                 )}

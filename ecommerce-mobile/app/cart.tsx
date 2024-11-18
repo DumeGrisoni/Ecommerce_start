@@ -17,6 +17,8 @@ import { CartItemType, CartStateType } from '@/types/types';
 import { useAuth } from '@/store/authStore';
 import { Heading } from '@/components/ui/heading';
 import { VStack } from '@/components/ui/vstack';
+import { truncateText } from '@/utils/truncateText';
+import { useToastNotification } from '@/components/toast';
 
 export default function CartScreen() {
   // ------------------Hooks------------------
@@ -24,6 +26,8 @@ export default function CartScreen() {
   const [modalVisible, setModalVisible] = React.useState(false);
 
   const cartItems: CartItemType[] = useCart((state) => state.items);
+
+  const { showNewToast } = useToastNotification();
 
   const resetCart = useCart((state: CartStateType) => state.resetCart);
 
@@ -40,6 +44,8 @@ export default function CartScreen() {
     0
   );
 
+  const totalQuantity = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+
   // ------------------Fonctions------------------
 
   const checkOut = async () => {
@@ -51,8 +57,8 @@ export default function CartScreen() {
   };
 
   const goToLogin = () => {
-    router.replace('/login');
     router.dismissAll();
+    router.replace('/login');
   };
 
   const backToHome = () => {
@@ -64,6 +70,10 @@ export default function CartScreen() {
 
   const removeToCart = (productId: number) => {
     removeProduct(productId);
+    showNewToast({
+      title: 'Produit retiré du panier',
+      description: 'Le produit a été retiré du panier',
+    });
   };
   const incrementQuantity = useCart(
     (state: CartStateType) => state.incrementQuantity
@@ -75,7 +85,7 @@ export default function CartScreen() {
 
   // ------------------Rendu------------------
 
-  if (cartItems.length === 0) {
+  if (totalQuantity === 0) {
     return (
       <Card className="lg:w-[70%] w-[90%] mx-auto h-auto my-10  ">
         <Text className="font-bold w-full text-center text-xl mb-3">
@@ -83,7 +93,7 @@ export default function CartScreen() {
         </Text>
         <Text className="my-10 mx-auto">Votre panier est vide</Text>
         <Button
-          className={`md:h-[50px] md:rounded-full ${isWeb ? 'w-[30%]' : 'w-[70%]'}  mx-auto`}
+          className={`md:h-[50px] md:rounded-lg ${isWeb ? 'w-[30%]' : 'w-[70%]'}  mx-auto`}
           onPress={backToHome}
         >
           <ButtonText
@@ -141,13 +151,16 @@ export default function CartScreen() {
                     <Icon as={AddIcon} />
                   </Pressable>
                 </HStack>
-                <Pressable onPress={() => removeToCart(item.product.id)}>
-                  <Icon as={Trash2} />
-                </Pressable>
 
                 <Text className="text-center text-sm lg:text-base flex-1">
                   {item.quantity * item.product.price} €
                 </Text>
+                <Pressable
+                  onPress={() => removeToCart(item.product.id)}
+                  className="mr-4"
+                >
+                  <Icon as={Trash2} />
+                </Pressable>
               </Box>
             )}
             className="border-b border-gray-300 "
@@ -158,7 +171,7 @@ export default function CartScreen() {
                 </Text>
                 <Text className="my-10 mx-auto">Votre panier est vide</Text>
                 <Button
-                  className={`md:h-[50px] md:rounded-full ${isWeb ? 'w-[30%]' : 'w-[70%]'}  mx-auto`}
+                  className={`md:h-[50px] md:rounded-lg ${isWeb ? 'w-[30%]' : 'w-[70%]'}  mx-auto`}
                   onPress={backToHome}
                 >
                   <ButtonText
@@ -167,7 +180,7 @@ export default function CartScreen() {
                     maxFontSizeMultiplier={0}
                     className="text-center text-sm lg:text-base"
                   >
-                    Continuer votre shopping
+                    Continuer mes achats
                   </ButtonText>
                 </Button>
               </Card>
@@ -200,32 +213,33 @@ export default function CartScreen() {
               />
               <Box className="flex-1 ml-2">
                 <Text className="flex-1 tex-center font-bold">
-                  {item.product.name}
+                  {truncateText(item.product.name, 20)}
                 </Text>
                 <Text className="flex-1">{item.product.price}</Text>
               </Box>
-              <HStack className="flex-1  justify-center flex-row items-center gap-1 ">
+              <HStack className="flex-1 ml-1 justify-center flex-row items-center gap-1 ">
                 <Pressable onPress={() => decrementQuantity(item.product.id)}>
                   <Icon as={RemoveIcon} />
                 </Pressable>
-                <Text className="text-center mx-4 text-sm md:text-base lg:text-lg">
+                <Text className="text-center mx-2 text-sm md:text-base lg:text-lg">
                   {item.quantity}
                 </Text>
                 <Pressable onPress={() => incrementQuantity(item.product.id)}>
                   <Icon as={AddIcon} />
                 </Pressable>
               </HStack>
-              <Pressable
-                className="flex-1 justify-center items-center"
-                onPress={() => removeToCart(item.product.id)}
-              >
-                <Icon as={Trash2} />
-              </Pressable>
-              <Box className=" items-center justify-center mr-2">
+
+              <Box className=" items-center justify-center mr-3">
                 <Text className="text-center">
                   {item.quantity * item.product.price} €
                 </Text>
               </Box>
+              <Pressable
+                className=" mr-2 justify-center items-center"
+                onPress={() => removeToCart(item.product.id)}
+              >
+                <Icon as={Trash2} />
+              </Pressable>
             </Card>
           )}
           className="flex-1 my-3"
@@ -236,16 +250,16 @@ export default function CartScreen() {
         <Card className="lg:w-[25%] w-[90%] lg:h-[80%] bg-white md:mr-6">
           <Box className="lg:flex-row flex-col w-full items-center justify-center">
             <Text className="font-bold flex-1 text-center lg:text-left md:text-lg lg:text-xl mb-3">
-              Sous-total : ({cartItems.length}{' '}
-              {cartItems.length > 1 ? 'articles' : 'article'})
+              Sous-total : ({totalQuantity}{' '}
+              {totalQuantity > 1 ? 'articles' : 'article'})
             </Text>
             <Text className="font-bold text-base md:text-lg lg:text-xl md:mb-3">
               {total.toFixed(2)} €
             </Text>
           </Box>
-          <Box className="gap-2 mt-5 md:mt-10">
+          <Box className="gap-6 mt-5 md:mt-10">
             <Button
-              className={`md:h-[50px] md:rounded-full w-[70%] mx-auto`}
+              className={`md:h-[50px] md:rounded-lg w-[70%] mx-auto`}
               onPress={backToHome}
             >
               <ButtonText
@@ -254,12 +268,12 @@ export default function CartScreen() {
                 maxFontSizeMultiplier={0}
                 className="text-center text-sm lg:text-base"
               >
-                Continuer votre shopping
+                Continuer mes achats
               </ButtonText>
             </Button>
-            {cartItems.length === 0 ? null : (
+            {totalQuantity === 0 ? null : (
               <Button
-                className={`md:h-[50px] md:rounded-full w-[70%] mx-auto`}
+                className={`md:h-[50px] md:rounded-lg w-[70%] mx-auto`}
                 onPress={checkOut}
               >
                 <ButtonText
@@ -280,26 +294,25 @@ export default function CartScreen() {
             <HStack className="flex-row items-center justify-center gap-2">
               <Text className="font-bold text-xl mb-2"> Sous-total :</Text>
               <Text className="text-xl mb-2">
-                ({cartItems.length}{' '}
-                {cartItems.length > 1 ? 'articles' : 'article'})
+                ({totalQuantity} {totalQuantity > 1 ? 'articles' : 'article'})
               </Text>
             </HStack>
             <Text className="text-xl mb-2">{total.toFixed(2)} €</Text>
           </Box>
           <Box className="gap-3">
-            {cartItems.length === 0 ? null : (
+            {totalQuantity === 0 ? null : (
               <Button
-                className={`h-[50px] mt-3 w-[70%] mx-auto rounded-full`}
+                className={`h-[50px] mt-3 w-[70%] mx-auto rounded-lg`}
                 onPress={checkOut}
               >
                 <ButtonText>Valider mon panier</ButtonText>
               </Button>
             )}
             <Button
-              className={`h-[50px] mt-3 w-[70%] mx-auto rounded-full`}
+              className={`h-[50px] mt-3 w-[70%] mx-auto rounded-lg`}
               onPress={backToHome}
             >
-              <ButtonText>Continuer votre shopping</ButtonText>
+              <ButtonText>Continuer mes achats</ButtonText>
             </Button>
           </Box>
         </Box>
@@ -317,20 +330,22 @@ export default function CartScreen() {
           }}
           className="flex-1"
         >
-          <Box className="bg-white w-[50%] h-[50%] mx-auto my-auto justify-center items-center">
+          <Card className="bg-white w-[80%] md:w-[50%] lg:w-[30%] max-h-[50%] h-auto mx-auto my-auto justify-center items-center">
             <VStack space="xl" className="p-4 items-center justify-center">
               <Heading>Confirmation du panier</Heading>
-              <Text>Vous devez être connecté pour valider votre panier</Text>
-              <HStack space="md">
-                <Button onPress={goToLogin}>
-                  <ButtonText>Se connecter</ButtonText>
+              <Text className="text-center">
+                Vous devez être connecté pour valider votre panier
+              </Text>
+              <VStack space="md" className={`mt-auto gap-4`}>
+                <Button onPress={goToLogin} size="lg" className="rounded-lg">
+                  <ButtonText>Me connecter</ButtonText>
                 </Button>
-                <Button onPress={backToHome}>
+                <Button onPress={backToHome} size="lg" className="rounded-lg">
                   <ButtonText>Continuer mes achats</ButtonText>
                 </Button>
-              </HStack>
+              </VStack>
             </VStack>
-          </Box>
+          </Card>
         </Box>
       </Modal>
     </Box>

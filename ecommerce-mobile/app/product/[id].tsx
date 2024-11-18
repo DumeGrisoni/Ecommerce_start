@@ -13,7 +13,6 @@ import { Box } from '@/components/ui/box';
 import { getProductById } from '@/api/products';
 import { useQuery } from '@tanstack/react-query';
 import { useCart } from '@/store/cartStore';
-import { isWeb } from '@gluestack-ui/nativewind-utils/IsWeb';
 import { HStack } from '@/components/ui/hstack';
 import { AddIcon, Icon, RemoveIcon } from '@/components/ui/icon';
 import { useToastNotification } from '@/components/toast';
@@ -41,7 +40,10 @@ export default function ProductDetailScreen() {
 
   const addToCart = () => {
     addProduct(product, quantity);
-    showNewToast();
+    showNewToast({
+      title: 'Produit ajouté au panier',
+      description: `${quantity} ${product.name} ajouté au panier`,
+    });
   };
   const decrementQuantity = () => {
     setQuantity((prev) => Math.max(prev - 1, 1));
