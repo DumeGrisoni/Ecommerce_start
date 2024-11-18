@@ -16,6 +16,7 @@ import { useCart } from '@/store/cartStore';
 import { HStack } from '@/components/ui/hstack';
 import { AddIcon, Icon, RemoveIcon } from '@/components/ui/icon';
 import { useToastNotification } from '@/components/toast';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function ProductDetailScreen() {
   // ----------------- Récupération de l'id du produit -----------------
@@ -67,53 +68,55 @@ export default function ProductDetailScreen() {
   }
 
   return (
-    <Box
-      key={product.id + product.name}
-      className="flex-1 items-center justify-center p-6"
-    >
-      <Card className="p-3 rounded-lg max-w-[960px] w-full items-center justify-center flex-1">
-        <Stack.Screen options={{ title: product.name }} />
-        <Image
-          source={{
-            uri: product.image,
-          }}
-          className="mb-6 h-[300px] w-full rounded-md"
-          alt="Image du produit"
-          resizeMode="contain"
-        />
-        <VStack className="mb-1">
-          <Heading size="md" className="mb-4 text-center">
-            {product.name}
-          </Heading>
-          <Text size="sm" className="text-center">
-            {product.description}
-          </Text>
-          <Text size="lg" className="text-center mt-6 font-bold">
-            {product.price} €
-          </Text>
-        </VStack>
+    <SafeAreaView className="flex-1">
+      <Box
+        key={product.id + product.name}
+        className="p-6 items-center justify-center"
+      >
+        <Card className="p-3 rounded-lg max-w-[960px] w-full items-center justify-center ">
+          <Stack.Screen options={{ title: product.name }} />
+          <Image
+            source={{
+              uri: product.image,
+            }}
+            className="mb-6 h-[300px] w-full rounded-md"
+            alt="Image du produit"
+            resizeMode="contain"
+          />
+          <VStack className="mb-1">
+            <Heading size="md" className="mb-4 text-center">
+              {product.name}
+            </Heading>
+            <Text size="sm" className="text-center">
+              {product.description}
+            </Text>
+            <Text size="lg" className="text-center mt-6 font-bold">
+              {product.price} €
+            </Text>
+          </VStack>
 
-        <HStack className=" mt-6 mb-6 border p-2 max-w-[120px] w-auto h-auto max-h-[50px] border-black rounded-lg justify-center flex-row items-center gap-3">
-          <Pressable
-            onPress={decrementQuantity}
-            className="flex-1 justify-center items-center h-full"
-          >
-            <Icon as={RemoveIcon} />
-          </Pressable>
-          <Text className="text-center mx-2 text-sm md:text-base lg:text-lg">
-            {quantity}
-          </Text>
-          <Pressable
-            onPress={incrementQuantity}
-            className="flex-1 items-center justify-center"
-          >
-            <Icon as={AddIcon} />
-          </Pressable>
-        </HStack>
-        <Button className="mb-6" onPress={addToCart}>
-          <ButtonText size="sm">Ajouter au panier</ButtonText>
-        </Button>
-      </Card>
-    </Box>
+          <HStack className=" mt-6 mb-6 border p-2 max-w-[120px] w-auto h-auto max-h-[50px] border-black rounded-lg justify-center flex-row items-center gap-3">
+            <Pressable
+              onPress={decrementQuantity}
+              className="flex-1 justify-center items-center h-full"
+            >
+              <Icon as={RemoveIcon} />
+            </Pressable>
+            <Text className="text-center mx-2 text-sm md:text-base lg:text-lg">
+              {quantity}
+            </Text>
+            <Pressable
+              onPress={incrementQuantity}
+              className="flex-1 items-center justify-center"
+            >
+              <Icon as={AddIcon} />
+            </Pressable>
+          </HStack>
+          <Button className="mb-6" onPress={addToCart}>
+            <ButtonText size="sm">Ajouter au panier</ButtonText>
+          </Button>
+        </Card>
+      </Box>
+    </SafeAreaView>
   );
 }
