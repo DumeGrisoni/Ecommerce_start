@@ -20,6 +20,8 @@ import { VStack } from '@/components/ui/vstack';
 import { truncateText } from '@/utils/truncateText';
 import { useToastNotification } from '@/components/toast';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useMutation } from '@tanstack/react-query';
+import { createOrder } from '@/api/orders';
 
 export default function CartScreen() {
   // ------------------Hooks------------------
@@ -31,6 +33,33 @@ export default function CartScreen() {
   const { showNewToast } = useToastNotification();
 
   const resetCart = useCart((state: CartStateType) => state.resetCart);
+
+  const createOrderMutation = useMutation({
+    mutationFn: () =>
+      createOrder(
+        cartItems.map((item) => ({
+          productId: item.product.id,
+          quantity: item.quantity,
+          price: item.product.price,
+        }))
+      ),
+
+    onSuccess: () => {
+      resetCart();
+      showNewToast({
+        title: 'Commande validée',
+        description: 'Votre commande a bien été validée',
+      });
+    },
+    onError: (error) => {
+      console.log(error);
+      showNewToast({
+        title: 'Erreur',
+        description:
+          'Une erreur est survenue lors de la validation de la commande',
+      });
+    },
+  });
 
   const isLoggedIn = useAuth((state) => !!state.token);
 
@@ -51,7 +80,7 @@ export default function CartScreen() {
 
   const checkOut = async () => {
     if (isLoggedIn) {
-      resetCart();
+      createOrderMutation.mutate();
     } else {
       setModalVisible(true);
     }
@@ -113,12 +142,12 @@ export default function CartScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1">
+    <SafeAreaView className="flex-1 items-center justify-center my-auto h-full w-full ">
       <Box
-        className={` ${isWeb ? 'lg:flex-row justify-center items-center md:gap-2' : 'mt-2 mb-10 flex-col'} `}
+        className={` ${isWeb ? 'lg:flex-row justify-center h-full w-full items-center md:gap-2' : 'mt-2 mb-10 h-full flex-col'} `}
       >
         {isWeb ? (
-          <Card className="lg:w-[70%] w-[90%] mx-auto h-auto my-10  ">
+          <Card className="lg:w-[70%] w-[90%] mx-auto h-auto my-10">
             <Text className="font-bold w-full text-center text-xl mb-3">
               Mes Articles
             </Text>
@@ -171,27 +200,6 @@ export default function CartScreen() {
                 </Box>
               )}
               className="border-b border-gray-300 "
-              ListEmptyComponent={
-                <Card className="lg:w-[70%] w-[90%] mx-auto h-auto my-10  ">
-                  <Text className="font-bold w-full text-center text-xl mb-3">
-                    Mes Articles
-                  </Text>
-                  <Text className="my-10 mx-auto">Votre panier est vide</Text>
-                  <Button
-                    className={`md:h-[50px] md:rounded-lg ${isWeb ? 'w-[30%]' : 'w-[70%]'}  mx-auto`}
-                    onPress={backToHome}
-                  >
-                    <ButtonText
-                      adjustsFontSizeToFit
-                      allowFontScaling
-                      maxFontSizeMultiplier={0}
-                      className="text-center text-sm lg:text-base"
-                    >
-                      Continuer mes achats
-                    </ButtonText>
-                  </Button>
-                </Card>
-              }
             />
             <Box className="justify-center mt-6 flex-col lg:flex-row">
               <Text className="font-bold text-center text-sm md:text-xl">
@@ -203,54 +211,60 @@ export default function CartScreen() {
             </Box>
           </Card>
         ) : (
-          <FlatList
-            data={cartItems}
-            renderItem={({ item }) => (
-              <Card
-                key={item.product.id}
-                className={`flex-row px-4 my-2 mx-2 h-auto items-center justify-center bg-white rounded-xl`}
-              >
-                <Image
-                  source={{
-                    uri: item.product.image,
-                  }}
-                  className={`${isWeb ? 'max-h-[100px] max-w-[100px] mr-10' : 'max-h-[50px] max-w-[50px] mr-3'} w-full rounded-xl justify-start `}
-                  alt="Image du produit"
-                  resizeMode="contain"
-                />
-                <Box className="flex-1 ml-2">
-                  <Text className="flex-1 tex-center font-bold">
-                    {truncateText(item.product.name, 20)}
-                  </Text>
-                  <Text className="flex-1">{item.product.price}</Text>
-                </Box>
-                <HStack className="flex-1 ml-1 justify-center flex-row items-center gap-1 ">
-                  <Pressable onPress={() => decrementQuantity(item.product.id)}>
-                    <Icon as={RemoveIcon} />
-                  </Pressable>
-                  <Text className="text-center mx-2 text-sm md:text-base lg:text-lg">
-                    {item.quantity}
-                  </Text>
-                  <Pressable onPress={() => incrementQuantity(item.product.id)}>
-                    <Icon as={AddIcon} />
-                  </Pressable>
-                </HStack>
-
-                <Box className=" items-center justify-center mr-3">
-                  <Text className="text-center">
-                    {item.quantity * item.product.price} €
-                  </Text>
-                </Box>
-                <Pressable
-                  className=" mr-2 justify-center items-center"
-                  onPress={() => removeToCart(item.product.id)}
+          <Box className=" mt-auto ">
+            <FlatList
+              data={cartItems}
+              renderItem={({ item }) => (
+                <Card
+                  key={item.product.id}
+                  className={`flex-row px-4 my-2 mx-2 h-auto items-center justify-center bg-white rounded-xl`}
                 >
-                  <Icon as={Trash2} />
-                </Pressable>
-              </Card>
-            )}
-            className="my-6"
-          />
+                  <Image
+                    source={{
+                      uri: item.product.image,
+                    }}
+                    className={`${isWeb ? 'max-h-[100px] max-w-[100px] mr-10' : 'max-h-[50px] max-w-[50px] mr-3'} w-full rounded-xl justify-start `}
+                    alt="Image du produit"
+                    resizeMode="contain"
+                  />
+                  <Box className="flex-1 ml-2">
+                    <Text className="flex-1 tex-center font-bold">
+                      {truncateText(item.product.name, 20)}
+                    </Text>
+                    <Text className="flex-1">{item.product.price}</Text>
+                  </Box>
+                  <HStack className="flex-1 ml-1 justify-center flex-row items-center gap-1 ">
+                    <Pressable
+                      onPress={() => decrementQuantity(item.product.id)}
+                    >
+                      <Icon as={RemoveIcon} />
+                    </Pressable>
+                    <Text className="text-center mx-2 text-sm md:text-base lg:text-lg">
+                      {item.quantity}
+                    </Text>
+                    <Pressable
+                      onPress={() => incrementQuantity(item.product.id)}
+                    >
+                      <Icon as={AddIcon} />
+                    </Pressable>
+                  </HStack>
+
+                  <Box className=" items-center justify-center mr-3">
+                    <Text className="text-center">
+                      {item.quantity * item.product.price} €
+                    </Text>
+                  </Box>
+                  <Pressable
+                    className=" mr-2 justify-center items-center"
+                    onPress={() => removeToCart(item.product.id)}
+                  >
+                    <Icon as={Trash2} />
+                  </Pressable>
+                </Card>
+              )}
+              className="my-6"
+            />
+          </Box>
         )}
 
         {isWeb ? (
@@ -296,7 +310,7 @@ export default function CartScreen() {
             </Box>
           </Card>
         ) : (
-          <Box className="mb-10 w-[90%] mx-auto mt-auto border-t border-gray-300">
+          <Box className="pb-16 w-[90%] mx-auto mt-auto border-t border-gray-300">
             <Box className="flex-col mb-2 mt-3 w-full items-center justify-center">
               <HStack className="flex-row items-center justify-center gap-2">
                 <Text className="font-bold text-xl mb-2"> Sous-total :</Text>

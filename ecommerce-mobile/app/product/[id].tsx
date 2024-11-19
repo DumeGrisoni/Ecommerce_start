@@ -1,6 +1,8 @@
-import { ActivityIndicator, Alert, Pressable, View } from 'react-native';
+import { ActivityIndicator, Dimensions, Pressable } from 'react-native';
 import React, { useState } from 'react';
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { Stack, useLocalSearchParams } from 'expo-router';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useQuery } from '@tanstack/react-query';
 
 // ---------------- Imports personnels ---------------
 import { Text } from '@/components/ui/text';
@@ -11,12 +13,10 @@ import { Heading } from '@/components/ui/heading';
 import { Button, ButtonText } from '@/components/ui/button';
 import { Box } from '@/components/ui/box';
 import { getProductById } from '@/api/products';
-import { useQuery } from '@tanstack/react-query';
 import { useCart } from '@/store/cartStore';
 import { HStack } from '@/components/ui/hstack';
 import { AddIcon, Icon, RemoveIcon } from '@/components/ui/icon';
 import { useToastNotification } from '@/components/toast';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function ProductDetailScreen() {
   // ----------------- Récupération de l'id du produit -----------------
@@ -57,9 +57,9 @@ export default function ProductDetailScreen() {
   // ----------------- Affichage -----------------
   if (isLoading) {
     return (
-      <View className=" flex-1 h-full w-full items-center justify-center">
+      <Box className=" flex-1 h-full w-full items-center justify-center">
         <ActivityIndicator size="large" />
-      </View>
+      </Box>
     );
   }
 
@@ -67,13 +67,15 @@ export default function ProductDetailScreen() {
     return <Text>Une erreur est survenue lors du chargement du produit.</Text>;
   }
 
+  const height = Dimensions.get('window').height - 60;
+
   return (
-    <SafeAreaView className="flex-1">
-      <Box
-        key={product.id + product.name}
-        className="p-6 items-center justify-center"
-      >
-        <Card className="p-3 rounded-lg max-w-[960px] w-full items-center justify-center ">
+    <SafeAreaView
+      key={product.id + product.name}
+      className={`flex-1 items-center justify-center w-full h-full`}
+    >
+      <Box className={`h-full`}>
+        <Card className="rounded-lg lg:max-w-[960px] w-[90%] mx-auto items-center justify-center mt-[42px] md:mt-[52px] lg:mt-[60px] ">
           <Stack.Screen options={{ title: product.name }} />
           <Image
             source={{

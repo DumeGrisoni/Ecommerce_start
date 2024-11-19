@@ -48,8 +48,6 @@ export default function RootLayout() {
           >
             <Stack.Screen name="index" />
             <Stack.Screen name="cart" />
-            <Stack.Screen name="(user)/profil" />
-            <Stack.Screen name="(auth)/login" />
           </Stack>
           <Box className=" border-gray-500 border-t h-[60px] absolute bottom-0 w-full bg-white px-2">
             <HStack className="justify-around items-center h-full ">

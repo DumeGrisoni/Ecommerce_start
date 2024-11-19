@@ -52,3 +52,22 @@ export type AuthActionsType = {
 };
 
 type AuthStoreType = AuthStateType & AuthActionsType;
+
+export type Order = {
+  id: number;
+  total: number;
+  date: string;
+  products: CartItemType[];
+};
+
+export type OrderStateType = {
+  orders: Order[];
+  addOrder: (order: Order) => void;
+};
+
+export type OrderItem = {
+  id: number;
+  orderId: number;
+  productId: number;
+  quantity: number;
+};
