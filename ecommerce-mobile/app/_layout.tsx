@@ -13,7 +13,6 @@ import { Text } from '@/components/ui/text';
 import { HStack } from '@/components/ui/hstack';
 import { useAuth } from '@/store/authStore';
 import { Box } from '@/components/ui/box';
-import { VStack } from '@/components/ui/vstack';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 const queryClient = new QueryClient();
@@ -36,7 +35,7 @@ export default function RootLayout() {
   }, [selectedTab]);
 
   return (
-    <SafeAreaProvider>
+    <SafeAreaProvider className="flex-1">
       <QueryClientProvider client={queryClient}>
         <GluestackUIProvider mode="system">
           <Stack
@@ -49,7 +48,7 @@ export default function RootLayout() {
             <Stack.Screen name="index" />
             <Stack.Screen name="cart" />
           </Stack>
-          <Box className=" border-gray-500 border-t h-[60px] absolute bottom-0 w-full bg-white px-2">
+          <Box className=" border-typography-100 border-y h-[50px] md:h-[60px] absolute bottom-0 w-full bg-typography-50 px-2">
             <HStack className="justify-around items-center h-full ">
               <Link href="/" asChild className="flex-col ">
                 <Pressable onPress={() => setSelectedTab('index')}>

@@ -52,7 +52,6 @@ export default function Login() {
   };
 
   if (isLoggedIn) {
-    router.dismissAll();
     router.replace('/');
   }
 

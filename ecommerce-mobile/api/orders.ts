@@ -23,7 +23,7 @@ export async function createOrder(items: any[]) {
   return data;
 }
 
-export async function getOrders(userId: string) {
+export async function getOrders(userId: number) {
   const token = useAuth.getState().token;
 
   const res = await fetch(`${API_URL}/orders`, {
@@ -42,6 +42,26 @@ export async function getOrders(userId: string) {
 
   const userOrders = data.filter((order: any) => order.userId === userId);
   return userOrders;
+}
+
+export async function getOrder(orderId: number) {
+  const token = useAuth.getState().token;
+
+  const res = await fetch(`${API_URL}/orders/${orderId}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: token,
+    },
+  });
+  const data = await res.json();
+
+  if (!res.ok) {
+    console.log('data', data);
+    throw new Error('Error getting order');
+  }
+
+  return data;
 }
 
 export async function getOrderItems(orderId: number) {

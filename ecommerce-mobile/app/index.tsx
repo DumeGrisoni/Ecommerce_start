@@ -1,6 +1,7 @@
 import {
   ActivityIndicator,
   FlatList,
+  Platform,
   Pressable,
   TextInput,
   View,
@@ -32,6 +33,8 @@ export default function HomeScreen() {
     product.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const isWeb = Platform.OS === 'web';
+
   if (isLoading) {
     <View className=" flex-1 h-full w-full items-center justify-center">
       <ActivityIndicator size="large" />
@@ -46,13 +49,14 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView className="flex-1">
-      <HStack className="justify-between w-[90%] mx-auto items-center border border-gray-300 rounded mt-4 mb-2">
-        <HStack className="bg-white rounded p-2 gap-2 w-full justify-start items-center">
+      <HStack className="justify-between w-[90%] md:w-[60%] mx-auto items-center rounded my-4">
+        <HStack className="bg-white  rounded p-2 gap-2 w-full justify-start items-center">
           <Icon as={SearchIcon} size="xl" color="gray" />
           <TextInput
             placeholder="Rechercher un produit"
             value={searchQuery}
             onChangeText={setSearchQuery}
+            className={`flex-1 text-typography-900 border-none outline-none`}
           />
           {searchQuery.length > 0 && (
             <Pressable onPress={() => setSearchQuery('')} className="ml-auto">
@@ -61,14 +65,15 @@ export default function HomeScreen() {
           )}
         </HStack>
       </HStack>
+      <View className="h-[1px] bg-typography-100  w-full" />
 
       <FlatList
         key={numColumns}
         data={filteredData}
         numColumns={numColumns}
-        contentContainerClassName="gap-2 max-w-[960px] mx-auto w-full"
+        contentContainerClassName="gap-2 max-w-[960px] mx-auto w-full "
         columnWrapperClassName="gap-2 mx-2"
-        className="my-2"
+        className="pt-2 pb-16"
         renderItem={({ item }) => <ProductListItem product={item} />}
       />
     </SafeAreaView>

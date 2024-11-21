@@ -88,7 +88,7 @@ export default function Profil() {
   // ------------ Render ----------------
 
   return (
-    <SafeAreaView className="bg-white flex-1">
+    <Box className="bg-white flex-1">
       <ScrollView className="h-full" contentContainerStyle={{ flexGrow: 1 }}>
         <Box className="w-[90%] md:w-[70%] lg:w-[50%] h-[90%] items-center justify-center my-auto mx-auto  ">
           <Heading className="text-center">Informations personnelles</Heading>
@@ -233,6 +233,6 @@ export default function Profil() {
           </Button>
         </Box>
       </ScrollView>
-    </SafeAreaView>
+    </Box>
   );
 }

@@ -1,6 +1,6 @@
-import { FlatList, Modal, Platform, Pressable, View } from 'react-native';
-import { Stack, useRouter } from 'expo-router';
-import React from 'react';
+import { Dimensions, FlatList, Modal, Platform, Pressable } from 'react-native';
+import { useRouter } from 'expo-router';
+import React, { useEffect } from 'react';
 import { Trash2 } from 'lucide-react-native';
 
 // ------------------Imports Personnel------------------
@@ -19,9 +19,10 @@ import { Heading } from '@/components/ui/heading';
 import { VStack } from '@/components/ui/vstack';
 import { truncateText } from '@/utils/truncateText';
 import { useToastNotification } from '@/components/toast';
-import { SafeAreaView } from 'react-native-safe-area-context';
+
 import { useMutation } from '@tanstack/react-query';
 import { createOrder } from '@/api/orders';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function CartScreen() {
   // ------------------Hooks------------------
@@ -40,7 +41,7 @@ export default function CartScreen() {
         cartItems.map((item) => ({
           productId: item.product.id,
           quantity: item.quantity,
-          price: item.product.price,
+          price: item.product.price * item.quantity,
         }))
       ),
 
@@ -63,9 +64,8 @@ export default function CartScreen() {
 
   const isLoggedIn = useAuth((state) => !!state.token);
 
-  // ------------------Variables------------------
-
   const router = useRouter();
+  // ------------------Variables------------------
 
   const isWeb = Platform.OS === 'web' ? true : false;
 
@@ -73,6 +73,8 @@ export default function CartScreen() {
     (sum, item) => sum + item.product.price * item.quantity,
     0
   );
+
+  const height = Dimensions.get('window').height - 50;
 
   const totalQuantity = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
@@ -113,38 +115,43 @@ export default function CartScreen() {
     (state: CartStateType) => state.decrementQuantity
   );
 
+  useEffect(() => {
+    if (cartItems.length > 0) {
+      console.log('cart items', cartItems);
+    }
+  }, [cartItems]);
+
   // ------------------Rendu------------------
 
   if (totalQuantity === 0) {
     return (
-      <SafeAreaView className="flex-1">
-        <Card className="lg:w-[70%] w-[90%] mx-auto h-auto my-10  ">
-          <Text className="font-bold w-full text-center text-xl mb-3">
-            Mes Articles
-          </Text>
-          <Text className="my-10 mx-auto">Votre panier est vide</Text>
-          <Button
-            className={`md:h-[50px] md:rounded-lg ${isWeb ? 'w-[30%]' : 'w-[70%]'}  mx-auto`}
-            onPress={backToHome}
+      <Card className="lg:w-[70%] w-[90%] m-auto  ">
+        <Text className="font-bold w-full text-center text-xl my-3">
+          Mes Articles
+        </Text>
+        <Text className="my-6 text-center">Votre panier est vide</Text>
+        <Button
+          className={`md:h-[50px] md:rounded-lg ${isWeb ? 'w-[30%]' : 'w-[70%]'} my-3  mx-auto`}
+          onPress={backToHome}
+        >
+          <ButtonText
+            adjustsFontSizeToFit
+            allowFontScaling
+            maxFontSizeMultiplier={0}
+            className="text-center text-sm lg:text-base"
           >
-            <ButtonText
-              adjustsFontSizeToFit
-              allowFontScaling
-              maxFontSizeMultiplier={0}
-              className="text-center text-sm lg:text-base"
-            >
-              Continuer votre shopping
-            </ButtonText>
-          </Button>
-        </Card>
-      </SafeAreaView>
+            Continuer votre shopping
+          </ButtonText>
+        </Button>
+      </Card>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 items-center justify-center my-auto h-full w-full ">
+    <SafeAreaView className={`flex-1`}>
       <Box
-        className={` ${isWeb ? 'lg:flex-row justify-center h-full w-full items-center md:gap-2' : 'mt-2 mb-10 h-full flex-col'} `}
+        className={` ${isWeb ? 'lg:flex-row justify-center h-full w-full items-center md:gap-2' : `mt-2 pb-4 w-full `} `}
+        style={{ height: height }}
       >
         {isWeb ? (
           <Card className="lg:w-[70%] w-[90%] mx-auto h-auto my-10">
@@ -211,60 +218,53 @@ export default function CartScreen() {
             </Box>
           </Card>
         ) : (
-          <Box className=" mt-auto ">
-            <FlatList
-              data={cartItems}
-              renderItem={({ item }) => (
-                <Card
-                  key={item.product.id}
-                  className={`flex-row px-4 my-2 mx-2 h-auto items-center justify-center bg-white rounded-xl`}
-                >
-                  <Image
-                    source={{
-                      uri: item.product.image,
-                    }}
-                    className={`${isWeb ? 'max-h-[100px] max-w-[100px] mr-10' : 'max-h-[50px] max-w-[50px] mr-3'} w-full rounded-xl justify-start `}
-                    alt="Image du produit"
-                    resizeMode="contain"
-                  />
-                  <Box className="flex-1 ml-2">
-                    <Text className="flex-1 tex-center font-bold">
-                      {truncateText(item.product.name, 20)}
-                    </Text>
-                    <Text className="flex-1">{item.product.price}</Text>
-                  </Box>
-                  <HStack className="flex-1 ml-1 justify-center flex-row items-center gap-1 ">
-                    <Pressable
-                      onPress={() => decrementQuantity(item.product.id)}
-                    >
-                      <Icon as={RemoveIcon} />
-                    </Pressable>
-                    <Text className="text-center mx-2 text-sm md:text-base lg:text-lg">
-                      {item.quantity}
-                    </Text>
-                    <Pressable
-                      onPress={() => incrementQuantity(item.product.id)}
-                    >
-                      <Icon as={AddIcon} />
-                    </Pressable>
-                  </HStack>
-
-                  <Box className=" items-center justify-center mr-3">
-                    <Text className="text-center">
-                      {item.quantity * item.product.price} €
-                    </Text>
-                  </Box>
-                  <Pressable
-                    className=" mr-2 justify-center items-center"
-                    onPress={() => removeToCart(item.product.id)}
-                  >
-                    <Icon as={Trash2} />
+          <FlatList
+            data={cartItems}
+            renderItem={({ item }) => (
+              <Card
+                key={item.product.id}
+                className={`flex-row px-4 my-2 mx-2 h-auto items-center justify-center bg-white rounded-xl`}
+              >
+                <Image
+                  source={{
+                    uri: item.product.image,
+                  }}
+                  className={`${isWeb ? 'max-h-[100px] max-w-[100px] mr-10' : 'max-h-[50px] max-w-[50px] mr-3'} w-full rounded-xl justify-start `}
+                  alt="Image du produit"
+                  resizeMode="contain"
+                />
+                <Box className="flex-1 ml-2">
+                  <Text className="flex-1 tex-center font-bold">
+                    {truncateText(item.product.name, 20)}
+                  </Text>
+                  <Text className="flex-1">{item.product.price}</Text>
+                </Box>
+                <HStack className="flex-1 ml-1 justify-center flex-row items-center gap-1 ">
+                  <Pressable onPress={() => decrementQuantity(item.product.id)}>
+                    <Icon as={RemoveIcon} />
                   </Pressable>
-                </Card>
-              )}
-              className="my-6"
-            />
-          </Box>
+                  <Text className="text-center mx-2 text-sm md:text-base lg:text-lg">
+                    {item.quantity}
+                  </Text>
+                  <Pressable onPress={() => incrementQuantity(item.product.id)}>
+                    <Icon as={AddIcon} />
+                  </Pressable>
+                </HStack>
+
+                <Box className=" items-center justify-center mr-3">
+                  <Text className="text-center">
+                    {item.quantity * item.product.price} €
+                  </Text>
+                </Box>
+                <Pressable
+                  className=" mr-2 justify-center items-center"
+                  onPress={() => removeToCart(item.product.id)}
+                >
+                  <Icon as={Trash2} />
+                </Pressable>
+              </Card>
+            )}
+          />
         )}
 
         {isWeb ? (
@@ -310,7 +310,10 @@ export default function CartScreen() {
             </Box>
           </Card>
         ) : (
-          <Box className="pb-16 w-[90%] mx-auto mt-auto border-t border-gray-300">
+          <VStack
+            className=" w-full mx-auto border-t  border-gray-300"
+            style={{ paddingBottom: 10 }}
+          >
             <Box className="flex-col mb-2 mt-3 w-full items-center justify-center">
               <HStack className="flex-row items-center justify-center gap-2">
                 <Text className="font-bold text-xl mb-2"> Sous-total :</Text>
@@ -320,24 +323,27 @@ export default function CartScreen() {
               </HStack>
               <Text className="text-xl mb-2">{total.toFixed(2)} €</Text>
             </Box>
-            <Box className="gap-3">
+            <VStack space="md">
               {totalQuantity === 0 ? null : (
                 <Button
-                  className={`h-[50px] mt-3 w-[70%] mx-auto rounded-lg`}
+                  className={` w-[70%] mx-auto rounded-lg`}
                   onPress={checkOut}
+                  size="lg"
                 >
                   <ButtonText>Valider mon panier</ButtonText>
                 </Button>
               )}
               <Button
-                className={`h-[50px] mt-3 w-[70%] mx-auto rounded-lg`}
+                size="lg"
+                className={` w-[70%] mx-auto rounded-lg`}
                 onPress={backToHome}
               >
                 <ButtonText>Continuer mes achats</ButtonText>
               </Button>
-            </Box>
-          </Box>
+            </VStack>
+          </VStack>
         )}
+
         <Modal
           animationType="slide"
           transparent={true}
