@@ -1,6 +1,6 @@
 'use client';
-import Link from 'next/link';
 import { useState } from 'react';
+import { redirect } from 'next/navigation';
 
 // ------------ Import personnels -----------------
 import { Box } from '@/components/ui/box';
@@ -13,7 +13,6 @@ import { VStack } from '@/components/ui/vstack';
 import { EyeIcon, EyeOffIcon } from 'lucide-react';
 import { useToastNotification } from '@/components/toast';
 import { handleLogin } from '../actions';
-import { redirect } from 'next/navigation';
 
 const LoginPage = () => {
   // ------------ State -----------------
@@ -101,12 +100,6 @@ const LoginPage = () => {
             <ButtonText className="text-typography-0">Connexion</ButtonText>
           </Button>
         </VStack>
-        <Text className="text-typography-500 text-center my-4">
-          Vous n&apos;avez pas de compte ?{' '}
-          <Link href="/register" className="text-primary-500">
-            Créer un compte
-          </Link>
-        </Text>
       </FormControl>
     </Box>
   );
