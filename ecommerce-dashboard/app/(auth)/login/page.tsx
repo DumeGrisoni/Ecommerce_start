@@ -11,22 +11,43 @@ import { Input, InputField, InputSlot } from '@/components/ui/input';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
 import { EyeIcon, EyeOffIcon } from 'lucide-react';
-import { login } from '@/api/auth';
+import { useToastNotification } from '@/components/toast';
+import { handleLogin } from '../actions';
+import { useRouter } from 'next/navigation';
 
 const LoginPage = () => {
   // ------------ State -----------------
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const { showNewToast } = useToastNotification();
+  const [loginError, setLoginError] = useState(false);
+  const router = useRouter();
 
   // ------------ Functions ----------------
   const onLogin = async () => {
     try {
-      await login(email, password);
-      alert('Vous êtes connecté');
+      const result = await handleLogin(email, password);
+      if (result.success) {
+        showNewToast({
+          title: 'Vous êtes connecté',
+          description: 'Vous poouvez maintenant accéder à votre compte',
+        });
+        router.push('/dashboard');
+      } else {
+        showNewToast({
+          title: 'Erreur',
+          description: "Vérifiez vos identifiants et réessayez s'il vous plaît",
+        });
+        setLoginError(true);
+      }
     } catch (error) {
-      alert('Une erreur est survenue lors de la connexion');
+      showNewToast({
+        title: 'Erreur',
+        description: 'Une erreur est survenue, veuillez réessayer',
+      });
       console.error(error);
+      setLoginError(true);
     }
   };
 
@@ -34,14 +55,22 @@ const LoginPage = () => {
 
   return (
     <Box className="flex-1 min-h-screen items-center justify-center">
-      <FormControl className="lg:w-[20%] md:w-[50%] w-[90%] bg-typography-white h-auto rounded-lg">
+      <FormControl
+        isInvalid={loginError}
+        className="lg:w-[20%] md:w-[50%] w-[90%] bg-typography-white h-auto rounded-lg"
+      >
         <VStack space="xl" className="p-4">
           <Heading className="text-typography-900">S&apos;identifier</Heading>
 
           <VStack space="xs">
             <Text className="text-typography-500">Votre e-mail</Text>
             <Input>
-              <InputField type="text" value={email} onChangeText={setEmail} />
+              <InputField
+                type="text"
+                value={email}
+                onChangeText={setEmail}
+                showSoftInputOnFocus={false}
+              />
             </Input>
           </VStack>
           <VStack space="xs">
@@ -64,6 +93,13 @@ const LoginPage = () => {
               </InputSlot>
             </Input>
           </VStack>
+
+          {loginError && (
+            <Text className="text-red-500 text-center">
+              Identifiants erronés
+            </Text>
+          )}
+
           <Button className="mx-auto w-full" onPress={onLogin}>
             <ButtonText className="text-typography-0">Connexion</ButtonText>
           </Button>
@@ -71,7 +107,7 @@ const LoginPage = () => {
         <Text className="text-typography-500 text-center my-4">
           Vous n&apos;avez pas de compte ?{' '}
           <Link href="/register" className="text-primary-500">
-            Inscrivez-vous
+            Créer un compte
           </Link>
         </Text>
       </FormControl>

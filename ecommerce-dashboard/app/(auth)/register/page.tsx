@@ -1,6 +1,8 @@
+'use client';
 import { ScrollView } from 'react-native';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 // ------------ Import personnels -----------------
 import { Box } from '@/components/ui/box';
@@ -12,7 +14,8 @@ import { HStack } from '@/components/ui/hstack';
 import { EyeIcon, EyeOffIcon } from 'lucide-react';
 import { Button, ButtonText } from '@/components/ui/button';
 import { Heading } from '@/components/ui/heading';
-import { register } from '@/api/auth';
+import { handleRegister } from '../actions';
+import { useToastNotification } from '@/components/toast';
 
 const RegisterPage = () => {
   // ------------ State -----------------
@@ -24,6 +27,9 @@ const RegisterPage = () => {
   const [adress, setAdress] = useState('');
   const [postalCode, setPostalCode] = useState('');
   const [city, setCity] = useState('');
+  const { showNewToast } = useToastNotification();
+  const [registerError, setRegisterError] = useState(false);
+  const router = useRouter();
 
   // ------------ Functions ----------------
   const handleState = () => {
@@ -32,7 +38,7 @@ const RegisterPage = () => {
 
   const onRegister = async () => {
     try {
-      await register(
+      const result = await handleRegister(
         email,
         password,
         name,
@@ -41,17 +47,34 @@ const RegisterPage = () => {
         Number(postalCode),
         city
       );
-      alert('Vous êtes enregistré');
+      if (result.success) {
+        showNewToast({
+          title: 'Vous êtes connecté',
+          description: 'Vous poouvez maintenant accéder à votre compte',
+        });
+        router.push('/dashboard');
+      } else {
+        showNewToast({
+          title: 'Erreur',
+          description: "Vérifiez vos identifiants et réessayez s'il vous plaît",
+        });
+        setRegisterError(true);
+      }
     } catch (error) {
-      alert("Une erreur est survenue lors de l'enregistrement");
+      showNewToast({
+        title: 'Erreur',
+        description: 'Une erreur est survenue, veuillez réessayer',
+      });
       console.error(error);
+      setRegisterError(true);
     }
   };
 
   return (
-    <ScrollView>
-      <Box className="flex-1 items-center justify-center w-full h-full p-6">
+    <ScrollView className="flex-1 min-h-screen">
+      <Box className="flex-1 min-h-screen items-center justify-center  p-6">
         <FormControl
+          isInvalid={registerError}
           className={`lg:w-[30%] md:w-[50%] w-[90%] bg-typography-white h-auto rounded-lg`}
         >
           <VStack space="xl" className="p-4">
@@ -129,25 +152,13 @@ const RegisterPage = () => {
                 </InputSlot>
               </Input>
             </VStack>
+            {registerError && (
+              <Text className="text-red-500 text-center">
+                Veuillez remplir tous les champs
+              </Text>
+            )}
 
-            <Button
-              className="mx-auto w-full my-2"
-              onPress={() => {
-                if (
-                  email === '' ||
-                  password === '' ||
-                  name === '' ||
-                  surname === '' ||
-                  adress === '' ||
-                  postalCode === '' ||
-                  city === ''
-                ) {
-                  alert('Veuillez renseigner tous les champs');
-                } else {
-                  onRegister();
-                }
-              }}
-            >
+            <Button className="mx-auto w-full my-2" onPress={onRegister}>
               <ButtonText className="text-typography-0">Continuer</ButtonText>
             </Button>
           </VStack>
@@ -156,7 +167,7 @@ const RegisterPage = () => {
             <Text className="text-typography-500 text-center mb-4">
               Vous avez déjà un compte ?{' '}
               <Link href="/login" className="text-primary-500">
-                Connectez-vous
+                Me connecter
               </Link>
             </Text>
           </VStack>

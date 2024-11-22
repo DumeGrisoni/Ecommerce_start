@@ -43,9 +43,8 @@ export async function register(
   });
   const data = await response.json();
   if (!response.ok) {
-    console.log(data);
     throw new Error("Une erreur est survenue lors de l'enregistrement");
   }
-  console.log(data);
+
   return data;
 }
