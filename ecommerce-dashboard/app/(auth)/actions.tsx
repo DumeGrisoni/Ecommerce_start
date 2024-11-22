@@ -6,11 +6,12 @@ import { cookies } from 'next/headers';
 export async function handleLogin(email: string, password: string) {
   try {
     const res = await login(email, password);
-    if (res.token) {
+
+    if (res.user.role === 'admin') {
       cookies().set('token', res.token);
-      return { success: true, token: res.token };
+      return { success: true, user: res.user, token: res.token };
     } else {
-      return { success: false, error: 'Identifiants erronés' };
+      return { role: false, error: "Vous n'êtes pas autorisé" };
     }
   } catch (error) {
     console.log(error);

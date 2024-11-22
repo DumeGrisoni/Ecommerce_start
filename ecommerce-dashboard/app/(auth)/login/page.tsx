@@ -22,22 +22,23 @@ const LoginPage = () => {
   const [password, setPassword] = useState('');
   const { showNewToast } = useToastNotification();
   const [loginError, setLoginError] = useState(false);
-  // const router = useRouter();
 
   // ------------ Functions ----------------
   const onLogin = async () => {
     try {
       const result = await handleLogin(email, password);
-      if (result.success === true) {
-        showNewToast({
-          title: 'Vous êtes connecté',
-          description: 'Vous poouvez maintenant accéder à votre compte',
-        });
-        redirect('/dashboard');
+      if (result && result.success === true) {
+        if (result.role === true) {
+          showNewToast({
+            title: 'Vous êtes connecté',
+            description: 'Vous poouvez maintenant accéder à votre compte',
+          });
+          redirect('/dashboard');
+        }
       } else {
         showNewToast({
           title: 'Erreur',
-          description: "Vérifiez vos identifiants et réessayez s'il vous plaît",
+          description: "Vous n'êtes pas autorisé à accéder à cette page",
         });
         setLoginError(true);
       }
