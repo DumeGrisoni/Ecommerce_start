@@ -2,7 +2,7 @@
 import { ScrollView } from 'react-native';
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { redirect } from 'next/navigation';
 
 // ------------ Import personnels -----------------
 import { Box } from '@/components/ui/box';
@@ -29,7 +29,6 @@ const RegisterPage = () => {
   const [city, setCity] = useState('');
   const { showNewToast } = useToastNotification();
   const [registerError, setRegisterError] = useState(false);
-  const router = useRouter();
 
   // ------------ Functions ----------------
   const handleState = () => {
@@ -52,7 +51,7 @@ const RegisterPage = () => {
           title: 'Vous êtes connecté',
           description: 'Vous poouvez maintenant accéder à votre compte',
         });
-        router.push('/dashboard');
+        redirect('/dashboard');
       } else {
         showNewToast({
           title: 'Erreur',
@@ -61,10 +60,6 @@ const RegisterPage = () => {
         setRegisterError(true);
       }
     } catch (error) {
-      showNewToast({
-        title: 'Erreur',
-        description: 'Une erreur est survenue, veuillez réessayer',
-      });
       console.error(error);
       setRegisterError(true);
     }

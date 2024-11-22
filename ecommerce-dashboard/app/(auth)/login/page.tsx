@@ -13,7 +13,7 @@ import { VStack } from '@/components/ui/vstack';
 import { EyeIcon, EyeOffIcon } from 'lucide-react';
 import { useToastNotification } from '@/components/toast';
 import { handleLogin } from '../actions';
-import { useRouter } from 'next/navigation';
+import { redirect } from 'next/navigation';
 
 const LoginPage = () => {
   // ------------ State -----------------
@@ -22,18 +22,18 @@ const LoginPage = () => {
   const [password, setPassword] = useState('');
   const { showNewToast } = useToastNotification();
   const [loginError, setLoginError] = useState(false);
-  const router = useRouter();
+  // const router = useRouter();
 
   // ------------ Functions ----------------
   const onLogin = async () => {
     try {
       const result = await handleLogin(email, password);
-      if (result.success) {
+      if (result.success === true) {
         showNewToast({
           title: 'Vous êtes connecté',
           description: 'Vous poouvez maintenant accéder à votre compte',
         });
-        router.push('/dashboard');
+        redirect('/dashboard');
       } else {
         showNewToast({
           title: 'Erreur',
@@ -42,10 +42,6 @@ const LoginPage = () => {
         setLoginError(true);
       }
     } catch (error) {
-      showNewToast({
-        title: 'Erreur',
-        description: 'Une erreur est survenue, veuillez réessayer',
-      });
       console.error(error);
       setLoginError(true);
     }

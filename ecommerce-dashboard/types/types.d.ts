@@ -30,3 +30,7 @@ export type OrderItem = {
   quantity: number;
   product: ProductType;
 };
+
+export type DashboardLayoutProps = {
+  children: React.ReactNode;
+};
