@@ -5,7 +5,7 @@ import { ChartBarStacked, FilePlus, Home, LogOut } from 'lucide-react';
 
 const Navbar = () => {
   return (
-    <Box className="w-auto h-[50%] p-3 fixed top-1/2 transform -translate-y-1/2 ">
+    <Box className="w-auto h-[50%] py-3 px-6 fixed top-1/2 transform -translate-y-1/2 ">
       <VStack className="space-y-4 justify-around h-full">
         <Link
           href="/dashboard"
@@ -34,7 +34,6 @@ const Navbar = () => {
           <LogOut className="text-typography-800" />
         </Link>
       </VStack>
-      {/* </VStack> */}
     </Box>
   );
 };
