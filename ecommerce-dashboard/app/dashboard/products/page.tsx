@@ -12,7 +12,7 @@ const ProductsPage = async () => {
   return (
     <div className="flex flex-wrap gap-2 max-w-[1400px] my-6 w-full mx-auto h-full">
       <Link href="/dashboard/products/create">
-        <Card className="flex border-dashed border-2 border-typography-500 items-center justify-center h-full w-[295px] lg:min-w-[345px]">
+        <Card className="flex border-dashed hover:border-solid border-2 border-slate-400 items-center justify-center h-full w-[295px] lg:min-w-[345px]">
           <Icon as={AddIcon} className="w-8 h-8 color-typography-500" />
         </Card>
       </Link>

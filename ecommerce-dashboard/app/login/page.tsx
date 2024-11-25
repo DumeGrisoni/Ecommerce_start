@@ -12,7 +12,7 @@ import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
 import { EyeIcon, EyeOffIcon } from 'lucide-react';
 import { useToastNotification } from '@/components/toast';
-import { handleLogin } from '../actions';
+import { handleLogin } from './actions';
 
 const LoginPage = () => {
   // ------------ State -----------------
