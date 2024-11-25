@@ -21,9 +21,9 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     return redirect('/login');
   }
   return (
-    <Box>
+    <Box className="flex-1 bg-typography-100">
       <Navbar />
-      <Box>{children}</Box>
+      <Box className="ml-16 p-4 flex-1">{children}</Box>
     </Box>
   );
 };

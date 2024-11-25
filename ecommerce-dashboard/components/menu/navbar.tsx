@@ -1,32 +1,40 @@
 import Link from 'next/link';
 import { Box } from '@/components/ui/box';
-import { Text } from '@/components/ui/text';
-import { HStack } from '@/components/ui/hstack';
+import { VStack } from '../ui/vstack';
+import { ChartBarStacked, FilePlus, Home, LogOut } from 'lucide-react';
 
 const Navbar = () => {
   return (
-    <Box className="w-full bg-white border-b border-typography-500 p-3">
-      <HStack className="justify-between items-center">
-        <Link href="/dashboard">
-          <Text className="text-typography-900 text-lg font-bold">
-            Tableau de Bord
-          </Text>
-        </Link>
-        <HStack
-          space="xl"
-          className="justify-center gap-20 items-center flex-1"
+    <Box className="w-auto h-[50%] p-3 fixed top-1/2 transform -translate-y-1/2 ">
+      <VStack className="space-y-4 justify-around h-full">
+        <Link
+          href="/dashboard"
+          className="rounded-full h-12 w-12 flex bg-typography-white items-center justify-center hover:scale-105 cursor-pointer"
         >
-          <Link href="/dashboard/products">
-            <Text className="text-typography-900">Articles</Text>
-          </Link>
+          <Home className="text-typography-800 " />
+        </Link>
 
-          <Link href="/logout">
-            <Text className="text-typography-900 focus:font-bold">
-              Déconnexion
-            </Text>
-          </Link>
-        </HStack>
-      </HStack>
+        <Link
+          href="/dashboard/products"
+          className="rounded-full h-12 w-12 flex bg-typography-white items-center justify-center hover:scale-105 cursor-pointer"
+        >
+          <FilePlus className="text-typography-800" />
+        </Link>
+        <Link
+          href="/dashboard/categories"
+          className="rounded-full h-12 w-12 flex bg-typography-white items-center justify-center hover:scale-105 cursor-pointer"
+        >
+          <ChartBarStacked className="text-typography-800" />
+        </Link>
+
+        <Link
+          href="/logout"
+          className="rounded-full h-12 w-12 flex bg-typography-white items-center justify-center hover:scale-105 cursor-pointer"
+        >
+          <LogOut className="text-typography-800" />
+        </Link>
+      </VStack>
+      {/* </VStack> */}
     </Box>
   );
 };

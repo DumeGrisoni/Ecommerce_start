@@ -12,10 +12,11 @@ export default function ProductListItem({ product }: { product: ProductType }) {
     <Link
       href={`/dashboard/products/${product.id}`}
       key={product.id}
-      className="flex-1 inline-flex min-w-[300px]"
+      className="flex-1 inline-flex min-w-[150px] md:min-w-[300px]"
     >
       <Card
         className={`flex-1 hover:border-slate-400 border-2 border-transparent`}
+        variant="elevated"
       >
         <Image
           source={{
