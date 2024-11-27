@@ -6,6 +6,9 @@ import { jwtDecode } from 'jwt-decode';
 // ------------ Import personnels -----------------
 import { DashboardLayoutProps } from '@/types/types';
 import Navbar from '@/components/menu/navbar';
+import { HStack } from '@/components/ui/hstack';
+import { Heading } from '@/components/ui/heading';
+import { Avatar, AvatarFallbackText } from '@/components/ui/avatar';
 
 const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const token = cookies().get('token')?.value;
@@ -21,11 +24,25 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     return redirect('/login');
   }
   return (
-    <Box className="flex-1 bg-typography-100">
-      <Navbar />
-      <Box className="ml-16 p-4 flex-1">{children}</Box>
-    </Box>
+    <div className="h-screen">
+      <Header />
+      <HStack space="xl" className="">
+        <Navbar />
+        <Box className="flex-1 ml-16 md:ml-24 mt-[60px]">{children}</Box>
+      </HStack>
+    </div>
   );
 };
 
 export default DashboardLayout;
+
+function Header() {
+  return (
+    <HStack className="flex-1 bg-typography-0 w-full border-b py-2 z-20 px-4 items-center fixed justify-between border-typography-400">
+      <Heading>Tableau de Bord</Heading>
+      <Avatar>
+        <AvatarFallbackText>D</AvatarFallbackText>
+      </Avatar>
+    </HStack>
+  );
+}

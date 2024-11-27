@@ -8,7 +8,7 @@ export default function Home() {
     redirect('/dashboard');
   }, []);
   return (
-    <Box className="min-h-screen bg-typography-100 items-center justify-center">
+    <Box className="min-h-screen items-center justify-center">
       <Box className="flex items-center justify-center h-full"></Box>
     </Box>
   );

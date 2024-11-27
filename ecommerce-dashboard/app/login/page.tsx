@@ -53,7 +53,7 @@ const LoginPage = () => {
     <Box className="flex-1 min-h-screen items-center justify-center">
       <FormControl
         isInvalid={loginError}
-        className="lg:w-[20%] md:w-[50%] w-[90%] bg-typography-white h-auto rounded-lg"
+        className="lg:w-[20%] md:w-[50%] w-[90%] border border-typography-100 bg-typography-white h-auto rounded-lg"
       >
         <VStack space="xl" className="p-4">
           <Heading className="text-typography-900">S&apos;identifier</Heading>
