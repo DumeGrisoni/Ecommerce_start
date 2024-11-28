@@ -78,7 +78,7 @@ const OrderDetails = ({ params }: { params: { id: number } }) => {
             />
             <LabelValuePair
               label="Numéro de la commande:"
-              value={order.id}
+              value={'# ' + order.id}
               isSmallScreen={isSmallScreen}
             />
             <LabelValuePair

@@ -18,3 +18,8 @@ export async function handleLogin(email: string, password: string) {
     return { success: false };
   }
 }
+
+export async function handleLogout() {
+  cookies().delete('token');
+  return { success: true };
+}

@@ -2,16 +2,20 @@
 import Link from 'next/link';
 import { VStack } from '../ui/vstack';
 import { FilePlus, LayoutList, LogOut, PackageSearch } from 'lucide-react';
-import { usePathname } from 'next/navigation';
+import { redirect, usePathname } from 'next/navigation';
 import { HStack } from '../ui/hstack';
 import { Text } from '../ui/text';
 import { useEffect, useState } from 'react';
+import { Pressable } from 'react-native';
+import { handleLogout } from '@/app/login/actions';
 
 const Navbar = () => {
+  // ----------------- State -----------------
   const currentPath = usePathname();
   const [isExpanded, setIsExpanded] = useState(false);
   const [isSmallScreen, setIsSmallScreen] = useState(false);
 
+  // ----------------- Effect -----------------
   useEffect(() => {
     console.log(currentPath);
   }, [currentPath]);
@@ -28,6 +32,12 @@ const Navbar = () => {
       window.removeEventListener('resize', handleResize);
     };
   }, []);
+
+  // ----------------- Functions -----------------
+  const handleLogOutFunction = () => {
+    handleLogout();
+    redirect('/login');
+  };
 
   return (
     <div
@@ -115,7 +125,7 @@ const Navbar = () => {
           </HStack>
         </Link>
 
-        <Link href="/logout" className="group">
+        <Pressable onPress={handleLogOutFunction} className="group">
           <HStack className="flex items-center gap-4 ">
             <div
               className={`rounded-full text-typography-800 h-12 min-w-12  flex bg-typography-white items-center justify-center hover:scale-105 cursor-pointer
@@ -131,7 +141,7 @@ const Navbar = () => {
               Déconnexion
             </Text>
           </HStack>
-        </Link>
+        </Pressable>
       </VStack>
     </div>
   );

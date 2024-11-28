@@ -28,8 +28,8 @@ const MainPage = () => {
 
   // ----------------- Functions -----------------
   const fetchOrders = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
       const allOrders = await getOrders();
       setOrders(allOrders);
       setLoading(false);
@@ -111,15 +111,34 @@ const MainPage = () => {
           <Box className="border rounded bg-white border-typography-100 hover:border-typography-800 w-[95%] mx-auto p-2 my-2">
             <HStack className="justify-between px-4" space="md">
               <HStack className="flex-1 justify-around ">
+                <HStack
+                  className=" justify-between items-center"
+                  space={isSmallScreen ? 'md' : 'sm'}
+                >
+                  {!isSmallScreen && (
+                    <Text
+                      size={isSmallScreen ? 'xs' : 'sm'}
+                      className="text-center text-typography-900 font-bold"
+                    >
+                      Status:
+                    </Text>
+                  )}
+                  <Text
+                    size={isSmallScreen ? 'xs' : 'sm'}
+                    className={`text-center font-semibold ${
+                      item.status === 'Nouveau'
+                        ? 'text-green-500'
+                        : 'text-typography-500'
+                    } `}
+                  >
+                    {item.status}
+                  </Text>
+                </HStack>
                 <Text
                   size={isSmallScreen ? 'xs' : 'sm'}
-                  className={`text-center font-semibold ${
-                    item.status === 'Nouveau'
-                      ? 'text-green-500'
-                      : 'text-typography-500'
-                  } `}
+                  className="text-center text-typography-900"
                 >
-                  {item.status}
+                  #{item.id}
                 </Text>
                 <Text
                   size={isSmallScreen ? 'xs' : 'sm'}

@@ -41,9 +41,9 @@ function Header() {
   return (
     <HStack className="flex-1 bg-typography-0 w-full border-b py-2 z-20 px-4 items-center fixed justify-between border-typography-400">
       <Link href="/dashboard">
-        <Heading>Tableau de Bord</Heading>
+        <Heading className="lg:text-2xl text-md">Tableau de Bord</Heading>
       </Link>
-      <Avatar>
+      <Avatar size="md">
         <AvatarFallbackText>D</AvatarFallbackText>
       </Avatar>
     </HStack>
