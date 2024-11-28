@@ -23,9 +23,6 @@ export async function getOrders() {
 export async function getOrderItems(orderId: number) {
   const token = cookies().get('token')?.value;
 
-  console.log(`Fetching order items for orderId: ${orderId}`);
-  console.log(`Using token: ${token}`);
-
   const res = await fetch(`${API_URL}/orders/${orderId}`, {
     method: 'GET',
     headers: {
@@ -33,21 +30,12 @@ export async function getOrderItems(orderId: number) {
       Authorization: token ? token : '',
     },
   });
-
-  const textData = await res.text();
+  const data = await res.json();
 
   if (!res.ok) {
-    console.log('data', textData);
-    console.error(`Error response status: ${res.status}`);
-    console.error(`Error response text: ${textData}`);
+    console.log('data', data);
     throw new Error('Error getting order items');
   }
 
-  try {
-    const data = JSON.parse(textData); // Parser le texte en JSON
-    return data;
-  } catch (error) {
-    console.error('Failed to parse JSON:', error);
-    throw new Error('Failed to parse JSON');
-  }
+  return data;
 }

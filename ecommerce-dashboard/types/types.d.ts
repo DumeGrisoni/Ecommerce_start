@@ -10,7 +10,7 @@ export type Order = {
   id: number;
   total: number;
   date: string;
-  products: CartItemType[];
+  products: ProductType[];
   userId: number;
   createdAt: string;
   status: string;
@@ -33,4 +33,10 @@ export type OrderItem = {
 
 export type DashboardLayoutProps = {
   children: React.ReactNode;
+};
+
+export type itemPerPageSelectorProps = {
+  itemsPerPage: number;
+  setItemsPerPage: (value: number) => void;
+  options: number[];
 };
