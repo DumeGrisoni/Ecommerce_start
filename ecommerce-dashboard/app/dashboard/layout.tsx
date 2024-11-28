@@ -9,6 +9,7 @@ import Navbar from '@/components/menu/navbar';
 import { HStack } from '@/components/ui/hstack';
 import { Heading } from '@/components/ui/heading';
 import { Avatar, AvatarFallbackText } from '@/components/ui/avatar';
+import Link from 'next/link';
 
 const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const token = cookies().get('token')?.value;
@@ -39,7 +40,9 @@ export default DashboardLayout;
 function Header() {
   return (
     <HStack className="flex-1 bg-typography-0 w-full border-b py-2 z-20 px-4 items-center fixed justify-between border-typography-400">
-      <Heading>Tableau de Bord</Heading>
+      <Link href="/dashboard">
+        <Heading>Tableau de Bord</Heading>
+      </Link>
       <Avatar>
         <AvatarFallbackText>D</AvatarFallbackText>
       </Avatar>

@@ -31,6 +31,18 @@ export type OrderItem = {
   product: ProductType;
 };
 
+type OrderItemDetailsProps = {
+  item: OrderItem;
+  isSmallScreen: boolean;
+  isLast: boolean;
+};
+
+type LabelValuePairProps = {
+  label: string;
+  value: string | number;
+  isSmallScreen: boolean;
+};
+
 export type DashboardLayoutProps = {
   children: React.ReactNode;
 };

@@ -31,14 +31,14 @@ const Navbar = () => {
 
   return (
     <div
-      className={`z-10 h-full bg-typography-0  py-3 px-2 xl:px-6
+      className={`z-10 h-screen mt-auto bg-typography-0  py-3 px-2 md:px-6
        fixed top-1/2 transform -translate-y-1/2 transition-all duration-500 border-r border-typography-400 ${
          isExpanded ? 'w-52' : 'w-16 md:w-24'
        } `}
       onMouseEnter={() => !isSmallScreen && setIsExpanded(true)}
       onMouseLeave={() => !isSmallScreen && setIsExpanded(false)}
     >
-      <VStack className="space-y-4 justify-center h-full gap-4">
+      <VStack className="space-y-2 md:space-y-4 justify-center h-full pt-16 lg:pt-0 gap-4">
         <Link href="/dashboard" className="group ">
           <HStack className="flex items-center gap-4">
             <div
