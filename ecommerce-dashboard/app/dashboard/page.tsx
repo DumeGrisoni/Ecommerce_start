@@ -6,6 +6,7 @@ import { Card } from '@/components/ui/card';
 import { Heading } from '@/components/ui/heading';
 import { HStack } from '@/components/ui/hstack';
 import { Text } from '@/components/ui/text';
+import { VStack } from '@/components/ui/vstack';
 
 import { Order } from '@/types/types';
 import { formatDate } from '@/utils/datesFunc';
@@ -16,13 +17,34 @@ import { ActivityIndicator, FlatList, View } from 'react-native';
 
 const MainPage = () => {
   // ----------------- State -----------------
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [paginateOrders, setPaginateOrders] = useState<Order[]>([]);
+  const [newOrders, setNewOrders] = useState<Order[]>([]);
+  const [processingOrders, setProcessingOrders] = useState<Order[]>([]);
+  const [inDeliveryOrders, setInDeliveryOrders] = useState<Order[]>([]);
+  const [deliveredOrders, setDeliveredOrders] = useState<Order[]>([]);
+  const [cancelledOrders, setCancelledOrders] = useState<Order[]>([]);
+  const [paginateNewOrders, setPaginateNewOrders] = useState<Order[]>([]);
+  const [paginateProcessingOrders, setPaginateProcessingOrders] = useState<
+    Order[]
+  >([]);
+  const [paginateInDeliveryOrders, setPaginateInDeliveryOrders] = useState<
+    Order[]
+  >([]);
+  const [paginateDeliveredOrders, setPaginateDeliveredOrders] = useState<
+    Order[]
+  >([]);
+  const [paginateCancelOrders, setPaginateCancelOrders] = useState<Order[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [isSmallScreen, setIsSmallScreen] = useState(false);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  // ----------------- Variables -----------------
+  const [isNewDropdownOpen, setIsNewDropdownOpen] = useState(false);
+  const [isProcessingDropdownOpen, setIsProcessingDropdownOpen] =
+    useState(false);
+  const [isInDeliveryDropdownOpen, setIsInDeliveryDropdownOpen] =
+    useState(false);
+  const [isDeliveredDropdownOpen, setIsDeliveredDropdownOpen] = useState(false);
+  const [isCancelledDropdownOpen, setIsCancelledDropdownOpen] = useState(false);
+  // // ----------------- Variables -----------------
 
   const options = [10, 20, 50, 100];
 
@@ -31,7 +53,27 @@ const MainPage = () => {
     setLoading(true);
     try {
       const allOrders = await getOrders();
-      setOrders(allOrders);
+      const newOrders = allOrders.filter(
+        (order: Order) => order.status === 'Nouveau'
+      );
+      setNewOrders(newOrders);
+      const processingOrders = allOrders.filter(
+        (order: Order) => order.status === 'Préparation'
+      );
+      setProcessingOrders(processingOrders);
+      const inDeliveryOrders = allOrders.filter(
+        (order: Order) => order.status === 'Livraison'
+      );
+      setInDeliveryOrders(inDeliveryOrders);
+      const deliveredOrders = allOrders.filter(
+        (order: Order) => order.status === 'Livré'
+      );
+      setDeliveredOrders(deliveredOrders);
+      const cancelledOrders = allOrders.filter(
+        (order: Order) => order.status === 'Annulée'
+      );
+      setCancelledOrders(cancelledOrders);
+
       setLoading(false);
     } catch (error) {
       console.error('Error fetching orders:', error);
@@ -50,6 +92,23 @@ const MainPage = () => {
     }
 
     return pages;
+  };
+
+  const getStatusClass = (status: string) => {
+    switch (status) {
+      case 'Nouveau':
+        return 'text-black';
+      case 'Préparation':
+        return 'text-slate-400';
+      case 'Livraison':
+        return 'text-yellow-500';
+      case 'Livré':
+        return 'text-green-500';
+      case 'Annulé':
+        return 'text-red-500';
+      default:
+        return 'text-typography-500';
+    }
   };
 
   // ----------------- Effets -----------------
@@ -71,15 +130,38 @@ const MainPage = () => {
   useEffect(() => {
     const start = (currentPage - 1) * itemsPerPage;
     const end = currentPage * itemsPerPage;
-    setPaginateOrders(orders.slice(start, end));
-  }, [currentPage, orders, itemsPerPage]);
+    setPaginateNewOrders(newOrders.slice(start, end));
+    setPaginateProcessingOrders(processingOrders.slice(start, end));
+    setPaginateInDeliveryOrders(inDeliveryOrders.slice(start, end));
+    setPaginateDeliveredOrders(deliveredOrders.slice(start, end));
+    setPaginateCancelOrders(cancelledOrders.slice(start, end));
+  }, [
+    currentPage,
+    newOrders,
+    processingOrders,
+    inDeliveryOrders,
+    deliveredOrders,
+    cancelledOrders,
+    itemsPerPage,
+  ]);
 
   useEffect(() => {
     setCurrentPage(1);
   }, [itemsPerPage]);
 
+  useEffect(() => {
+    console.log(processingOrders);
+  }, [processingOrders]);
+
   // ----------------- Render -----------------
-  if (!loading && !paginateOrders.length) {
+  if (
+    !loading &&
+    !paginateNewOrders.length &&
+    !paginateProcessingOrders.length &&
+    !paginateInDeliveryOrders.length &&
+    !paginateDeliveredOrders.length &&
+    !paginateCancelOrders.length
+  ) {
     return (
       <Box className="flex-1 min-h-screen">
         <Box className="h-[80%] my-auto">
@@ -106,7 +188,7 @@ const MainPage = () => {
 
   const renderItems = (item: Order) => {
     return (
-      <Link href={`/dashboard/${item.id}`} className="group">
+      <Link href={`/dashboard/${item.id}`} className="group" key={item.id}>
         <HStack className="justify-around w-[90%] mx-auto">
           <Box className="border rounded bg-white border-typography-100 hover:border-typography-800 w-[95%] mx-auto p-2 my-2">
             <HStack className="justify-between px-4" space="md">
@@ -125,11 +207,9 @@ const MainPage = () => {
                   )}
                   <Text
                     size={isSmallScreen ? 'xs' : 'sm'}
-                    className={`text-center font-semibold ${
-                      item.status === 'Nouveau'
-                        ? 'text-green-500'
-                        : 'text-typography-500'
-                    } `}
+                    className={`text-center font-semibold ${getStatusClass(
+                      item.status
+                    )} `}
                   >
                     {item.status}
                   </Text>
@@ -167,55 +247,390 @@ const MainPage = () => {
     >
       <HStack
         space="sm"
-        className=" items-center justify-between ml-auto mr-10 w-[55%] z-50"
+        className="items-center justify-between ml-auto mr-10 w-[55%] z-50"
       >
-        <Heading className="text-center my-4">Toutes mes commandes</Heading>
-        <ItemPerPageSelector
-          itemsPerPage={itemsPerPage}
-          setItemsPerPage={setItemsPerPage}
-          options={options}
-        />
+        {!isSmallScreen ? (
+          <Heading className="text-center my-4">Toutes mes commandes</Heading>
+        ) : (
+          <Text className="text-start my-4 font-bold">
+            Toutes mes commandes
+          </Text>
+        )}
+        <HStack className=" items-center justify-center">
+          {!isSmallScreen && (
+            <Text className="text-typography-900">Commandes par page: </Text>
+          )}
+          <ItemPerPageSelector
+            itemsPerPage={itemsPerPage}
+            setItemsPerPage={setItemsPerPage}
+            options={options}
+          />
+        </HStack>
       </HStack>
 
-      <FlatList
-        data={paginateOrders}
-        renderItem={({ item }) => renderItems(item)}
-        keyExtractor={(item) => item.id.toString()}
-      />
-
-      {orders.length > itemsPerPage && (
-        <HStack
-          className={`justify-around  w-[90%] md:w-[50%] h-[50px] md:h-[80px]  items-center  mx-auto`}
-        >
+      <VStack className="justify-center items-center mt-10" space="lg">
+        {/* NOUVELLES COMMANDES */}
+        <Box className="w-full">
           <Button
-            size={isSmallScreen ? 'xs' : 'md'}
-            onPress={() => setCurrentPage(currentPage - 1)}
-            disabled={currentPage === 1}
+            onPress={() => setIsNewDropdownOpen(!isNewDropdownOpen)}
+            className="p-2 w-[90%]  mx-auto border rounded bg-typography-white"
           >
-            <ButtonText>Précédent</ButtonText>
+            <ButtonText className="text-typography-900 font-semibold">
+              Nouvelles commandes
+            </ButtonText>
           </Button>
+          {isNewDropdownOpen && (
+            <Box className=" mt-1 w-[90%] mx-auto bg-white border rounded shadow-lg">
+              <FlatList
+                data={paginateNewOrders}
+                renderItem={({ item }) => renderItems(item)}
+                keyExtractor={(item) => item.id.toString()}
+                ListEmptyComponent={
+                  <Text className="text-center">
+                    Aucune nouvelle commande trouvée
+                  </Text>
+                }
+              />
 
-          {getPageNumber(orders.length, currentPage).map((page) => (
-            <Button
-              size={isSmallScreen ? 'xs' : 'md'}
-              onPress={() => setCurrentPage(page)}
-              key={page}
-              className={`${page !== currentPage ? 'bg-typography-500' : ' '}`}
-              disabled={page === currentPage}
-            >
-              <ButtonText>{page}</ButtonText>
-            </Button>
-          ))}
+              {newOrders.length > itemsPerPage && (
+                <HStack
+                  className={`justify-around w-[90%] md:w-[50%] h-[50px] md:h-[80px] items-center mx-auto`}
+                >
+                  <Button
+                    size={isSmallScreen ? 'xs' : 'md'}
+                    onPress={() => setCurrentPage(currentPage - 1)}
+                    disabled={currentPage === 1}
+                  >
+                    <ButtonText>Précédent</ButtonText>
+                  </Button>
 
+                  {getPageNumber(newOrders.length, currentPage).map((page) => (
+                    <Button
+                      size={isSmallScreen ? 'xs' : 'md'}
+                      onPress={() => setCurrentPage(page)}
+                      key={page}
+                      className={`${
+                        page !== currentPage ? 'bg-typography-500' : ' '
+                      }`}
+                      disabled={page === currentPage}
+                    >
+                      <ButtonText>{page}</ButtonText>
+                    </Button>
+                  ))}
+
+                  <Button
+                    size={isSmallScreen ? 'xs' : 'md'}
+                    onPress={() => setCurrentPage(currentPage + 1)}
+                    disabled={currentPage * itemsPerPage >= newOrders.length}
+                  >
+                    <ButtonText>Suivant</ButtonText>
+                  </Button>
+                </HStack>
+              )}
+            </Box>
+          )}
+        </Box>
+
+        {/* COMMANDES EN PRÉPARATION */}
+        <Box className="w-full">
           <Button
-            size={isSmallScreen ? 'xs' : 'md'}
-            onPress={() => setCurrentPage(currentPage + 1)}
-            disabled={currentPage * itemsPerPage >= orders.length}
+            onPress={() =>
+              setIsProcessingDropdownOpen(!isProcessingDropdownOpen)
+            }
+            className="p-2 w-[90%] mx-auto border rounded bg-typography-white"
           >
-            <ButtonText>Suivant</ButtonText>
+            <ButtonText className="text-typography-900 font-semibold">
+              Commandes en préparation
+            </ButtonText>
           </Button>
-        </HStack>
-      )}
+          {isProcessingDropdownOpen && (
+            <Box className="w-[90%] mt-1 mx-auto bg-white border rounded shadow-lg">
+              {processingOrders.length > 0 ? (
+                <FlatList
+                  data={paginateProcessingOrders}
+                  renderItem={({ item }) => renderItems(item)}
+                  keyExtractor={(item) => item.id.toString()}
+                  ListEmptyComponent={
+                    <Text className="text-center">
+                      Aucune commande en préparation trouvée
+                    </Text>
+                  }
+                />
+              ) : (
+                <Box className="h-11 my-auto items-center justify-center">
+                  <Text className="text-center">
+                    Aucune commande en préparation trouvée
+                  </Text>
+                </Box>
+              )}
+
+              {processingOrders.length > itemsPerPage && (
+                <HStack
+                  className={`justify-around w-[90%] md:w-[50%] h-[50px] md:h-[80px] items-center mx-auto`}
+                >
+                  <Button
+                    size={isSmallScreen ? 'xs' : 'md'}
+                    onPress={() => setCurrentPage(currentPage - 1)}
+                    disabled={currentPage === 1}
+                  >
+                    <ButtonText>Précédent</ButtonText>
+                  </Button>
+
+                  {getPageNumber(processingOrders.length, currentPage).map(
+                    (page) => (
+                      <Button
+                        size={isSmallScreen ? 'xs' : 'md'}
+                        onPress={() => setCurrentPage(page)}
+                        key={page}
+                        className={`${
+                          page !== currentPage ? 'bg-typography-500' : ' '
+                        }`}
+                        disabled={page === currentPage}
+                      >
+                        <ButtonText>{page}</ButtonText>
+                      </Button>
+                    )
+                  )}
+
+                  <Button
+                    size={isSmallScreen ? 'xs' : 'md'}
+                    onPress={() => setCurrentPage(currentPage + 1)}
+                    disabled={
+                      currentPage * itemsPerPage >= processingOrders.length
+                    }
+                  >
+                    <ButtonText>Suivant</ButtonText>
+                  </Button>
+                </HStack>
+              )}
+            </Box>
+          )}
+        </Box>
+
+        {/* COMMANDES EN LIVRAISON */}
+        <Box className="w-full">
+          <Button
+            onPress={() =>
+              setIsInDeliveryDropdownOpen(!isInDeliveryDropdownOpen)
+            }
+            className="p-2 w-[90%] mx-auto border rounded bg-typography-white"
+          >
+            <ButtonText className="text-typography-900 font-semibold">
+              Commandes en livraison
+            </ButtonText>
+          </Button>
+          {isInDeliveryDropdownOpen && (
+            <Box className="w-[90%] mt-1 mx-auto bg-white border rounded shadow-lg">
+              {inDeliveryOrders.length > 0 ? (
+                <FlatList
+                  data={paginateInDeliveryOrders}
+                  renderItem={({ item }) => renderItems(item)}
+                  keyExtractor={(item) => item.id.toString()}
+                  ListEmptyComponent={
+                    <Text className="text-center">
+                      Aucune commande en livraison trouvée
+                    </Text>
+                  }
+                />
+              ) : (
+                <Box className="h-11 my-auto items-center justify-center">
+                  <Text className="text-center">
+                    Aucune commande en livraison trouvée
+                  </Text>
+                </Box>
+              )}
+
+              {inDeliveryOrders.length > itemsPerPage && (
+                <HStack
+                  className={`justify-around w-[90%] md:w-[50%] h-[50px] md:h-[80px] items-center mx-auto`}
+                >
+                  <Button
+                    size={isSmallScreen ? 'xs' : 'md'}
+                    onPress={() => setCurrentPage(currentPage - 1)}
+                    disabled={currentPage === 1}
+                  >
+                    <ButtonText>Précédent</ButtonText>
+                  </Button>
+
+                  {getPageNumber(inDeliveryOrders.length, currentPage).map(
+                    (page) => (
+                      <Button
+                        size={isSmallScreen ? 'xs' : 'md'}
+                        onPress={() => setCurrentPage(page)}
+                        key={page}
+                        className={`${
+                          page !== currentPage ? 'bg-typography-500' : ' '
+                        }`}
+                        disabled={page === currentPage}
+                      >
+                        <ButtonText>{page}</ButtonText>
+                      </Button>
+                    )
+                  )}
+
+                  <Button
+                    size={isSmallScreen ? 'xs' : 'md'}
+                    onPress={() => setCurrentPage(currentPage + 1)}
+                    disabled={
+                      currentPage * itemsPerPage >= inDeliveryOrders.length
+                    }
+                  >
+                    <ButtonText>Suivant</ButtonText>
+                  </Button>
+                </HStack>
+              )}
+            </Box>
+          )}
+        </Box>
+
+        {/* COMMANDES LIVRÉES */}
+        <Box className="w-full">
+          <Button
+            onPress={() => setIsDeliveredDropdownOpen(!isDeliveredDropdownOpen)}
+            className="p-2 w-[90%] mx-auto border rounded bg-typography-white"
+          >
+            <ButtonText className="text-typography-900 font-semibold">
+              Commandes livrées
+            </ButtonText>
+          </Button>
+          {isDeliveredDropdownOpen && (
+            <Box className="w-[90%] mt-1 mx-auto bg-white border rounded shadow-lg">
+              {deliveredOrders.length > 0 ? (
+                <FlatList
+                  data={paginateDeliveredOrders}
+                  renderItem={({ item }) => renderItems(item)}
+                  keyExtractor={(item) => item.id.toString()}
+                  ListEmptyComponent={
+                    <Text className="text-center">
+                      Aucune commande livrée trouvée
+                    </Text>
+                  }
+                />
+              ) : (
+                <Box className="h-11 my-auto items-center justify-center">
+                  <Text className="text-center">
+                    Aucune commande livrée trouvée
+                  </Text>
+                </Box>
+              )}
+
+              {deliveredOrders.length > itemsPerPage && (
+                <HStack
+                  className={`justify-around w-[90%] md:w-[50%] h-[50px] md:h-[80px] items-center mx-auto`}
+                >
+                  <Button
+                    size={isSmallScreen ? 'xs' : 'md'}
+                    onPress={() => setCurrentPage(currentPage - 1)}
+                    disabled={currentPage === 1}
+                  >
+                    <ButtonText>Précédent</ButtonText>
+                  </Button>
+
+                  {getPageNumber(deliveredOrders.length, currentPage).map(
+                    (page) => (
+                      <Button
+                        size={isSmallScreen ? 'xs' : 'md'}
+                        onPress={() => setCurrentPage(page)}
+                        key={page}
+                        className={`${
+                          page !== currentPage ? 'bg-typography-500' : ' '
+                        }`}
+                        disabled={page === currentPage}
+                      >
+                        <ButtonText>{page}</ButtonText>
+                      </Button>
+                    )
+                  )}
+
+                  <Button
+                    size={isSmallScreen ? 'xs' : 'md'}
+                    onPress={() => setCurrentPage(currentPage + 1)}
+                    disabled={
+                      currentPage * itemsPerPage >= deliveredOrders.length
+                    }
+                  >
+                    <ButtonText>Suivant</ButtonText>
+                  </Button>
+                </HStack>
+              )}
+            </Box>
+          )}
+        </Box>
+
+        {/* COMMANDES ANNULÉES */}
+        <Box className="w-full">
+          <Button
+            onPress={() => setIsCancelledDropdownOpen(!isCancelledDropdownOpen)}
+            className="p-2 w-[90%] mx-auto border rounded bg-typography-white"
+          >
+            <ButtonText className="text-typography-900 font-semibold">
+              Commandes annulées
+            </ButtonText>
+          </Button>
+          {isCancelledDropdownOpen && (
+            <Box className="w-[90%] mt-1 mx-auto bg-white border rounded shadow-lg">
+              {cancelledOrders.length > 0 ? (
+                <FlatList
+                  data={paginateCancelOrders}
+                  renderItem={({ item }) => renderItems(item)}
+                  keyExtractor={(item) => item.id.toString()}
+                  ListEmptyComponent={
+                    <Text className="text-center">
+                      Aucune commande annulée trouvée
+                    </Text>
+                  }
+                />
+              ) : (
+                <Box className="h-11 my-auto items-center justify-center">
+                  <Text className="text-center">
+                    Aucune commande annulée trouvée
+                  </Text>
+                </Box>
+              )}
+
+              {cancelledOrders.length > itemsPerPage && (
+                <HStack
+                  className={`justify-around w-[90%] md:w-[50%] h-[50px] md:h-[80px] items-center mx-auto`}
+                >
+                  <Button
+                    size={isSmallScreen ? 'xs' : 'md'}
+                    onPress={() => setCurrentPage(currentPage - 1)}
+                    disabled={currentPage === 1}
+                  >
+                    <ButtonText>Précédent</ButtonText>
+                  </Button>
+
+                  {getPageNumber(cancelledOrders.length, currentPage).map(
+                    (page) => (
+                      <Button
+                        size={isSmallScreen ? 'xs' : 'md'}
+                        onPress={() => setCurrentPage(page)}
+                        key={page}
+                        className={`${
+                          page !== currentPage ? 'bg-typography-500' : ' '
+                        }`}
+                        disabled={page === currentPage}
+                      >
+                        <ButtonText>{page}</ButtonText>
+                      </Button>
+                    )
+                  )}
+
+                  <Button
+                    size={isSmallScreen ? 'xs' : 'md'}
+                    onPress={() => setCurrentPage(currentPage + 1)}
+                    disabled={
+                      currentPage * itemsPerPage >= cancelledOrders.length
+                    }
+                  >
+                    <ButtonText>Suivant</ButtonText>
+                  </Button>
+                </HStack>
+              )}
+            </Box>
+          )}
+        </Box>
+      </VStack>
     </View>
   );
 };

@@ -3,15 +3,18 @@ import { getOrderItems } from '@/api/orders';
 import { getProductById } from '@/api/products';
 import LabelValuePair from '@/components/orders/LabelvaluePairProps';
 import OrderItemDetails from '@/components/orders/OrderItemDetails';
+import StatusSelector from '@/components/orders/StatusSelector';
 import { Box } from '@/components/ui/box';
 import { Card } from '@/components/ui/card';
 import { Heading } from '@/components/ui/heading';
+import { HStack } from '@/components/ui/hstack';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
 import { Order, OrderItem } from '@/types/types';
 import { formatDate } from '@/utils/datesFunc';
 import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator } from 'react-native';
+import { updateOrderStatus } from './actions';
 
 const OrderDetails = ({ params }: { params: { id: number } }) => {
   // ----------------- State -----------------
@@ -38,6 +41,11 @@ const OrderDetails = ({ params }: { params: { id: number } }) => {
     }
   }, [params.id]);
 
+  const handleUpdateStatus = (newStatus: string, id: number) => {
+    setOrder((prevOrder) => ({ ...prevOrder, status: newStatus }));
+    updateOrderStatus(id, newStatus);
+  };
+
   // ----------------- Variables -----------------
 
   const totalPrice = order.items
@@ -62,15 +70,23 @@ const OrderDetails = ({ params }: { params: { id: number } }) => {
 
   return (
     <Box className="min-h-screen w-full my-auto mx-auto">
-      <Card className="m-auto w-full my-6  lg:w-[70%]">
+      <Card className="m-auto w-[95%] my-6  lg:w-[70%]">
         {loading && <ActivityIndicator size="large" color="black" />}
         {order ? (
           <VStack space="lg">
-            <LabelValuePair
-              label="Status:"
-              value={order.status}
-              isSmallScreen={isSmallScreen}
-            />
+            <HStack className="justify-between z-50 items-center">
+              {isSmallScreen ? (
+                <Text className="text-center text-xs font-semibold">
+                  Status de la commande
+                </Text>
+              ) : (
+                <Heading className="text-center">Status de la commande</Heading>
+              )}
+              <StatusSelector
+                order={order}
+                onUpdateStatus={handleUpdateStatus}
+              />
+            </HStack>
             <LabelValuePair
               label="Total de la commande:"
               value={totalPrice + ' €'}
@@ -82,12 +98,12 @@ const OrderDetails = ({ params }: { params: { id: number } }) => {
               isSmallScreen={isSmallScreen}
             />
             <LabelValuePair
-              label="Le:"
+              label="Date:"
               value={formatDate(order.createdAt)}
               isSmallScreen={isSmallScreen}
             />
             <LabelValuePair
-              label="Par:"
+              label="Client:"
               value="Dominique Grisoni"
               isSmallScreen={isSmallScreen}
             />
