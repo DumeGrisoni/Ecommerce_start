@@ -64,7 +64,7 @@ const StatusSelector: React.FC<StatusSelectorProps> = ({
             className={`p-2 cursor-pointer ${
               status === 'shipped' ? 'bg-green-100' : ''
             } hover:bg-green-100`}
-            onClick={() => handleChange('Livré', order.id)}
+            onClick={() => handleChange('Livrée', order.id)}
           >
             <Text>Livré</Text>
           </li>

@@ -102,9 +102,9 @@ const MainPage = () => {
         return 'text-slate-400';
       case 'Livraison':
         return 'text-yellow-500';
-      case 'Livré':
+      case 'Livrée':
         return 'text-green-500';
-      case 'Annulé':
+      case 'Annulée':
         return 'text-red-500';
       default:
         return 'text-typography-500';
