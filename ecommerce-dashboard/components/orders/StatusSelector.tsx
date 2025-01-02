@@ -40,15 +40,15 @@ const StatusSelector: React.FC<StatusSelectorProps> = ({
         </ButtonText>
       </Button>
       {isOpen && (
-        <ul className="absolute z-50 mt-10  w-full bg-white border rounded shadow-lg">
+        <ul className="absolute z-50 mt-10 min-w-[80px] w-full bg-white border rounded shadow-lg">
           <li
             key={order.id + 'preparation'}
             className={`p-2 cursor-pointer ${
               status === 'pending' ? 'bg-state-200' : ''
             } hover:bg-slate-200`}
-            onClick={() => handleChange('Préparation', order.id)}
+            onClick={() => handleChange('En cours', order.id)}
           >
-            <Text>Préparation</Text>
+            <Text>En cours</Text>
           </li>
           <li
             key={order.id + 'livraison'}
@@ -66,7 +66,7 @@ const StatusSelector: React.FC<StatusSelectorProps> = ({
             } hover:bg-green-100`}
             onClick={() => handleChange('Livrée', order.id)}
           >
-            <Text>Livré</Text>
+            <Text>Livrée</Text>
           </li>
           <li
             key={order.id + 'annulée'}

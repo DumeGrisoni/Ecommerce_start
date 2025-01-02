@@ -58,7 +58,7 @@ const MainPage = () => {
       );
       setNewOrders(newOrders);
       const processingOrders = allOrders.filter(
-        (order: Order) => order.status === 'Préparation'
+        (order: Order) => order.status === 'En cours'
       );
       setProcessingOrders(processingOrders);
       const inDeliveryOrders = allOrders.filter(
@@ -66,7 +66,7 @@ const MainPage = () => {
       );
       setInDeliveryOrders(inDeliveryOrders);
       const deliveredOrders = allOrders.filter(
-        (order: Order) => order.status === 'Livré'
+        (order: Order) => order.status === 'Livrée'
       );
       setDeliveredOrders(deliveredOrders);
       const cancelledOrders = allOrders.filter(
@@ -98,8 +98,8 @@ const MainPage = () => {
     switch (status) {
       case 'Nouveau':
         return 'text-black';
-      case 'Préparation':
-        return 'text-slate-400';
+      case 'En cours':
+        return 'text-slate-500';
       case 'Livraison':
         return 'text-yellow-500';
       case 'Livrée':
