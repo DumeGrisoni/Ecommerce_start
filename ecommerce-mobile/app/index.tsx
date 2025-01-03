@@ -71,8 +71,8 @@ export default function HomeScreen() {
         key={numColumns}
         data={filteredData}
         numColumns={numColumns}
-        contentContainerClassName="gap-2 max-w-[960px] mx-auto pb-[150px] w-full "
-        columnWrapperClassName="gap-2 mx-2 "
+        contentContainerClassName="gap-2 max-w-[960px] mx-auto pb-[150px] w-full"
+        columnWrapperClassName="gap-2 mx-2"
         className="pt-2"
         renderItem={({ item }) => <ProductListItem product={item} />}
       />
