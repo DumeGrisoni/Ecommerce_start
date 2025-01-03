@@ -8,7 +8,7 @@ import { Box } from '@/components/ui/box';
 import { Card } from '@/components/ui/card';
 import { Heading } from '@/components/ui/heading';
 import { Text } from '@/components/ui/text';
-import { Order, OrderItem, userType } from '@/types/types';
+import { Order, OrderItem, OrderStatus, userType } from '@/types/types';
 import { formatDate } from '@/utils/datesFunc';
 import { HStack } from '@/components/ui/hstack';
 import { VStack } from '@/components/ui/vstack';
@@ -35,6 +35,30 @@ const Orders = () => {
   const fetchOrders = async () => {
     try {
       setLoading(true);
+
+      const statusPriority: Record<OrderStatus, number> = {
+        Nouveau: 1,
+        'En cours': 2,
+        Livraison: 3,
+        Livrée: 4,
+        Annulée: 5,
+      };
+
+      const sortOrders = (orders: Order[]) => {
+        return orders.sort((a, b) => {
+          if (
+            statusPriority[a.status as OrderStatus] !==
+            statusPriority[b.status as OrderStatus]
+          ) {
+            return (
+              statusPriority[a.status as OrderStatus] -
+              statusPriority[b.status as OrderStatus]
+            );
+          }
+          return new Date(a.date).getTime() - new Date(b.date).getTime();
+        });
+      };
+
       const allOrders = await getOrders(user.id);
 
       const ordersDetails = await Promise.all(
@@ -50,7 +74,7 @@ const Orders = () => {
         })
       );
 
-      setOrders(ordersDetails);
+      setOrders(sortOrders(ordersDetails));
 
       setLoading(false);
     } catch (error) {
@@ -74,6 +98,22 @@ const Orders = () => {
     }
 
     return pages;
+  };
+  const getStatusClass = (status: string) => {
+    switch (status) {
+      case 'Nouveau':
+        return 'text-slate-500';
+      case 'En cours':
+        return 'text-blue-500';
+      case 'Livraison':
+        return 'text-yellow-500';
+      case 'Livrée':
+        return 'text-green-500';
+      case 'Annulée':
+        return 'text-red-500';
+      default:
+        return 'text-typography-500';
+    }
   };
   // ----------------- Effets -----------------
 
@@ -111,7 +151,10 @@ const Orders = () => {
         <Box className="border rounded bg-white border-typography-500 w-[95%] mx-auto p-2 my-2">
           <HStack className="justify-between px-4" space="md">
             <HStack className="flex-1 justify-around ">
-              <Text size="sm" className="text-center text-typography-500">
+              <Text
+                size="sm"
+                className={`text-center ${getStatusClass(item.status)}`}
+              >
                 {item.status}
               </Text>
               <Text

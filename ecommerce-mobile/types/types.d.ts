@@ -69,6 +69,8 @@ export type OrderStateType = {
   addOrder: (order: Order) => void;
 };
 
+type OrderStatus = 'Nouveau' | 'En cours' | 'Livraison' | 'Livrée' | 'Annulée';
+
 export type OrderItem = {
   id: number;
   orderId: number;

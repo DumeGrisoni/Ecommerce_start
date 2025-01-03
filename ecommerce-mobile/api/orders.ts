@@ -37,6 +37,7 @@ export async function getOrders(userId: number) {
 
   if (!res.ok) {
     console.log('data', data);
+
     throw new Error('Error getting orders');
   }
 
@@ -50,8 +51,8 @@ export async function getOrder(orderId: number) {
   const res = await fetch(`${API_URL}/orders/${orderId}`, {
     method: 'GET',
     headers: {
-      'Content-Type': 'application/json',
       Authorization: token,
+      'Content-Type': 'application/json',
     },
   });
   const data = await res.json();

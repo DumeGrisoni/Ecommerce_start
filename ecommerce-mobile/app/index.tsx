@@ -48,7 +48,7 @@ export default function HomeScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1">
+    <SafeAreaView className="flex-1 h-full ">
       <HStack className="justify-between w-[90%] md:w-[60%] mx-auto items-center rounded my-4">
         <HStack className="bg-white  rounded p-2 gap-2 w-full justify-start items-center">
           <Icon as={SearchIcon} size="xl" color="gray" />
@@ -71,9 +71,9 @@ export default function HomeScreen() {
         key={numColumns}
         data={filteredData}
         numColumns={numColumns}
-        contentContainerClassName="gap-2 max-w-[960px] mx-auto w-full "
-        columnWrapperClassName="gap-2 mx-2"
-        className="pt-2 pb-16"
+        contentContainerClassName="gap-2 max-w-[960px] mx-auto pb-[150px] w-full "
+        columnWrapperClassName="gap-2 mx-2 "
+        className="pt-2"
         renderItem={({ item }) => <ProductListItem product={item} />}
       />
     </SafeAreaView>
