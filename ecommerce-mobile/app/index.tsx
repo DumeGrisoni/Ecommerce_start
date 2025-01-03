@@ -13,7 +13,7 @@ import ProductListItem from '../components/ProductListItem';
 import { listProducts } from '@/api/products';
 import { useBreakpointValue } from '@/components/ui/utils/use-break-point-value';
 import { useQuery } from '@tanstack/react-query';
-import { Text } from '@/components/ui/text/index.web';
+import { Text } from '../components/ui/text/index.web';
 import { ProductType } from '@/types/types';
 import { CloseIcon, Icon, SearchIcon } from '@/components/ui/icon';
 import { HStack } from '@/components/ui/hstack';

@@ -10,6 +10,6 @@ export default function CustomStripeProvider({
     queryKey: ['stripe', 'keys'],
     queryFn: fetchStripeKeys,
   });
-
+  console.log('stripeKeys:', stripeKeys);
   return children;
 }

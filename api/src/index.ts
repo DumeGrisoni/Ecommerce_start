@@ -6,7 +6,7 @@ import serverless from 'serverless-http';
 import stripeRouter from './routes/stripe/index.js';
 
 const app = express();
-const port = 3000;
+const port = 3001;
 
 // Middlewares
 app.use(urlencoded({ extended: false }));
