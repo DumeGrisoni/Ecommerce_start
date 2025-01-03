@@ -3,6 +3,7 @@ import productsRouter from './routes/products/index.js';
 import ordersRouter from './routes/orders/index.js';
 import authRouter from './routes/auth/index.js';
 import serverless from 'serverless-http';
+import stripeRouter from './routes/stripe/index.js';
 
 const app = express();
 const port = 3000;
@@ -13,7 +14,7 @@ app.use(json());
 
 // Endpoint pour la racine de l'API
 app.get('/', (req, res) => {
-  res.send('Hello World top ca maintenant cool maintenant!');
+  res.send('Hello World !');
 });
 
 // Utiliser le router des produits
@@ -23,10 +24,13 @@ app.use('/orders', ordersRouter);
 // Utiliser le router de l'authentification
 app.use('/auth', authRouter);
 
+// Utiliser le router de Stripe
+app.use('/stripe', stripeRouter);
+
 // Reponse pour le lancement de l'API
 if (process.env.NODE_ENV === 'dev') {
   app.listen(port, () => {
-    console.log(`App listening at http://localhost:${port} ! c'est top`);
+    console.log(`App listening at http://localhost:${port}`);
   });
 }
 
