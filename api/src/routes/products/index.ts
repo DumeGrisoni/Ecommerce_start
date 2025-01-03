@@ -10,7 +10,7 @@ import { validateData } from '../../middlewares/validationMiddleware.js';
 import {
   createProductSchema,
   updateProductSchema,
-} from '../../../src/db/productsSchema.js';
+} from '../../db/productsSchema.js';
 import { verifyRole, verifyToken } from '../../middlewares/authMiddleware.js';
 
 // Endpoint pour la liste des produits

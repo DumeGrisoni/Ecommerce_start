@@ -7,6 +7,7 @@ import stripeRouter from './routes/stripe/index.js';
 
 const app = express();
 const port = 3001;
+const host = '192.168.1.34';
 
 // Middlewares
 app.use(urlencoded({ extended: false }));
@@ -29,7 +30,7 @@ app.use('/stripe', stripeRouter);
 
 // Reponse pour le lancement de l'API
 if (process.env.NODE_ENV === 'dev') {
-  app.listen(port, () => {
+  app.listen(port, host, () => {
     console.log(`App listening at http://localhost:${port}`);
   });
 }

@@ -10,10 +10,8 @@ export async function login(email: string, password: string) {
   });
   const data = await response.json();
   if (!response.ok) {
-    console.log(data);
     throw new Error('Une erreur est survenue lors de la connexion');
   }
-  console.log(data);
   return data;
 }
 

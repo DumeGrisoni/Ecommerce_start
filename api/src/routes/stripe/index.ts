@@ -6,7 +6,7 @@ const router = Router();
 
 // Endpoints
 
-router.get('/keys', verifyToken, getKeys);
+router.get('/keys', getKeys);
 
 router.post('/create-payment-intent', verifyToken, createPaymentIntent);
 

@@ -13,11 +13,11 @@ import ProductListItem from '../components/ProductListItem';
 import { listProducts } from '@/api/products';
 import { useBreakpointValue } from '@/components/ui/utils/use-break-point-value';
 import { useQuery } from '@tanstack/react-query';
-import { Text } from '../components/ui/text/index.web';
 import { ProductType } from '@/types/types';
 import { CloseIcon, Icon, SearchIcon } from '@/components/ui/icon';
 import { HStack } from '@/components/ui/hstack';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Text } from '@/components/ui/text';
 
 export default function HomeScreen() {
   const [searchQuery, setSearchQuery] = React.useState('');
@@ -42,8 +42,13 @@ export default function HomeScreen() {
   }
 
   if (error) {
+    console.log('error', error);
     return (
-      <Text>Une erreur est survenue lors du chargement des produits.</Text>
+      <View className=" items-center justify-center flex-1">
+        <Text className="text-center">
+          Une erreur est survenue lors du chargement des produits.
+        </Text>
+      </View>
     );
   }
 
