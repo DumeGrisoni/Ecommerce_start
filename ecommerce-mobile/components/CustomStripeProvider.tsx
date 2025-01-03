@@ -19,24 +19,24 @@ export default function CustomStripeProvider({
     queryFn: fetchStripeKeys,
   });
 
-  // if (isLoading) {
-  //   return (
-  //     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-  //       <ActivityIndicator size="large" />
-  //     </View>
-  //   );
-  // }
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
 
-  // if (error || !stripeKeys) {
-  //   return (
-  //     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-  //       <Text>Une erreur est survenue lors du chargement des clés Stripe.</Text>
-  //     </View>
-  //   );
-  // }
+  if (error || !stripeKeys) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>Une erreur est survenue lors du chargement des clés Stripe.</Text>
+      </View>
+    );
+  }
 
   return (
-    <StripeProvider publishableKey={stripeKeys?.publishableKey}>
+    <StripeProvider publishableKey={stripeKeys.publishableKey}>
       {children}
     </StripeProvider>
   );

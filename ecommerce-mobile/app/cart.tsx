@@ -1,4 +1,11 @@
-import { Dimensions, FlatList, Modal, Platform, Pressable } from 'react-native';
+import {
+  Alert,
+  Dimensions,
+  FlatList,
+  Modal,
+  Platform,
+  Pressable,
+} from 'react-native';
 import { useRouter } from 'expo-router';
 import React, { useEffect } from 'react';
 import { Trash2 } from 'lucide-react-native';
@@ -23,6 +30,8 @@ import { useToastNotification } from '@/components/toast';
 import { useMutation } from '@tanstack/react-query';
 import { createOrder } from '@/api/orders';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { createPaymentIntent } from '@/api/stripe';
+import { useStripe } from '@stripe/stripe-react-native';
 
 export default function CartScreen() {
   // ------------------Hooks------------------
@@ -34,6 +43,33 @@ export default function CartScreen() {
   const { showNewToast } = useToastNotification();
 
   const resetCart = useCart((state: CartStateType) => state.resetCart);
+
+  const { initPaymentSheet, presentPaymentSheet } = useStripe();
+
+  const paymentIntentMutation = useMutation({
+    mutationFn: createPaymentIntent,
+    onSuccess: async (data) => {
+      const { error } = await initPaymentSheet({
+        merchantDisplayName: 'ECommerce',
+        customerId: data.customer,
+        customerEphemeralKeySecret: data.ephemeralKey,
+        paymentIntentClientSecret: data.paymentIntent,
+        // Set `allowsDelayedPaymentMethods` to true if your business can handle payment
+        //methods that complete payment after a delay, like SEPA Debit and Sofort.
+        // allowsDelayedPaymentMethods: true,
+        defaultBillingDetails: {
+          name: 'Jane Doe',
+        },
+      });
+      if (error) {
+        Alert.alert('Error', error.message);
+        console.log('Error', error);
+      }
+    },
+    onError: (error) => {
+      console.log('error', error);
+    },
+  });
 
   const createOrderMutation = useMutation({
     mutationFn: () =>
@@ -80,9 +116,17 @@ export default function CartScreen() {
 
   // ------------------Fonctions------------------
 
+  const openPaymentSheet = async () => {
+    const { error } = await presentPaymentSheet();
+
+    if (!error) {
+      Alert.alert('Félicitations', 'Votre commande a bien été validée');
+    }
+  };
+
   const checkOut = async () => {
     if (isLoggedIn) {
-      createOrderMutation.mutate();
+      openPaymentSheet();
     } else {
       setModalVisible(true);
     }
@@ -120,6 +164,11 @@ export default function CartScreen() {
       console.log('cart items', cartItems);
     }
   }, [cartItems]);
+
+  // ------------------Effects------------------
+  useEffect(() => {
+    paymentIntentMutation.mutate();
+  }, []);
 
   // ------------------Rendu------------------
 
