@@ -18,14 +18,33 @@ export default function ProductListItem({ product }: { product: ProductType }) {
         className={`flex-1 hover:border-slate-400  border`}
         variant="elevated"
       >
-        <Image
+        {Array.isArray(product.image) ? (
+          <Image
+            source={{
+              uri: product.image[0],
+            }}
+            className="mb-6 h-[200px] w-full rounded-md"
+            alt="Image du produit"
+            resizeMode="contain"
+          />
+        ) : (
+          <Image
+            source={{
+              uri: product.image[0],
+            }}
+            className="mb-6 h-[200px] w-full rounded-md"
+            alt="Image du produit"
+            resizeMode="contain"
+          />
+        )}
+        {/* <Image
           source={{
-            uri: product.image,
+            uri: product.image[0],
           }}
           className="mb-6 h-[200px] w-full rounded-md"
           alt="Image du produit"
           resizeMode="contain"
-        />
+        /> */}
         <Text size="md" className="flex-1 text-left">
           {product.name}
         </Text>

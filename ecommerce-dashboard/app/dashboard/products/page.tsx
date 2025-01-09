@@ -1,3 +1,4 @@
+'use client';
 import Link from 'next/link';
 
 // ---------- Imports Personnels ----------
@@ -6,9 +7,28 @@ import ProductListItem from '@/components/products/ProductListItem';
 import { Card } from '@/components/ui/card';
 import { ProductType } from '@/types/types';
 import { AddIcon, Icon } from '@/components/ui/icon';
+import { useEffect, useState } from 'react';
 
-const ProductsPage = async () => {
-  const products: ProductType[] = await listProducts();
+const ProductsPage = () => {
+  const [products, setProducts] = useState<ProductType[]>([]);
+
+  const loadProducts = async () => {
+    try {
+      const products = await listProducts();
+      setProducts(products);
+    } catch (error) {
+      console.log('error', error);
+    }
+  };
+
+  useEffect(() => {
+    loadProducts();
+  }, []);
+
+  useEffect(() => {
+    console.log('products', products[0]);
+  }, [products]);
+
   return (
     <div className="flex flex-wrap gap-2 max-w-[1400px] my-6 w-full mx-auto h-full">
       <Link href="/dashboard/products/create">

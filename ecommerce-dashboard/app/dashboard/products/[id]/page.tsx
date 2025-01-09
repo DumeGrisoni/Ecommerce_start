@@ -41,14 +41,30 @@ export default async function ProductDetails({
           className="flex-1 w-full justify-center items-center flex-col lg:flex-row"
           space="xl"
         >
-          <Image
-            source={{
-              uri: product.image,
-            }}
-            className="mb-6 h-[200px] w-[300px] rounded-md"
-            alt="Image du produit"
-            resizeMode="contain"
-          />
+          {Array.isArray(product.image) ? (
+            <VStack className=" w-full justify-center items-center" space="lg">
+              {product.image.map((img, index) => (
+                <Image
+                  key={index}
+                  source={{
+                    uri: img,
+                  }}
+                  className="mb-6 h-[200px] w-[300px] rounded-md"
+                  alt="Image du produit"
+                  resizeMode="contain"
+                />
+              ))}
+            </VStack>
+          ) : (
+            <Image
+              source={{
+                uri: product.image,
+              }}
+              className="mb-6 h-[200px] w-[300px] rounded-md"
+              alt="Image du produit"
+              resizeMode="contain"
+            />
+          )}
           <Box className=" w-[90%] lg:w-[1px] mx-auto lg:my-auto h-[1px] lg:h-[90%] bg-typography-100 my-3 " />
           <VStack className=" justify-center items-center w-full" space="lg">
             <HStack className=" w-[80%] justify-between items-center px-4 mx-auto">
