@@ -64,4 +64,41 @@ router.post('/login', validateData(loginSchema), async (req, res) => {
   }
 });
 
+router.get('/users', async (req, res) => {
+  try {
+    const users = await db.select().from(usersTable);
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).send('Erreur lors de la récupération des utilisateurs');
+  }
+});
+
+router.get('/users/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = parseInt(id, 10); // Convertir id en number
+
+    if (isNaN(userId)) {
+      res.status(400).send('ID utilisateur invalide');
+      return;
+    }
+
+    const [user] = await db
+      .select()
+      .from(usersTable)
+      .where(eq(usersTable.id, userId));
+
+    if (!user) {
+      res.status(404).send('Utilisateur non trouvé');
+      return;
+    }
+
+    // @ts-ignore
+    delete user.password;
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).send("Erreur lors de la récupération de l'utilisateur");
+  }
+});
+
 export default router;

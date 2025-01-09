@@ -1,11 +1,15 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const gluestackPlugin = require('@gluestack-ui/nativewind-utils/tailwind-plugin');
+import { withUt } from 'uploadthing/tw';
 
 /** @type {import('tailwindcss').Config} */
-module.exports = {
-  darkMode: "class",
-  content: ["app/**/*.{tsx,jsx,ts,js}", "components/**/*.{tsx,jsx,ts,js}"],
+
+module.exports = withUt({
+  darkMode: 'class',
+  content: ['app/**/*.{tsx,jsx,ts,js}', 'components/**/*.{tsx,jsx,ts,js}'],
   presets: [require('nativewind/preset')],
-  important: "html",
+  important: 'html',
 
   safelist: [
     {
@@ -173,9 +177,9 @@ module.exports = {
         },
       },
       fontFamily: {
-        heading: undefined,
-        body: undefined,
-        mono: undefined,
+        heading: ['Arial', 'sans-serif'], // Définir une valeur par défaut
+        body: ['Arial', 'sans-serif'], // Définir une valeur par défaut
+        mono: ['Courier New', 'monospace'], // Définir une valeur par défaut
         roboto: ['Roboto', 'sans-serif'],
       },
       fontWeight: {
@@ -198,5 +202,5 @@ module.exports = {
     },
   },
 
-  plugins: [gluestackPlugin]
-};
+  plugins: [gluestackPlugin],
+});

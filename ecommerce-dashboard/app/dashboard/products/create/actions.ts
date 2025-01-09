@@ -7,7 +7,8 @@ import { cookies } from 'next/headers';
 export async function createProduct(
   name: string,
   description: string,
-  price: number
+  price: number,
+  images: string[]
 ) {
   let redirectURL = '/dashboard/products';
   try {
@@ -19,7 +20,7 @@ export async function createProduct(
         'Content-Type': 'application/json',
         Authorization: `${token}`,
       },
-      body: JSON.stringify({ name, description, price }),
+      body: JSON.stringify({ name, description, price, images }),
     });
 
     if (!response.ok) {
@@ -27,6 +28,7 @@ export async function createProduct(
         // Remove Token from cookies
         redirectURL = '/login';
       } else {
+        console.log(response);
         const errorMessage =
           'Une erreur est survenue lors de la création du produit';
         throw new Error(errorMessage);

@@ -1,5 +1,6 @@
 'use client';
 import { getOrders } from '@/api/orders';
+import { fetchUsers } from '@/api/users';
 import { Box } from '@/components/ui/box';
 import { Button, ButtonText } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -44,6 +45,7 @@ const MainPage = () => {
     useState(false);
   const [isDeliveredDropdownOpen, setIsDeliveredDropdownOpen] = useState(false);
   const [isCancelledDropdownOpen, setIsCancelledDropdownOpen] = useState(false);
+  const [users, setUsers] = useState([]);
   // // ----------------- Variables -----------------
 
   const options = [10, 20, 50, 100];
@@ -78,6 +80,15 @@ const MainPage = () => {
     } catch (error) {
       console.error('Error fetching orders:', error);
       setLoading(false);
+    }
+  };
+
+  const fetchUsersData = async () => {
+    const usersData = await fetchUsers();
+    if (!usersData) {
+      setUsers([]);
+    } else {
+      setUsers(usersData);
     }
   };
 
@@ -118,6 +129,7 @@ const MainPage = () => {
     const handleResize = () => {
       setIsSmallScreen(window.innerWidth < 1000);
     };
+    fetchUsersData();
 
     handleResize(); // Vérifiez la taille de l'écran au chargement
     window.addEventListener('resize', handleResize);
@@ -144,6 +156,10 @@ const MainPage = () => {
     cancelledOrders,
     itemsPerPage,
   ]);
+
+  useEffect(() => {
+    console.log('users:', users);
+  }, [users]);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -281,16 +297,24 @@ const MainPage = () => {
           </Button>
           {isNewDropdownOpen && (
             <Box className=" mt-1 w-[90%] mx-auto bg-white border rounded shadow-lg">
-              <FlatList
-                data={paginateNewOrders}
-                renderItem={({ item }) => renderItems(item)}
-                keyExtractor={(item) => item.id.toString()}
-                ListEmptyComponent={
+              {paginateNewOrders.length > 0 ? (
+                <FlatList
+                  data={paginateNewOrders}
+                  renderItem={({ item }) => renderItems(item)}
+                  keyExtractor={(item) => item.id.toString()}
+                  ListEmptyComponent={
+                    <Text className="text-center">
+                      Aucune nouvelle commande trouvée
+                    </Text>
+                  }
+                />
+              ) : (
+                <Box className="h-11 my-auto items-center justify-center">
                   <Text className="text-center">
                     Aucune nouvelle commande trouvée
                   </Text>
-                }
-              />
+                </Box>
+              )}
 
               {newOrders.length > itemsPerPage && (
                 <HStack

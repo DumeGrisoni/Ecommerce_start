@@ -31,7 +31,7 @@ app.use('/stripe', stripeRouter);
 // Reponse pour le lancement de l'API
 if (process.env.NODE_ENV === 'dev') {
   app.listen(port, host, () => {
-    console.log(`App listening at http://localhost:${port}`);
+    console.log(`App listening at http://${host}:${port}`);
   });
 }
 

@@ -2,6 +2,7 @@
 import { getProductById } from '@/api/products';
 import { Box } from '@/components/ui/box';
 import { Card } from '@/components/ui/card';
+import { Heading } from '@/components/ui/heading';
 import { HStack } from '@/components/ui/hstack';
 import { Image } from '@/components/ui/image';
 import { Text } from '@/components/ui/text';
@@ -21,6 +22,14 @@ export default async function ProductDetails({
   const product: ProductType = await getProductById(id);
 
   // ----------------- Rendu -----------------
+
+  if (!product) {
+    return (
+      <Box className="flex-1 justify-center items-center my-auto min-h-screen">
+        <Heading>Produit introuvable</Heading>
+      </Box>
+    );
+  }
 
   return (
     <Box
