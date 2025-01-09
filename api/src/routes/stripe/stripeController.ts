@@ -1,5 +1,8 @@
 import { Request, Response } from 'express';
+import { db } from '../../db/index.js';
+import { orderItemsTable, ordersTable } from '../../db/ordersSchema.js';
 import Stripe from 'stripe';
+import { eq } from 'drizzle-orm';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
@@ -8,6 +11,25 @@ export async function getKeys(req: Request, res: Response) {
 }
 
 export async function createPaymentIntent(req: Request, res: Response) {
+  const { orderId } = req.body;
+
+  const [order] = await db
+    .select()
+    .from(ordersTable)
+    .where(eq(ordersTable.id, orderId));
+
+  const orderItems = await db
+    .select()
+    .from(orderItemsTable)
+    .where(eq(orderItemsTable.orderId, orderId));
+
+  //Calcule le total de la commande (orderItems.price * orderItems.quantity)
+  const total = orderItems.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
+  const amount = Math.round(total * 100);
+
   const customer = await stripe.customers.create({
     email: req.body.email,
   });
@@ -18,7 +40,7 @@ export async function createPaymentIntent(req: Request, res: Response) {
   );
 
   const paymentIntent = await stripe.paymentIntents.create({
-    amount: 1099,
+    amount: amount,
     currency: 'eur',
     customer: customer.id,
   });

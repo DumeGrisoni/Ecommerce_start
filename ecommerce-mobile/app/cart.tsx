@@ -32,6 +32,7 @@ import { createOrder } from '@/api/orders';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { createPaymentIntent } from '@/api/stripe';
 import { useStripe } from '@stripe/stripe-react-native';
+import { create } from 'zustand';
 
 export default function CartScreen() {
   // ------------------Hooks------------------
@@ -81,12 +82,13 @@ export default function CartScreen() {
         }))
       ),
 
-    onSuccess: () => {
-      resetCart();
-      showNewToast({
-        title: 'Commande validée',
-        description: 'Votre commande a bien été validée',
-      });
+    onSuccess: (data) => {
+      // resetCart();
+      // showNewToast({
+      //   title: 'Commande validée',
+      //   description: 'Votre commande a bien été validée',
+      // });
+      paymentIntentMutation.mutate({ orderId: data.id });
     },
     onError: (error) => {
       console.log(error);
@@ -126,7 +128,8 @@ export default function CartScreen() {
 
   const checkOut = async () => {
     if (isLoggedIn) {
-      openPaymentSheet();
+      createOrderMutation.mutateAsync();
+      // openPaymentSheet();
     } else {
       setModalVisible(true);
     }
@@ -147,7 +150,7 @@ export default function CartScreen() {
   const removeToCart = (productId: number) => {
     removeProduct(productId);
     showNewToast({
-      title: 'Produit retiré du panier',
+      title: 'Panier mis à jour',
       description: 'Le produit a été retiré du panier',
     });
   };
@@ -159,16 +162,7 @@ export default function CartScreen() {
     (state: CartStateType) => state.decrementQuantity
   );
 
-  useEffect(() => {
-    if (cartItems.length > 0) {
-      console.log('cart items', cartItems);
-    }
-  }, [cartItems]);
-
   // ------------------Effects------------------
-  useEffect(() => {
-    paymentIntentMutation.mutate();
-  }, []);
 
   // ------------------Rendu------------------
 
