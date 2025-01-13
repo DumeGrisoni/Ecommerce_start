@@ -21,7 +21,7 @@ export default function ProductListItem({ product }: { product: ProductType }) {
         >
           <Image
             source={{
-              uri: product.image,
+              uri: product.image[0],
             }}
             className="mb-6 h-[200px] w-full rounded-md"
             alt="Image du produit"

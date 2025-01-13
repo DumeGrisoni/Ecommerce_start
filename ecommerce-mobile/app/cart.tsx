@@ -55,9 +55,6 @@ export default function CartScreen() {
         customerId: data.customer,
         customerEphemeralKeySecret: data.ephemeralKey,
         paymentIntentClientSecret: data.paymentIntent,
-        // Set `allowsDelayedPaymentMethods` to true if your business can handle payment
-        //methods that complete payment after a delay, like SEPA Debit and Sofort.
-        // allowsDelayedPaymentMethods: true,
         defaultBillingDetails: {
           name: 'Jane Doe',
         },
@@ -66,6 +63,7 @@ export default function CartScreen() {
         Alert.alert('Error', error.message);
         console.log('Error', error);
       }
+      openPaymentSheet();
     },
     onError: (error) => {
       console.log('error', error);
@@ -120,9 +118,13 @@ export default function CartScreen() {
 
   const openPaymentSheet = async () => {
     const { error } = await presentPaymentSheet();
-
     if (!error) {
       Alert.alert('Félicitations', 'Votre commande a bien été validée');
+    } else {
+      Alert.alert(
+        'Erreur',
+        'Une erreur est survenue lors de la validation de la commande'
+      );
     }
   };
 
@@ -210,7 +212,7 @@ export default function CartScreen() {
                 >
                   <Image
                     source={{
-                      uri: item.product.image,
+                      uri: item.product.image[0],
                     }}
                     className="lg:max-h-[100px] lg:max-w-[100px] max-h-[30px]  max-w-[30px] mr-10 w-full rounded-xl justify-start "
                     alt="Image du produit"
@@ -270,7 +272,7 @@ export default function CartScreen() {
               >
                 <Image
                   source={{
-                    uri: item.product.image,
+                    uri: item.product.image[0],
                   }}
                   className={`${isWeb ? 'max-h-[100px] max-w-[100px] mr-10' : 'max-h-[50px] max-w-[50px] mr-3'} w-full rounded-xl justify-start `}
                   alt="Image du produit"
