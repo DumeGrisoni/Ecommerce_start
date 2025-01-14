@@ -52,3 +52,10 @@ export type itemPerPageSelectorProps = {
   setItemsPerPage: (value: number) => void;
   options: number[];
 };
+
+export type CategoryProps = {
+  id: number;
+  name: string;
+  productsIds: number[];
+  createdAt: string;
+};

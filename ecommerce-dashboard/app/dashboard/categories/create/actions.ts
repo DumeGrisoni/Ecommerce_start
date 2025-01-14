@@ -41,31 +41,3 @@ export async function createCategory(
     redirect(redirectURL);
   }
 }
-
-export async function listCategories() {
-  try {
-    const token = cookies().get('token')?.value;
-
-    const response = await fetch(`${API_URL}/categories`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `${token}`,
-      },
-    });
-
-    if (!response.ok) {
-      if (response.status === 401) {
-        // Remove Token from cookies
-        redirect('/login');
-      } else {
-        const errorMessage =
-          'Une erreur est survenue lors de la récupération des catégories';
-        throw new Error(errorMessage);
-      }
-    }
-    return response.json();
-  } catch (error) {
-    console.log(error);
-  }
-}

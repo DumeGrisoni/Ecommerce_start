@@ -1,5 +1,5 @@
 import { integer, jsonb, pgTable, varchar } from 'drizzle-orm/pg-core';
-import { productsTable } from './productsSchema';
+import { productsTable } from './productsSchema.js';
 import { createInsertSchema } from 'drizzle-zod';
 
 export const productVariantsTable = pgTable('product_variants', {
