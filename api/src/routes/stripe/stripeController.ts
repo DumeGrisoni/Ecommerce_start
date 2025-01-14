@@ -4,7 +4,9 @@ import { orderItemsTable, ordersTable } from '../../db/ordersSchema.js';
 import Stripe from 'stripe';
 import { eq } from 'drizzle-orm';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
+  apiVersion: '2024-12-18.acacia',
+});
 
 export async function getKeys(req: Request, res: Response) {
   res.json({ publishableKey: process.env.STRIPE_PUBLISHABLE_KEY });

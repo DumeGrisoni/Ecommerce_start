@@ -25,10 +25,6 @@ const ProductsPage = () => {
     loadProducts();
   }, []);
 
-  useEffect(() => {
-    console.log('products', products[0]);
-  }, [products]);
-
   return (
     <div className="flex flex-wrap gap-2 max-w-[1400px] my-6 w-full mx-auto h-full">
       <Link href="/dashboard/products/create">

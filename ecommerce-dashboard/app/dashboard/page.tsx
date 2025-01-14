@@ -130,7 +130,7 @@ const MainPage = () => {
       setIsSmallScreen(window.innerWidth < 1000);
     };
     fetchUsersData();
-
+    console.log('URL', process.env.NEXT_PUBLIC_API_URL);
     handleResize(); // Vérifiez la taille de l'écran au chargement
     window.addEventListener('resize', handleResize);
 
@@ -148,6 +148,7 @@ const MainPage = () => {
     setPaginateDeliveredOrders(deliveredOrders.slice(start, end));
     setPaginateCancelOrders(cancelledOrders.slice(start, end));
   }, [
+    users,
     currentPage,
     newOrders,
     processingOrders,
@@ -156,10 +157,6 @@ const MainPage = () => {
     cancelledOrders,
     itemsPerPage,
   ]);
-
-  useEffect(() => {
-    console.log('users:', users);
-  }, [users]);
 
   useEffect(() => {
     setCurrentPage(1);
