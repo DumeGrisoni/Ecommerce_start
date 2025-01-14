@@ -27,19 +27,20 @@ const LoginPage = () => {
     try {
       const result = await handleLogin(email, password);
       if (result && result.success === true) {
-        if (result.role === true) {
+        if (result.role === 'admin') {
           showNewToast({
             title: 'Vous êtes connecté',
-            description: 'Vous poouvez maintenant accéder à votre compte',
+            description: 'Vous pouvez maintenant accéder à votre compte',
           });
           redirect('/dashboard');
         }
       } else {
+        console.log(result);
         showNewToast({
           title: 'Erreur',
           description: "Vous n'êtes pas autorisé à accéder à cette page",
         });
-        setLoginError(true);
+        // setLoginError(true);
       }
     } catch (error) {
       console.error(error);

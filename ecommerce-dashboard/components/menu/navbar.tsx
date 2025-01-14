@@ -7,7 +7,7 @@ import { HStack } from '../ui/hstack';
 import { Text } from '../ui/text';
 import { useEffect, useState } from 'react';
 import { Pressable } from 'react-native';
-import { handleLogout } from '@/app/login/actions';
+import { handleLogout } from '../../app/login/actions';
 
 const Navbar = () => {
   // ----------------- State -----------------

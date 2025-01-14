@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createPaymentIntent, getKeys } from './stripeController';
+import { createPaymentIntent, getKeys } from './stripeController.js';
 import { verifyToken } from '../../middlewares/authMiddleware.js';
 
 const router = Router();

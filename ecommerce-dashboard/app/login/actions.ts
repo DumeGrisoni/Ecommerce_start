@@ -1,12 +1,12 @@
 'use server';
 
-import { login } from '@/api/auth';
+import { login } from '../../api/auth';
 import { cookies } from 'next/headers';
 
 export async function handleLogin(email: string, password: string) {
   try {
     const res = await login(email, password);
-
+    console.log('response', res);
     if (res.user.role === 'admin') {
       cookies().set('token', res.token);
       return { success: true, user: res.user, token: res.token };
@@ -15,7 +15,13 @@ export async function handleLogin(email: string, password: string) {
     }
   } catch (error) {
     console.log(error);
-    return { success: false };
+
+    // Vérifiez que l'erreur est un objet avec une propriété message
+    if (error instanceof Error) {
+      return { success: false, error: error.message };
+    } else {
+      return { success: false, error: 'Une erreur inconnue est survenue' };
+    }
   }
 }
 

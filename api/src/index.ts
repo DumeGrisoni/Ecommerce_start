@@ -1,6 +1,7 @@
 import express, { json, urlencoded } from 'express';
 import productsRouter from './routes/products/index.js';
 import ordersRouter from './routes/orders/index.js';
+import productVariantsRouter from './routes/productVariants/index.js';
 import authRouter from './routes/auth/index.js';
 import serverless from 'serverless-http';
 import stripeRouter from './routes/stripe/index.js';
@@ -21,6 +22,7 @@ app.get('/', (req, res) => {
 // Utiliser le router des produits
 app.use('/products', productsRouter);
 app.use('/orders', ordersRouter);
+app.use('/productVariant', productVariantsRouter);
 
 // Utiliser le router de l'authentification
 app.use('/auth', authRouter);
