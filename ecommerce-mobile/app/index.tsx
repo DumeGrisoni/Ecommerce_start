@@ -18,6 +18,7 @@ import { CloseIcon, Icon, SearchIcon } from '@/components/ui/icon';
 import { HStack } from '@/components/ui/hstack';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text } from '@/components/ui/text';
+import { Box } from '@/components/ui/box';
 
 export default function HomeScreen() {
   const [searchQuery, setSearchQuery] = React.useState('');
@@ -34,6 +35,10 @@ export default function HomeScreen() {
   );
 
   const isWeb = Platform.OS === 'web';
+
+  useEffect(() => {
+    console.log('data', data);
+  });
 
   if (isLoading) {
     <View className=" flex-1 h-full w-full items-center justify-center">

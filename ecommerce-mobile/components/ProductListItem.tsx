@@ -1,3 +1,4 @@
+'use client';
 import { Link } from 'expo-router';
 import { Platform, Pressable } from 'react-native';
 
