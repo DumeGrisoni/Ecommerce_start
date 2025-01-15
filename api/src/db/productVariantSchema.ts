@@ -1,10 +1,9 @@
 import { integer, jsonb, pgTable, varchar } from 'drizzle-orm/pg-core';
-import { productsTable } from './productsSchema.js';
 import { createInsertSchema } from 'drizzle-zod';
 
 export const productVariantsTable = pgTable('product_variants', {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  productId: integer().references(() => productsTable.id),
+  productId: varchar({ length: 255 }).array(),
   colors: jsonb('colors').array().notNull().default([]),
 });
 

@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Box } from '@/components/ui/box';
 import { useSearchParams } from 'next/navigation';
 
@@ -18,6 +18,11 @@ import { HStack } from '@/components/ui/hstack';
 import { CloseIcon, Icon } from '@/components/ui/icon';
 import { Pressable } from 'react-native';
 import { removeImage } from '@/utils/removeImage';
+import { listCategories } from '@/api/categories';
+import { CategoryProps, VariantProps } from '@/types/types';
+import { Textarea, TextareaInput } from '@/components/ui/textarea';
+import VariantComposant from '@/components/products/VariantComposant';
+import { v4 as uuidv4 } from 'uuid';
 
 const CreateProduct = () => {
   //--------------- States ---------------
@@ -26,6 +31,9 @@ const CreateProduct = () => {
   const [price, setPrice] = useState('');
   const [images, setImages] = useState<string[]>([]);
   const [imgKey, setImgKey] = useState<string[]>([]);
+  const [categories, setCategories] = useState<CategoryProps[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+  const [variant, setVariant] = useState<VariantProps>({} as VariantProps);
   const searchParams = useSearchParams();
   const [buttonText, setButtonText] = useState('Choisir un fichier');
 
@@ -37,6 +45,11 @@ const CreateProduct = () => {
   }
 
   //--------------- Functions ---------------
+
+  const getCategories = async () => {
+    const res = await listCategories();
+    setCategories(res);
+  };
 
   const handleUploadComplete = (res: { url: string; key: string }[]) => {
     setButtonText('Choisir un fichier');
@@ -55,6 +68,22 @@ const CreateProduct = () => {
     }
   };
 
+  const handleVariant = (newVariant: VariantProps) => {
+    setVariant(newVariant);
+  };
+
+  //--------------- UseEffect ---------------
+
+  useEffect(() => {
+    getCategories();
+  }, []);
+
+  useEffect(() => {
+    console.log('variants', variant);
+  }, [variant]);
+
+  //--------------- Render ---------------
+
   return (
     <Box className="flex-1 w-full  min-h-screen items-center justify-center">
       <FormControl
@@ -72,12 +101,33 @@ const CreateProduct = () => {
           </VStack>
           <VStack space="xs">
             <Text className="text-typography-500 leading-1">Description</Text>
-            <Input className="text-center">
-              <InputField
-                type="text"
+            <Textarea className="text-center">
+              <TextareaInput
                 value={description}
+                className="border border-typography-100 rounded"
                 onChangeText={setDescription}
               />
+            </Textarea>
+            <Text className="text-typography-500 leading-1">Catégorie</Text>
+            <Input className="text-center">
+              <select
+                value={selectedCategory ? selectedCategory : ''}
+                onChange={(e) => setSelectedCategory(Number(e.target.value))}
+                className="w-full p-2 rounded text-typography-500"
+              >
+                <option value="" disabled>
+                  Sélectionnez une catégorie
+                </option>
+                {categories.map((category) => (
+                  <option
+                    key={category.id}
+                    value={category.id}
+                    className="text-typography-500"
+                  >
+                    <Text className="text-typography-500">{category.name}</Text>
+                  </option>
+                ))}
+              </select>
             </Input>
           </VStack>
           <VStack space="xs">
@@ -149,6 +199,8 @@ const CreateProduct = () => {
             </Input>
           </VStack>
 
+          <VariantComposant onConfirm={handleVariant} />
+
           {errorMessage && (
             <Text className="text-red-500 text-center">
               Vous ne remplissez pas correctement les champs
@@ -158,7 +210,15 @@ const CreateProduct = () => {
           <Button
             className="mx-auto w-full"
             onPress={() =>
-              createProduct(name, description, Number(price), images)
+              createProduct(
+                productId,
+                name,
+                description,
+                Number(price),
+                images
+                // selectedCategory,
+                // variant
+              )
             }
           >
             <ButtonText className="text-typography-0">Créer</ButtonText>

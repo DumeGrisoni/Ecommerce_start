@@ -15,7 +15,7 @@ export async function listOrders(req: Request, res: Response) {
 
 // Recupérer une commande par son id
 export async function getOrderById(req: Request, res: Response) {
-  const id = parseInt(req.params.id);
+  const id = Number(req.params.id);
   try {
     const orderWithItems = await db
       .select()

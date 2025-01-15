@@ -16,7 +16,7 @@ export async function listProducts(req: Request, res: Response) {
 
 // Recupérer un produit par son id
 export async function getProductById(req: Request, res: Response) {
-  const id = Number(req.params.id);
+  const id = parseInt(req.params.id);
   try {
     const [product] = await db
       .select()
@@ -48,7 +48,7 @@ export async function createProduct(req: Request, res: Response) {
 
 // Mettre à jour un produit par son id
 export async function updateProduct(req: Request, res: Response) {
-  const id = Number(req.params.id);
+  const id = parseInt(req.params.id);
   try {
     const updatedFields = req.cleanBody;
 
@@ -69,7 +69,7 @@ export async function updateProduct(req: Request, res: Response) {
 
 // Supprimer un produit par son id
 export async function deleteProduct(req: Request, res: Response) {
-  const id = Number(req.params.id);
+  const id = parseInt(req.params.id);
   try {
     const [deletedProduct] = await db
       .delete(productsTable)

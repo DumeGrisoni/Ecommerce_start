@@ -4,7 +4,7 @@ import { createInsertSchema } from 'drizzle-zod';
 export const categoriesTable = pgTable('categories', {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   name: varchar({ length: 50 }).notNull(),
-  productsIds: integer().array().default([]),
+  productsIds: varchar({ length: 255 }).array().default([]),
   createdAt: timestamp().notNull().defaultNow(),
 });
 

@@ -15,6 +15,7 @@ export const productsTable = pgTable('products', {
   categoryId: integer().references(() => categoriesTable.id),
   image: varchar({ length: 255 }).notNull().array(),
   price: doublePrecision().notNull(),
+  productId: varchar({ length: 255 }).notNull(),
 });
 
 export const createProductSchema = createInsertSchema(productsTable).omit({

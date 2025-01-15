@@ -11,8 +11,6 @@ const app = express();
 const port = 3001;
 const host = '192.168.1.34';
 
-console.log('process.env.DATABASE_URL', process.env.DATABASE_URL);
-
 // Middlewares
 app.use(urlencoded({ extended: false }));
 app.use(json());
@@ -37,11 +35,11 @@ app.use('/auth', authRouter);
 // Reponse pour le lancement de l'API
 if (process.env.NODE_ENV === 'dev') {
   app.listen(port, host, () => {
-    console.log(`App listening at ${process.env.DATABASE_URL}`);
+    console.log(`App listening at http://${host}:${port}`);
   });
 } else {
   app.listen(port, () => {
-    console.log(`App listening at ${process.env.DATABASE_URL}`);
+    console.log(`Ca fonctionne`);
   });
 }
 

@@ -59,3 +59,21 @@ export type CategoryProps = {
   productsIds: number[];
   createdAt: string;
 };
+
+export type VariantProps = {
+  productId: number;
+  colors: Color[];
+};
+
+interface VariantComposantProps {
+  onConfirm: (variant: VariantProps) => void;
+}
+
+export interface Size {
+  size: string;
+  stock: number;
+}
+export interface Color {
+  name: string;
+  sizes: Size[];
+}

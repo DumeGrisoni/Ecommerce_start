@@ -5,6 +5,7 @@ import { API_URL } from '../../../../config';
 import { cookies } from 'next/headers';
 
 export async function createProduct(
+  id: number,
   name: string,
   description: string,
   price: number,
@@ -20,7 +21,7 @@ export async function createProduct(
         'Content-Type': 'application/json',
         Authorization: `${token}`,
       },
-      body: JSON.stringify({ name, description, price, image }),
+      body: JSON.stringify({ id, name, description, price, image }),
     });
 
     if (!response.ok) {

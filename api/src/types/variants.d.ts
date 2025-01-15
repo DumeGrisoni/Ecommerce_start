@@ -3,6 +3,6 @@ export interface Size {
   stock: number;
 }
 export interface Color {
-  color: string;
+  name: string;
   sizes: Size[];
 }

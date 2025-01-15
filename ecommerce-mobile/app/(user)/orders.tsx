@@ -203,7 +203,7 @@ const Orders = () => {
                   space="xs"
                 >
                   <Image
-                    source={{ uri: orderItem.product?.image }}
+                    source={{ uri: orderItem.product.image[0] }}
                     className="rounded-full w-[50px] border border-typography-100 h-[50px]"
                     alt="Image de l'article"
                     resizeMode="cover"

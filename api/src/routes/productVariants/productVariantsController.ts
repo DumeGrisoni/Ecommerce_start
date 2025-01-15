@@ -16,7 +16,7 @@ export async function listProductVariants(req: Request, res: Response) {
 
 // Recupérer un produit par son id
 export async function getProductVariantById(req: Request, res: Response) {
-  const id = Number(req.params.id);
+  const id = parseInt(req.params.id);
   try {
     const [productVariant] = await db
       .select()
@@ -57,7 +57,7 @@ export async function createProductVariant(req: Request, res: Response) {
 
 // Mettre à jour un produit par son id
 export async function updateProductVariant(req: Request, res: Response) {
-  const id = Number(req.params.id);
+  const id = parseInt(req.params.id);
   try {
     const updatedFields = req.cleanBody;
 
@@ -78,7 +78,7 @@ export async function updateProductVariant(req: Request, res: Response) {
 
 // Supprimer un produit par son id
 export async function deleteProductVariant(req: Request, res: Response) {
-  const id = Number(req.params.id);
+  const id = parseInt(req.params.id);
   try {
     const [deletedProductVariant] = await db
       .delete(productVariantsTable)
