@@ -7,9 +7,9 @@ import {
   createUserSchema,
   loginSchema,
   usersTable,
-} from '../../db/usersSchema.js';
-import { validateData } from '../../../src/middlewares/validationMiddleware.js';
-import { db } from '../../../src/db/index.js';
+} from '../../db/usersSchema';
+import { validateData } from '../../../src/middlewares/validationMiddleware';
+import { db } from '../../../src/db/index';
 
 const router = Router();
 
@@ -69,7 +69,8 @@ router.get('/users', async (req, res) => {
     const users = await db.select().from(usersTable);
     res.status(200).json(users);
   } catch (error) {
-    res.status(500).send('Erreur lors de la récupération des utilisateurs');
+    res.status(500).send(error);
+    throw new Error('Erreur lors de la récupération des utilisateurs');
   }
 });
 

@@ -1,3 +1,4 @@
+'use client';
 import Link from 'next/link';
 
 // ---------------- Imports personnels ---------------
@@ -6,7 +7,6 @@ import { Image } from '../ui/image';
 import { Text } from '../ui/text';
 import { Heading } from '../ui/heading';
 import { ProductType } from '@/types/types';
-
 export default function ProductListItem({ product }: { product: ProductType }) {
   return (
     <Link

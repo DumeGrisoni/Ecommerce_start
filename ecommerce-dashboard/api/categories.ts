@@ -2,7 +2,7 @@
 
 import { cookies } from 'next/headers';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 const token = cookies().get('token')?.value;
 
 export const listCategories = async () => {
@@ -39,16 +39,17 @@ export const createCategory = async (name: string) => {
 };
 
 export const updateCategory = async (id: number, name: string) => {
+  const updates = { name };
   const response = await fetch(`${API_URL}/categories/${id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
       Authorization: `${token}`,
     },
-    body: JSON.stringify({ name }),
+    body: JSON.stringify(updates),
   });
   if (!response.ok) {
-    console.log(response);
+    console.log('data', updates);
   }
   return response.json();
 };

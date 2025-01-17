@@ -31,7 +31,6 @@ const CategoriesPage = () => {
   // ---------- State ----------
   const [categories, setCategories] = useState<CategoryProps[]>([]);
   const [name, setName] = useState('');
-  const [productIds, setProductIds] = useState<number[]>([]);
   const [createdAt, setCreatedAt] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<CategoryProps>(
     {} as CategoryProps
@@ -60,7 +59,6 @@ const CategoriesPage = () => {
 
   const updateCatFunc = async (id: number) => {
     if (!name) return;
-    if (!productIds) return;
     if (!createdAt) return;
     try {
       await updateCategory(id, name);
@@ -91,7 +89,6 @@ const CategoriesPage = () => {
   useEffect(() => {
     if (!selectedCategory) return;
     setName(selectedCategory.name);
-    setProductIds(selectedCategory.productsIds);
     setCreatedAt(selectedCategory.createdAt);
   }, [selectedCategory]);
 
@@ -105,24 +102,19 @@ const CategoriesPage = () => {
           ListHeaderComponent={() => (
             <>
               <HStack className="w-full justify-between bg-slate-100 py-3 rounded-t-md border-b border-typography-200">
-                <Text className="ml-3 font-bold" size="lg">
+                <Text className="ml-10 flex-1 max-w-[20%] font-bold" size="lg">
                   Supprimer
                 </Text>
                 <Text
                   size="lg"
-                  className="text-typography-800 text-center flex-1 font-bold"
+                  className="text-typography-800 mr-6 text-center flex-1 font-bold"
                 >
                   Nom
                 </Text>
+
                 <Text
                   size="lg"
-                  className="text-typography-800 flex-1 text-center font-bold"
-                >
-                  Produits
-                </Text>
-                <Text
-                  size="lg"
-                  className="text-typography-800 flex-1 text-center font-bold"
+                  className="text-typography-800 flex-1 max-w-[20%] mr-6 text-center font-bold"
                 >
                   Modifier
                 </Text>
@@ -137,15 +129,17 @@ const CategoriesPage = () => {
           renderItem={({ item }) => (
             <>
               <HStack className="w-full justify-between items-center my-3">
-                <Button
-                  className=" ml-6 mr-5"
-                  action="negative"
-                  onPress={() => {
-                    handleDelete(item.id);
-                  }}
-                >
-                  <ButtonIcon as={TrashIcon} />
-                </Button>
+                <View className="ml-3 flex-1 max-w-[20%] h-full items-center justify-center">
+                  <Button
+                    className="max-w-[50%] flex-1"
+                    action="negative"
+                    onPress={() => {
+                      handleDelete(item.id);
+                    }}
+                  >
+                    <ButtonIcon as={TrashIcon} />
+                  </Button>
+                </View>
 
                 <Text
                   size="lg"
@@ -153,15 +147,9 @@ const CategoriesPage = () => {
                 >
                   {item.name}
                 </Text>
-                <Text
-                  size="lg"
-                  className="text-typography-800 flex-1 text-center font-semibold"
-                >
-                  {item.productsIds.length}
-                </Text>
-                <View className="flex-1 items-center justify-center">
+                <View className="flex-1 max-w-[20%] mr-6 items-center justify-center">
                   <Button
-                    className="w-[50%]"
+                    className="w-[45%]"
                     onPress={() => {
                       handleUpdateCategory(item);
                     }}

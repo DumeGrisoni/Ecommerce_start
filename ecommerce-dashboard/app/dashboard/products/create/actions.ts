@@ -3,15 +3,34 @@ import { redirect } from 'next/navigation';
 // import { ProductType } from '@/types/types';
 import { API_URL } from '../../../../config';
 import { cookies } from 'next/headers';
+import { VariantProps } from '@/types/types';
 
 export async function createProduct(
-  id: number,
   name: string,
   description: string,
   price: number,
-  image: string[]
+  images: string[],
+  newProductId: string,
+  categories: string[] | null,
+  variant: VariantProps
 ) {
   let redirectURL = '/dashboard/products';
+  // console.log(
+  //   'name',
+  //   name,
+  //   'description',
+  //   description,
+  //   'price',
+  //   price,
+  //   'images',
+  //   images,
+  //   'newProductId',
+  //   newProductId,
+  //   'category',
+  //   category,
+  //   'variant',
+  //   variant
+  // );
   try {
     const token = cookies().get('token')?.value;
 
@@ -21,10 +40,29 @@ export async function createProduct(
         'Content-Type': 'application/json',
         Authorization: `${token}`,
       },
-      body: JSON.stringify({ id, name, description, price, image }),
+      body: JSON.stringify({
+        name,
+        description,
+        price,
+        images,
+        productId: newProductId,
+        categories,
+      }),
     });
 
-    if (!response.ok) {
+    const variantResponse = await fetch(`${API_URL}/productVariant`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `${token}`,
+      },
+      body: JSON.stringify({
+        colors: variant.colors,
+        productIds: newProductId,
+      }),
+    });
+
+    if (!response.ok || !variantResponse.ok) {
       if (response.status === 401) {
         // Remove Token from cookies
         redirectURL = '/login';

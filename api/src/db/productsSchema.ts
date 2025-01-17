@@ -6,14 +6,14 @@ import {
   doublePrecision,
 } from 'drizzle-orm/pg-core';
 import { createInsertSchema } from 'drizzle-zod';
-import { categoriesTable } from './categoriesSchema.js';
+import { categoriesTable } from './categoriesSchema';
 
 export const productsTable = pgTable('products', {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   name: varchar({ length: 255 }).notNull(),
   description: text(),
-  categoryId: integer().references(() => categoriesTable.id),
-  image: varchar({ length: 255 }).notNull().array(),
+  categoryId: text().array(),
+  image: text().array(),
   price: doublePrecision().notNull(),
   productId: varchar({ length: 255 }).notNull(),
 });

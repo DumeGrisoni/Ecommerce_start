@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
-import { db } from '../../db/index.js';
+import { db } from '../../db/index';
 import { eq } from 'drizzle-orm';
 import _ from 'lodash';
-import { categoriesTable } from '../../db/categoriesSchema.js';
+import { categoriesTable } from '../../db/categoriesSchema';
 
 // Recupérer la liste des produits
 export async function listCategories(req: Request, res: Response) {
@@ -50,11 +50,12 @@ export async function createCategory(req: Request, res: Response) {
 export async function updateCategory(req: Request, res: Response) {
   const id = Number(req.params.id);
   try {
-    const updatedFields = req.cleanBody;
-
+    const updates = req.cleanBody;
     const [updateCategory] = await db
       .update(categoriesTable)
-      .set(updatedFields)
+      .set({
+        ...updates,
+      })
       .where(eq(categoriesTable.id, id))
       .returning();
     if (!updateCategory || updateCategory === undefined) {

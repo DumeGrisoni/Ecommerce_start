@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { redirect } from 'next/navigation';
 
 // ------------ Import personnels -----------------
@@ -47,6 +47,9 @@ const LoginPage = () => {
       setLoginError(true);
     }
   };
+  useEffect(() => {
+    console.log('url', process.env.NEXT_PUBLIC_API_URL);
+  }, []);
 
   // ------------ Rendu -----------------
 

@@ -1,6 +1,6 @@
 {
-  "id": "89eec153-5023-4cd7-84e2-546abee6e436",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "57aa2264-72f7-4985-892f-ffe4d340a3a3",
+  "prevId": "37d3e2f2-ed1b-494c-ac81-440adc727d97",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -63,21 +63,7 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {
-        "products_categoryId_categories_id_fk": {
-          "name": "products_categoryId_categories_id_fk",
-          "tableFrom": "products",
-          "tableTo": "categories",
-          "columnsFrom": [
-            "categoryId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
+      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "checkConstraints": {}
@@ -379,7 +365,7 @@
         },
         "productId": {
           "name": "productId",
-          "type": "varchar(255)[]",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": false
         },

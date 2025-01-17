@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { db } from '../../db/index.js';
-import { productsTable } from '../../db/productsSchema.js';
+import { db } from '../../db/index';
+import { productsTable } from '../../db/productsSchema';
 import { eq } from 'drizzle-orm';
 import _ from 'lodash';
 
@@ -35,10 +35,19 @@ export async function getProductById(req: Request, res: Response) {
 
 // Créer un produit
 export async function createProduct(req: Request, res: Response) {
+  const { name, description, categoryId, images, price, productId } = req.body;
+
   try {
     const [product] = await db
       .insert(productsTable)
-      .values(req.cleanBody)
+      .values({
+        name: name,
+        description: description,
+        price: price,
+        image: images, // Assurez-vous que les images sont correctement incluses
+        productId: productId,
+        categoryId: categoryId,
+      })
       .returning();
     res.status(201).json(product);
   } catch (error) {

@@ -2,8 +2,10 @@ export type ProductType = {
   id: number;
   name: string;
   description: string;
-  image: string;
+  image: string[];
   price: number;
+  categoryId: number;
+  productId: string;
 };
 
 export type Order = {
@@ -56,13 +58,19 @@ export type itemPerPageSelectorProps = {
 export type CategoryProps = {
   id: number;
   name: string;
-  productsIds: number[];
+  productsIds: string[];
   createdAt: string;
 };
 
 export type VariantProps = {
-  productId: number;
+  id: number;
+  productId: string;
   colors: Color[];
+};
+export type UpdateCategoryData = {
+  name?: string;
+  productIds?: string[];
+  // Ajoutez d'autres champs que vous souhaitez mettre à jour
 };
 
 interface VariantComposantProps {

@@ -1,7 +1,7 @@
 import { eq, ne } from 'drizzle-orm';
 import { Request, Response } from 'express';
-import { db } from '../../db/index.js';
-import { orderItemsTable, ordersTable } from '../../db/ordersSchema.js';
+import { db } from '../../db/index';
+import { orderItemsTable, ordersTable } from '../../db/ordersSchema';
 
 // Recupérer la liste des commandes de l'user, si c'est un admin retourner toutes les commandes
 export async function listOrders(req: Request, res: Response) {

@@ -5,8 +5,43 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1736962971455,
-      "tag": "0000_melted_vindicator",
+      "when": 1737016401403,
+      "tag": "0000_common_cassandra_nova",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1737029569559,
+      "tag": "0001_nebulous_rhodey",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1737031178302,
+      "tag": "0002_dry_shocker",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1737033768855,
+      "tag": "0003_odd_scourge",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1737033799049,
+      "tag": "0004_organic_the_liberteens",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1737044199952,
+      "tag": "0005_early_frightful_four",
       "breakpoints": true
     }
   ]

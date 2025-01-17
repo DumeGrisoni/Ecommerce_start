@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 
 export async function getOrders() {
   const token = cookies().get('token')?.value;
-  const API_URL = process.env.NEXT_PUBLIC_API_URL;
+  const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
   const response = await fetch(`${API_URL}/orders`, {
     method: 'GET',

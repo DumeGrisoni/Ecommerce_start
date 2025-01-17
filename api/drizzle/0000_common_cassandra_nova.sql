@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS "products" (
 	"name" varchar(255) NOT NULL,
 	"description" text,
 	"categoryId" integer,
-	"image" varchar(255)[],
+	"image" text[],
 	"price" double precision NOT NULL,
 	"productId" varchar(255) NOT NULL
 );

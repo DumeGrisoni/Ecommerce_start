@@ -1,0 +1,1 @@
+ALTER TABLE "product_variants" ALTER COLUMN "productId" SET DATA TYPE varchar(255);

@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation';
 
 //--------------- Personnal imports ---------------
 
-import { Button, ButtonText } from '@/components/ui/button';
+import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
 import { FormControl } from '@/components/ui/form-control';
 import { Heading } from '@/components/ui/heading';
 import { Input, InputField } from '@/components/ui/input';
@@ -15,7 +15,7 @@ import { createProduct } from './actions';
 import { UploadDropzone } from '@/utils/uploadthing';
 import Image from 'next/image';
 import { HStack } from '@/components/ui/hstack';
-import { CloseIcon, Icon } from '@/components/ui/icon';
+import { CheckIcon, CloseIcon, Icon } from '@/components/ui/icon';
 import { Pressable } from 'react-native';
 import { removeImage } from '@/utils/removeImage';
 import { listCategories } from '@/api/categories';
@@ -32,10 +32,12 @@ const CreateProduct = () => {
   const [images, setImages] = useState<string[]>([]);
   const [imgKey, setImgKey] = useState<string[]>([]);
   const [categories, setCategories] = useState<CategoryProps[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<CategoryProps[]>([]);
+  const [categoryIds, setCategoryIds] = useState<string[]>([]);
   const [variant, setVariant] = useState<VariantProps>({} as VariantProps);
   const searchParams = useSearchParams();
   const [buttonText, setButtonText] = useState('Choisir un fichier');
+  const [productId, setProductId] = useState('');
 
   //--------------- Variables ---------------
 
@@ -72,15 +74,37 @@ const CreateProduct = () => {
     setVariant(newVariant);
   };
 
+  const handleCategoryChange = (category: CategoryProps) => {
+    setSelectedCategory((prevSelected) => {
+      if (prevSelected.some((cat) => cat.id === category.id)) {
+        return prevSelected.filter((cat) => cat.id !== category.id);
+      } else {
+        return [...prevSelected, category];
+      }
+    });
+
+    setCategoryIds((prevIds) => {
+      if (prevIds.includes(category.id.toString())) {
+        return prevIds.filter((id) => id !== category.id.toString());
+      } else {
+        return [...prevIds, category.id.toString()];
+      }
+    });
+  };
+
   //--------------- UseEffect ---------------
 
   useEffect(() => {
     getCategories();
+    setProductId(uuidv4() as string);
   }, []);
 
   useEffect(() => {
-    console.log('variants', variant);
-  }, [variant]);
+    console.log(
+      'categories',
+      selectedCategory.map((cat) => cat.name + cat.id)
+    );
+  }, [selectedCategory, images]);
 
   //--------------- Render ---------------
 
@@ -108,30 +132,23 @@ const CreateProduct = () => {
                 onChangeText={setDescription}
               />
             </Textarea>
-            <Text className="text-typography-500 leading-1">Catégorie</Text>
-            <Input className="text-center">
-              <select
-                value={selectedCategory ? selectedCategory : ''}
-                onChange={(e) => setSelectedCategory(Number(e.target.value))}
-                className="w-full p-2 rounded text-typography-500"
-              >
-                <option value="" disabled>
-                  Sélectionnez une catégorie
-                </option>
-                {categories.map((category) => (
-                  <option
-                    key={category.id}
-                    value={category.id}
-                    className="text-typography-500"
-                  >
-                    <Text className="text-typography-500">{category.name}</Text>
-                  </option>
-                ))}
-              </select>
-            </Input>
+            <Text className="text-typography-500 leading-1">Catégorie(s)</Text>
+            <HStack className="items-center flex-wrap" space="md">
+              {categories.map((category) => (
+                <Button
+                  key={category.id}
+                  onPress={() => handleCategoryChange(category)}
+                >
+                  {selectedCategory.some((cat) => cat.id === category.id) && (
+                    <ButtonIcon as={CheckIcon} />
+                  )}
+                  <ButtonText>{category.name}</ButtonText>
+                </Button>
+              ))}
+            </HStack>
           </VStack>
           <VStack space="xs">
-            <Text className="text-typography-500 leading-1">Image</Text>
+            <Text className="text-typography-500 leading-1">Image(s)</Text>
             {images.length < 4 ? (
               <UploadDropzone
                 content={{
@@ -211,13 +228,13 @@ const CreateProduct = () => {
             className="mx-auto w-full"
             onPress={() =>
               createProduct(
-                productId,
                 name,
                 description,
                 Number(price),
-                images
-                // selectedCategory,
-                // variant
+                images,
+                productId,
+                categoryIds,
+                variant
               )
             }
           >

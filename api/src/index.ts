@@ -1,9 +1,9 @@
 import express, { json, urlencoded } from 'express';
-import productsRouter from './routes/products/index.js';
-import ordersRouter from './routes/orders/index.js';
-import productVariantsRouter from './routes/productVariants/index.js';
-import categoriesRouter from './routes/categories/index.js';
-import authRouter from './routes/auth/index.js';
+import productsRouter from './routes/products/index';
+import ordersRouter from './routes/orders/index';
+import productVariantsRouter from './routes/productVariants/index';
+import categoriesRouter from './routes/categories/index';
+import authRouter from './routes/auth/index';
 import serverless from 'serverless-http';
 import stripeRouter from './routes/stripe/index.js';
 
@@ -37,10 +37,5 @@ if (process.env.NODE_ENV === 'dev') {
   app.listen(port, host, () => {
     console.log(`App listening at http://${host}:${port}`);
   });
-} else {
-  app.listen(port, () => {
-    console.log(`Ca fonctionne`);
-  });
 }
-
 export const handler = serverless(app);

@@ -7,12 +7,12 @@ import {
   updateOrder,
   deleteOrder,
 } from './ordersController.js';
-import { validateData } from '../../middlewares/validationMiddleware.js';
+import { validateData } from '../../middlewares/validationMiddleware';
 import {
   insertOrderWithItemSchema,
   updateOrderSchema,
-} from '../../db/ordersSchema.js';
-import { verifyToken } from '../../middlewares/authMiddleware.js';
+} from '../../db/ordersSchema';
+import { verifyToken } from '../../middlewares/authMiddleware';
 
 const router = Router();
 

@@ -5,7 +5,7 @@ import { cookies } from 'next/headers';
 
 export const fetchUsers = async () => {
   const token = cookies().get('token')?.value;
-  const API_URL = process.env.NEXT_PUBLIC_API_URL;
+  const API_URL = process.env.NEXT_PUBLIC_API_URL!;
   if (!API_URL) {
     throw new Error('No API URL found');
   }
