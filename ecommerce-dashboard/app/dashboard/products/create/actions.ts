@@ -1,13 +1,12 @@
 'use server';
 import { redirect } from 'next/navigation';
-// import { ProductType } from '@/types/types';
 import { API_URL } from '../../../../config';
 import { cookies } from 'next/headers';
 import { VariantProps } from '@/types/types';
 
 export async function createProduct(
   name: string,
-  description: string,
+  description: string[],
   price: number,
   images: string[],
   newProductId: string,
@@ -15,22 +14,7 @@ export async function createProduct(
   variant: VariantProps
 ) {
   let redirectURL = '/dashboard/products';
-  // console.log(
-  //   'name',
-  //   name,
-  //   'description',
-  //   description,
-  //   'price',
-  //   price,
-  //   'images',
-  //   images,
-  //   'newProductId',
-  //   newProductId,
-  //   'category',
-  //   category,
-  //   'variant',
-  //   variant
-  // );
+
   try {
     const token = cookies().get('token')?.value;
 
@@ -46,7 +30,7 @@ export async function createProduct(
         price,
         images,
         productId: newProductId,
-        categories,
+        categoryId: categories,
       }),
     });
 
@@ -58,15 +42,30 @@ export async function createProduct(
       },
       body: JSON.stringify({
         colors: variant.colors,
-        productIds: newProductId,
+        productId: newProductId,
       }),
     });
 
     if (!response.ok || !variantResponse.ok) {
-      if (response.status === 401) {
+      if (variantResponse.status === 401) {
         // Remove Token from cookies
         redirectURL = '/login';
+      } else if (response.status === 400) {
+        const errorText = await response.text();
+        console.error(
+          'response Error:',
+          response.status,
+          response.statusText,
+          errorText
+        );
       } else {
+        const errorText = await variantResponse.text();
+        console.error(
+          'variantResponse Error:',
+          variantResponse.status,
+          variantResponse.statusText,
+          errorText
+        );
         const errorMessage =
           'Une erreur est survenue lors de la création du produit';
         throw new Error(errorMessage);

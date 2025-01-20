@@ -1,11 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Pressable } from 'react-native';
 
 // ----------------- Import de Personnels -----------------
 
-import { getProductById } from '@/api/products';
+import { deleteProduct, getProductById } from '@/api/products';
 import { Box } from '@/components/ui/box';
 import { Card } from '@/components/ui/card';
 import { Heading } from '@/components/ui/heading';
@@ -13,20 +13,81 @@ import { HStack } from '@/components/ui/hstack';
 import { Image } from '@/components/ui/image';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
-import { ProductType } from '@/types/types';
+import { CategoryProps, ProductType, VariantProps } from '@/types/types';
 import ImageMagnifier from '@/components/products/ImageMagnifier';
+import { listCategories } from '@/api/categories';
+import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
+import { EditIcon, TrashIcon } from '@/components/ui/icon';
+import { removeImage } from '@/utils/removeImage';
+import { useToastNotification } from '@/components/toast';
+import { listProductVariants } from '@/api/productVariants';
 
 export default function ProductDetails({ params }: { params: { id: number } }) {
   // ----------------- Hooks -----------------
 
   const [product, setProduct] = useState<ProductType | null>(null);
   const [selectedImage, setSelectedImage] = useState<number>(0);
+  const [categories, setCategories] = useState<CategoryProps[]>([]);
+  const [productCategories, setProductCategories] = useState<CategoryProps[]>(
+    []
+  );
+  const [productVariants, setProductVariants] = useState<VariantProps>(
+    {} as VariantProps
+  );
+
+  const toast = useToastNotification();
 
   // ----------------- Fonctions -----------------
 
   const handleSelectedImage = (index: number) => {
     if (product) {
       setSelectedImage(index);
+    }
+  };
+
+  const filterCategories = useCallback(() => {
+    // Retrouver toutes les categories qui correspondent au produit
+    if (product && product.categoryId) {
+      const productCategories = categories.filter((category) =>
+        product?.categoryId.includes(category.id.toString())
+      );
+      setProductCategories(productCategories);
+    }
+  }, [categories, product]);
+
+  const fetchProductVariants = useCallback(() => {
+    if (product) {
+      listProductVariants().then((productVariants) => {
+        const productVariantsFiltered = productVariants.filter(
+          (variant: VariantProps) => variant.productId === product.productId
+        );
+        setProductVariants(productVariantsFiltered);
+      });
+    }
+  }, [product]);
+
+  const handleDeleteProduct = async () => {
+    if (product) {
+      const confirmDelete = window.confirm(
+        'Êtes-vous sûr de vouloir supprimer ce produit ?'
+      );
+      if (confirmDelete) {
+        try {
+          // Supprimer les images du produit
+          for (const img of product.image) {
+            const imgPath = img.replace('https://utfs.io/f/', '');
+            await removeImage(imgPath);
+          }
+          // Supprimer le produit
+          await deleteProduct(product.id.toString());
+          toast.showNewToast({
+            title: 'Suppression',
+            description: 'Le produit a été supprimé avec succès',
+          });
+        } catch (error) {
+          console.error('Erreur lors de la suppression du produit:', error);
+        }
+      }
     }
   };
 
@@ -40,7 +101,30 @@ export default function ProductDetails({ params }: { params: { id: number } }) {
     };
 
     fetchProduct();
+
+    const fetchCategories = async () => {
+      const data = await listCategories();
+      setCategories(data);
+    };
+
+    fetchCategories();
   }, [params.id]);
+
+  useEffect(() => {
+    fetchProductVariants();
+  }, [product, fetchProductVariants]);
+
+  useEffect(() => {
+    if (categories.length > 0 && product) {
+      filterCategories();
+    }
+  }, [categories, product, filterCategories]);
+
+  useEffect(() => {
+    if (product && productVariants) {
+      console.log('variant', productVariants);
+    }
+  }, [product, productVariants]);
 
   // ----------------- Rendu -----------------
 
@@ -97,7 +181,7 @@ export default function ProductDetails({ params }: { params: { id: number } }) {
               <Text size="md" className="text-left font-semibold">
                 Nom du produit:
               </Text>
-              <Text size="md" className="text-right">
+              <Text size="md" className="text-right font-semibold">
                 {product.name}
               </Text>
             </HStack>
@@ -108,17 +192,65 @@ export default function ProductDetails({ params }: { params: { id: number } }) {
               <Text size="md" className="text-left font-semibold">
                 Description:
               </Text>
-              <Text size="md" className="text-right">
-                {product.description}
-              </Text>
+
+              <VStack>
+                {product.description.map((desc, index) => {
+                  const [beforeColon, afterColon] = desc.split(':');
+                  return (
+                    <>
+                      <Text size="md" key={index} className="text-right">
+                        <Text className="font-semibold">{beforeColon}</Text>
+                        {afterColon && `:${afterColon}`}
+                      </Text>
+                      <Box className="w-full h-[1px] bg-typography-200 my-2" />
+                    </>
+                  );
+                })}
+              </VStack>
             </HStack>
             <HStack className=" w-[80%] justify-between items-center px-4 mx-auto">
               <Text size="md" className="text-left font-semibold">
                 Prix:
               </Text>
-              <Text size="md" className="text-right">
+              <Text size="md" className="text-right font-semibold">
                 {product.price} €
               </Text>
+            </HStack>
+            <HStack className=" w-[80%] justify-between items-center px-4 mx-auto">
+              <Text size="md" className="text-left font-semibold">
+                Categories:
+              </Text>
+              {productCategories.length > 0 && (
+                <HStack space="md" className="text-right">
+                  {productCategories.map((category, index) => (
+                    <Text
+                      key={index}
+                      size="md"
+                      className="text-center text-typography-white bg-typography-900 border border-typography-white rounded-md p-2"
+                    >
+                      {category.name}
+                    </Text>
+                  ))}
+                </HStack>
+              )}
+            </HStack>
+            <HStack className=" w-[80%] justify-between items-center px-4 mx-auto">
+              <Text size="md" className="text-left font-semibold">
+                Tailles:
+              </Text>
+            </HStack>
+            <HStack
+              space="xl"
+              className=" justify-center items-center w-full mt-20 mx-auto"
+            >
+              <Button>
+                <ButtonIcon as={EditIcon} />
+                <ButtonText>Modifier</ButtonText>
+              </Button>
+              <Button action="negative" onPress={handleDeleteProduct}>
+                <ButtonIcon as={TrashIcon} />
+                <ButtonText>Supprimer</ButtonText>
+              </Button>
             </HStack>
           </VStack>
         </VStack>

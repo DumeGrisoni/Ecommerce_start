@@ -25,7 +25,7 @@ const VariantComposant: React.FC<VariantComposantProps> = ({ onConfirm }) => {
 
   const handleVariants = () => {
     const newVariant: VariantProps = {
-      productId: 1,
+      productId: '',
       colors: colors,
     };
 

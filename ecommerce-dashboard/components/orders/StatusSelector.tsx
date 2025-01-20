@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Order } from '@/types/types';
 import { Box } from '../ui/box';
-import { Button, ButtonText } from '../ui/button';
+import { Button, ButtonIcon, ButtonText } from '../ui/button';
 import { Text } from '../ui/text';
+import { ChevronDownIcon, ChevronUpIcon } from '../ui/icon';
 
 type StatusSelectorProps = {
   order: Order;
@@ -15,8 +16,7 @@ const StatusSelector: React.FC<StatusSelectorProps> = ({
 }) => {
   const [status, setStatus] = useState(order.status);
   const [isOpen, setIsOpen] = useState(false);
-
-  const isSmallScreen = window.innerWidth < 1200;
+  const [isHovered, setIsHovered] = useState(false);
 
   const handleChange = (newStatus: string, id: number) => {
     setStatus(newStatus);
@@ -32,12 +32,17 @@ const StatusSelector: React.FC<StatusSelectorProps> = ({
     <Box className="relative">
       <Button
         onPress={() => setIsOpen(!isOpen)}
-        className={`py-2 px-4 border rounded bg-typography-white `}
-        size={isSmallScreen ? 'xs' : 'md'}
+        className={`py-2 px-4 flex border rounded bg-typography-white`}
+        onPointerEnter={() => setIsHovered(true)}
+        onPointerLeave={() => setIsHovered(false)}
       >
         <ButtonText className="text-typography-900 font-semibold">
           {status}
         </ButtonText>
+        <ButtonIcon
+          as={!isOpen ? ChevronDownIcon : ChevronUpIcon}
+          color={isHovered ? 'white' : 'black'}
+        />
       </Button>
       {isOpen && (
         <ul className="absolute z-50 mt-10 min-w-[80px] w-full bg-white border rounded shadow-lg">

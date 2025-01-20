@@ -16,17 +16,17 @@ const OrderItemDetails: React.FC<OrderItemDetailsProps> = ({
       <HStack className="flex justify-between items-center">
         <Link href={`/dashboard/products/${item.product.id}`}>
           <Image
-            source={{ uri: item.product.image }}
+            source={{ uri: item.product.image[0] }}
             alt="image du produit"
-            className="h-20 w-20"
+            className={`h-20 w-20 border border-slate-300 hover:border-slate-500 rounded-md`}
             resizeMode="contain"
           />
         </Link>
         <Link href={`/dashboard/products/${item.product.id}`}>
           <VStack className="flex justify-between items-end">
             <Text
-              size={isSmallScreen ? 'xs' : 'md'}
-              className="hover:underline"
+              size={isSmallScreen ? 'xs' : 'xl'}
+              className="hover:underline mb-4 text-typography-900 font-semibold"
             >
               {item.product.name}
             </Text>

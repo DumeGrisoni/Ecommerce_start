@@ -4,6 +4,7 @@ import {
   listCategories,
   updateCategory,
 } from '@/api/categories';
+import SearchBar from '@/components/SearchBar';
 import { useToastNotification } from '@/components/toast';
 import { Box } from '@/components/ui/box';
 import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
@@ -21,7 +22,7 @@ import {
 import { Input, InputField } from '@/components/ui/input';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
-import { CategoryProps } from '@/types/types';
+import { CategoryProps, DataType } from '@/types/types';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -36,6 +37,8 @@ const CategoriesPage = () => {
     {} as CategoryProps
   );
   const [modalVisible, setModalVisible] = useState(false);
+  const [filteredData, setFilteredData] = useState<DataType[]>([]);
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
 
   const searchParams = useSearchParams();
 
@@ -45,17 +48,13 @@ const CategoriesPage = () => {
   const fetchCategories = async () => {
     const data = await listCategories();
     setCategories(data);
+    setFilteredData(data);
   };
 
   const handleUpdateCategory = (category: CategoryProps) => {
     setSelectedCategory(category);
     setModalVisible(!modalVisible);
   };
-
-  const errorMessage = searchParams.get('errorMessage');
-  if (errorMessage) {
-    console.log(decodeURIComponent(errorMessage));
-  }
 
   const updateCatFunc = async (id: number) => {
     if (!name) return;
@@ -73,6 +72,11 @@ const CategoriesPage = () => {
     }
   };
 
+  const errorMessage = searchParams.get('errorMessage');
+  if (errorMessage) {
+    console.log(decodeURIComponent(errorMessage));
+  }
+
   const handleDelete = async (id: number) => {
     await deleteCategory(id);
     toast.showNewToast({
@@ -82,10 +86,23 @@ const CategoriesPage = () => {
     fetchCategories();
   };
 
+  const handleSearch = (results: DataType[]) => {
+    setFilteredData(results);
+  };
+
   // ---------- Effects ----------
   useEffect(() => {
     fetchCategories();
+    const handleResize = () => {
+      setIsSmallScreen(window.innerWidth < 1000);
+    };
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
   }, []);
+
   useEffect(() => {
     if (!selectedCategory) return;
     setName(selectedCategory.name);
@@ -96,25 +113,37 @@ const CategoriesPage = () => {
 
   return (
     <View className="w-full items-center justify-center h-full min-h-screen bg-typography-50">
+      <View className="w-[90%] lg:w-[40%] mb-3">
+        <SearchBar data={categories} onSearch={handleSearch} />
+      </View>
       <Card className="flex bg-typography-white m-0 flex-col  p-0 items-center justify-start w-[90%] lg:w-[40%] h-[80%]">
         <FlatList
-          data={categories}
+          data={filteredData}
           ListHeaderComponent={() => (
             <>
               <HStack className="w-full justify-between bg-slate-100 py-3 rounded-t-md border-b border-typography-200">
-                <Text className="ml-10 flex-1 max-w-[20%] font-bold" size="lg">
+                <Text
+                  className={`${
+                    isSmallScreen ? 'ml-2' : 'ml-10'
+                  } flex-1 font-bold `}
+                  size={isSmallScreen ? 'xs' : 'lg'}
+                >
                   Supprimer
                 </Text>
                 <Text
-                  size="lg"
-                  className="text-typography-800 mr-6 text-center flex-1 font-bold"
+                  className={`
+                    ${isSmallScreen ? '' : ''} 
+                  flex-1 font-bold text-center`}
+                  size={isSmallScreen ? 'xs' : 'lg'}
                 >
                   Nom
                 </Text>
 
                 <Text
-                  size="lg"
-                  className="text-typography-800 flex-1 max-w-[20%] mr-6 text-center font-bold"
+                  className={`${
+                    isSmallScreen ? 'mr-2 ml-0' : 'ml-10'
+                  } flex-1 font-bold text-center`}
+                  size={isSmallScreen ? 'xs' : 'lg'}
                 >
                   Modifier
                 </Text>
@@ -131,7 +160,7 @@ const CategoriesPage = () => {
               <HStack className="w-full justify-between items-center my-3">
                 <View className="ml-3 flex-1 max-w-[20%] h-full items-center justify-center">
                   <Button
-                    className="max-w-[50%] flex-1"
+                    className="w-full flex-1"
                     action="negative"
                     onPress={() => {
                       handleDelete(item.id);
@@ -142,19 +171,19 @@ const CategoriesPage = () => {
                 </View>
 
                 <Text
-                  size="lg"
+                  size={isSmallScreen ? 'xs' : 'lg'}
                   className="text-typography-800 flex-1 text-center font-semibold"
                 >
                   {item.name}
                 </Text>
                 <View className="flex-1 max-w-[20%] mr-6 items-center justify-center">
                   <Button
-                    className="w-[45%]"
+                    className="w-full"
                     onPress={() => {
-                      handleUpdateCategory(item);
+                      handleUpdateCategory(item as CategoryProps);
                     }}
                   >
-                    <ButtonIcon as={EditIcon} />
+                    <ButtonIcon as={EditIcon} size="xl" />
                   </Button>
                 </View>
               </HStack>

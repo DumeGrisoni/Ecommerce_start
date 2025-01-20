@@ -1,10 +1,11 @@
 export type ProductType = {
+  type?: 'product';
   id: number;
   name: string;
-  description: string;
+  description: string[];
   image: string[];
   price: number;
-  categoryId: number;
+  categoryId: string[];
   productId: string;
 };
 
@@ -56,6 +57,7 @@ export type itemPerPageSelectorProps = {
 };
 
 export type CategoryProps = {
+  type?: 'category';
   id: number;
   name: string;
   productsIds: string[];
@@ -63,7 +65,7 @@ export type CategoryProps = {
 };
 
 export type VariantProps = {
-  id: number;
+  id?: number;
   productId: string;
   colors: Color[];
 };
@@ -85,3 +87,5 @@ export interface Color {
   name: string;
   sizes: Size[];
 }
+
+export type DataType = ProductType | CategoryProps;

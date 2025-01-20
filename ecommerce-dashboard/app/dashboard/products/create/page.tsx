@@ -15,19 +15,19 @@ import { createProduct } from './actions';
 import { UploadDropzone } from '@/utils/uploadthing';
 import Image from 'next/image';
 import { HStack } from '@/components/ui/hstack';
-import { CheckIcon, CloseIcon, Icon } from '@/components/ui/icon';
+import { AddIcon, CheckIcon, CloseIcon, Icon } from '@/components/ui/icon';
 import { Pressable } from 'react-native';
 import { removeImage } from '@/utils/removeImage';
 import { listCategories } from '@/api/categories';
 import { CategoryProps, VariantProps } from '@/types/types';
-import { Textarea, TextareaInput } from '@/components/ui/textarea';
 import VariantComposant from '@/components/products/VariantComposant';
 import { v4 as uuidv4 } from 'uuid';
+import { useToastNotification } from '@/components/toast';
 
 const CreateProduct = () => {
   //--------------- States ---------------
   const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
+  const [description, setDescription] = useState<string[]>([]);
   const [price, setPrice] = useState('');
   const [images, setImages] = useState<string[]>([]);
   const [imgKey, setImgKey] = useState<string[]>([]);
@@ -38,6 +38,9 @@ const CreateProduct = () => {
   const searchParams = useSearchParams();
   const [buttonText, setButtonText] = useState('Choisir un fichier');
   const [productId, setProductId] = useState('');
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
+
+  const toast = useToastNotification();
 
   //--------------- Variables ---------------
 
@@ -92,19 +95,45 @@ const CreateProduct = () => {
     });
   };
 
+  const handleAddDescriptionField = () => {
+    setDescription([...description, '']);
+  };
+
+  const handleDescriptionChange = (index: number, value: string) => {
+    const newDescriptions = [...description];
+    newDescriptions[index] = value;
+    setDescription(newDescriptions);
+  };
+
   //--------------- UseEffect ---------------
 
   useEffect(() => {
     getCategories();
     setProductId(uuidv4() as string);
+    const handleResize = () => {
+      setIsSmallScreen(window.innerWidth < 1000);
+    };
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
   }, []);
 
   useEffect(() => {
-    console.log(
-      'categories',
-      selectedCategory.map((cat) => cat.name + cat.id)
-    );
-  }, [selectedCategory, images]);
+    console.log('title', name);
+    console.log('description', description);
+    console.log('price', price);
+    console.log('images', images);
+    console.log('categories', categoryIds);
+
+    console.log('screen', isSmallScreen);
+  }, [name, description, price, images, categoryIds, isSmallScreen]);
+
+  useEffect(() => {
+    console.log('image key', imgKey);
+    console.log('imageUrl', images);
+  }, [imgKey, images]);
 
   //--------------- Render ---------------
 
@@ -125,13 +154,21 @@ const CreateProduct = () => {
           </VStack>
           <VStack space="xs">
             <Text className="text-typography-500 leading-1">Description</Text>
-            <Textarea className="text-center">
-              <TextareaInput
-                value={description}
-                className="border border-typography-100 rounded"
-                onChangeText={setDescription}
-              />
-            </Textarea>
+            {description.map((description, index) => (
+              <Input key={index} className="text-center mb-2">
+                <InputField
+                  value={description}
+                  className=" rounded"
+                  onChangeText={(value: string) =>
+                    handleDescriptionChange(index, value)
+                  }
+                  placeholder={`Description ${index + 1}`}
+                />
+              </Input>
+            ))}
+            <Button onPress={handleAddDescriptionField}>
+              <ButtonIcon as={AddIcon} />
+            </Button>
             <Text className="text-typography-500 leading-1">Catégorie(s)</Text>
             <HStack className="items-center flex-wrap" space="md">
               {categories.map((category) => (
@@ -205,7 +242,10 @@ const CreateProduct = () => {
             )}
           </VStack>
           <VStack space="xs">
-            <Text className="text-typography-500 leading-1">Prix</Text>
+            <Text className="text-typography-500 leading-1">
+              Prix avec virgule et 2 décimales
+            </Text>
+            <Text className="text-typography-500 "></Text>
             <Input className="text-center">
               <InputField
                 type="text"
@@ -226,17 +266,38 @@ const CreateProduct = () => {
 
           <Button
             className="mx-auto w-full"
-            onPress={() =>
-              createProduct(
-                name,
-                description,
-                Number(price),
-                images,
-                productId,
-                categoryIds,
-                variant
-              )
-            }
+            onPress={() => {
+              if (
+                !name ||
+                !description ||
+                !price ||
+                !images ||
+                !categoryIds ||
+                !variant
+              ) {
+                return toast.showNewToast({
+                  title: 'Erreur',
+                  description: 'Veuillez remplir tous les champs',
+                });
+              } else {
+                createProduct(
+                  name,
+                  description,
+                  parseFloat(price.replace(',', '.')),
+                  images,
+                  productId,
+                  categoryIds,
+                  variant
+                ).then(() => {
+                  if (!errorMessage) {
+                    toast.showNewToast({
+                      title: 'Création',
+                      description: 'Votre produit a bien été créé',
+                    });
+                  }
+                });
+              }
+            }}
           >
             <ButtonText className="text-typography-0">Créer</ButtonText>
           </Button>

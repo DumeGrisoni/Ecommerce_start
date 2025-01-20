@@ -43,6 +43,20 @@
       "when": 1737044199952,
       "tag": "0005_early_frightful_four",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1737358511858,
+      "tag": "0006_salty_george_stacy",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1737358531035,
+      "tag": "0007_redundant_typhoid_mary",
+      "breakpoints": true
     }
   ]
 }

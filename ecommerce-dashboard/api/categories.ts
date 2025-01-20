@@ -6,7 +6,13 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 const token = cookies().get('token')?.value;
 
 export const listCategories = async () => {
-  const response = await fetch(`${API_URL}/categories`);
+  const response = await fetch(`${API_URL}/categories`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `${token}`,
+    },
+  });
   if (!response.ok) {
     console.log(response);
   }

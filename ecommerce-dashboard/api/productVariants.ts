@@ -4,37 +4,37 @@ import { redirect } from 'next/navigation';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
-export const listProducts = async () => {
-  const response = await fetch(`${API_URL}/products`, {
+export const listProductVariants = async () => {
+  const response = await fetch(`${API_URL}/productVariants`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
     },
   });
-  const products = await response.json();
+  const productVariants = await response.json();
   if (!response.ok) {
     const errorMessage =
-      'Une erreur est survenue lors de la récupération de la liste des produits';
+      'Une erreur est survenue lors de la récupération de la liste des variants de produits';
     throw new Error(errorMessage);
   }
-  return products;
+  return productVariants;
 };
 
-export const getProductById = async (id: number) => {
-  const response = await fetch(`${API_URL}/products/${id}`, {
+export const getProductVariantByProductId = async (id: number) => {
+  const response = await fetch(`${API_URL}/productVariant/${id}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
     },
   });
   try {
-    const product = await response.json();
+    const productVariant = await response.json();
     if (!response.ok) {
       const errorMessage =
-        'Une erreur est survenue lors de la récupération du produit';
+        'Une erreur est survenue lors de la récupération des details du produit';
       throw new Error(errorMessage);
     } else {
-      return product;
+      return productVariant;
     }
   } catch (error) {
     console.log(error);
