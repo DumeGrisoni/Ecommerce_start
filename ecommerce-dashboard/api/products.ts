@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use server';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
@@ -59,6 +60,78 @@ export const getProductById = async (
   );
 
   return { ...product, variant: productVariant };
+};
+
+export const updateProduct = async (product: ProductWithVariant) => {
+  let redirectURL = `/dashboard/products`;
+  const variantId = product.variant.id;
+  try {
+    const token = cookies().get('token')?.value;
+    const { variant, id, ...productWithoutVariantAndId } = product; // Retirer la propriété id de product // Retirer la propriété id de variant
+
+    const productBody = JSON.stringify(productWithoutVariantAndId);
+    const variantBody = JSON.stringify(variant);
+
+    const response = await fetch(`${API_URL}/products/${product.id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `${token}`,
+      },
+      body: productBody,
+      mode: 'cors',
+      cache: 'default',
+    });
+
+    if (variant) {
+      const variantResponse = await fetch(
+        `${API_URL}/productVariant/${variantId}`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `${token}`,
+          },
+          body: variantBody,
+          mode: 'cors',
+          cache: 'default',
+        }
+      );
+      if (!variantResponse.ok) {
+        if (variantResponse.status === 401) {
+          // Remove Token from cookies
+          redirectURL = '/login';
+        } else {
+          const errorMessage =
+            'Une erreur est survenue lors de la mise à jour du variant';
+          console.error(
+            'Erreur API Variant:',
+            variantResponse.status,
+            variantResponse.statusText
+          );
+          throw new Error(errorMessage);
+        }
+      }
+    }
+    if (!response.ok) {
+      if (response.status === 401) {
+        // Remove Token from cookies
+        redirectURL = '/login';
+      } else {
+        const errorMessage =
+          'Une erreur est survenue lors de la mise à jour du produit';
+        console.error('Erreur API:', response.status, response.statusText);
+        throw new Error(errorMessage);
+      }
+    }
+  } catch (error) {
+    redirectURL = `/dashboard/products/?errorMessage=${encodeURIComponent(
+      'Une erreur est survenue lors de la mise à jour du produit'
+    )}`;
+    console.log(error);
+  } finally {
+    redirect(redirectURL);
+  }
 };
 
 export async function deleteProduct(id: string) {

@@ -8,7 +8,10 @@ import { AddIcon, TrashIcon } from '../ui/icon';
 import { Box } from '../ui/box';
 import { Color, VariantComposantProps } from '@/types/types';
 
-const VariantComposant: React.FC<VariantComposantProps> = ({ onConfirm }) => {
+const VariantComposant: React.FC<VariantComposantProps> = ({
+  variant,
+  onConfirm,
+}) => {
   // ------------ Hooks ----------------
   const [colors, setColors] = useState<Color[]>([]);
   const [newColor, setNewColor] = useState<string>('');
@@ -21,12 +24,12 @@ const VariantComposant: React.FC<VariantComposantProps> = ({ onConfirm }) => {
       ]);
       setNewColor('');
     }
-    onConfirm({ productId: '', colors: colors });
+    onConfirm({ id: 0, productId: '', colors: colors });
   };
 
   const removeColor = (colorName: string) => {
     setColors(colors.filter((c) => c.name !== colorName));
-    onConfirm({ productId: '', colors: colors });
+    onConfirm({ id: 0, productId: '', colors: colors });
   };
 
   const handleSizeChange = (
@@ -43,7 +46,7 @@ const VariantComposant: React.FC<VariantComposantProps> = ({ onConfirm }) => {
       return color;
     });
     setColors(newColors);
-    onConfirm({ productId: '', colors: colors });
+    onConfirm({ id: 0, productId: '', colors: colors });
   };
 
   const handleStockChange = (
@@ -62,7 +65,7 @@ const VariantComposant: React.FC<VariantComposantProps> = ({ onConfirm }) => {
         return color;
       });
       setColors(newColors);
-      onConfirm({ productId: '', colors: colors });
+      onConfirm({ id: 0, productId: '', colors: colors });
     }
   };
 
@@ -74,7 +77,7 @@ const VariantComposant: React.FC<VariantComposantProps> = ({ onConfirm }) => {
       return color;
     });
     setColors(newColors);
-    onConfirm({ productId: '', colors: colors });
+    onConfirm({ id: 0, productId: '', colors: colors });
   };
 
   const removeSizeAndStock = (colorName: string, index: number) => {
@@ -86,10 +89,16 @@ const VariantComposant: React.FC<VariantComposantProps> = ({ onConfirm }) => {
       return color;
     });
     setColors(newColors);
-    onConfirm({ productId: '', colors: colors });
+    onConfirm({ id: 0, productId: '', colors: colors });
   };
 
   // ------------ Effects ----------------
+
+  useEffect(() => {
+    if (variant) {
+      setColors(variant.colors);
+    }
+  }, [variant]);
 
   useEffect(() => {
     console.log('colors', colors);
@@ -113,58 +122,63 @@ const VariantComposant: React.FC<VariantComposantProps> = ({ onConfirm }) => {
         </Button>
       </HStack>
       <Box className="w-full h-[1px] bg-typography-200 mb-3" />
-      {colors.map((color, index) => (
-        <VStack key={index} space="xs" className="mt-2">
-          <HStack space="2xl" className="justify-between items-center">
-            <Text className="text-typography-500 font-semibold">
-              {color.name}
-            </Text>
-            <Button onPress={() => removeColor(color.name)}>
-              <ButtonIcon as={TrashIcon} />
-            </Button>
-          </HStack>
-          {color.sizes.map((size, sizeIndex) => (
-            <HStack
-              key={sizeIndex}
-              space="xs"
-              className="mt-2 items-center justify-center"
-            >
-              <Input className="flex-1">
-                <InputField
-                  type="text"
-                  value={size.size}
-                  onChangeText={(text: string) =>
-                    handleSizeChange(color.name, sizeIndex, text)
-                  }
-                  placeholder="Ajouter une taille"
-                />
-              </Input>
-              <Input className="flex-1">
-                <InputField
-                  value={size.stock !== undefined ? size.stock.toString() : ''}
-                  onChangeText={(text: string) =>
-                    handleStockChange(color.name, sizeIndex, text)
-                  }
-                  placeholder="Ajouter un stock"
-                  keyboardType="numeric"
-                />
-              </Input>
-              <Button onPress={() => removeSizeAndStock(color.name, sizeIndex)}>
+      {colors &&
+        colors.map((color, index) => (
+          <VStack key={index} space="xs" className="mt-2">
+            <HStack space="2xl" className="justify-between items-center">
+              <Text className="text-typography-500 font-semibold">
+                {color.name}
+              </Text>
+              <Button onPress={() => removeColor(color.name)}>
                 <ButtonIcon as={TrashIcon} />
               </Button>
             </HStack>
-          ))}
-          <Box className="w-full mt-2 mr-auto mb-6">
-            <Button
-              onPress={() => addSizeAndStock(color.name)}
-              className=" mr-auto"
-            >
-              <ButtonIcon as={AddIcon} />
-              <ButtonText>Ajouter une taille</ButtonText>
-            </Button>
-          </Box>
-        </VStack>
-      ))}
+            {color.sizes.map((size, sizeIndex) => (
+              <HStack
+                key={sizeIndex}
+                space="xs"
+                className="mt-2 items-center justify-center"
+              >
+                <Input className="flex-1">
+                  <InputField
+                    type="text"
+                    value={size.size}
+                    onChangeText={(text: string) =>
+                      handleSizeChange(color.name, sizeIndex, text)
+                    }
+                    placeholder="Ajouter une taille"
+                  />
+                </Input>
+                <Input className="flex-1">
+                  <InputField
+                    value={
+                      size.stock !== undefined ? size.stock.toString() : ''
+                    }
+                    onChangeText={(text: string) =>
+                      handleStockChange(color.name, sizeIndex, text)
+                    }
+                    placeholder="Ajouter un stock"
+                    keyboardType="numeric"
+                  />
+                </Input>
+                <Button
+                  onPress={() => removeSizeAndStock(color.name, sizeIndex)}
+                >
+                  <ButtonIcon as={TrashIcon} />
+                </Button>
+              </HStack>
+            ))}
+            <Box className="w-full mt-2 mr-auto mb-6">
+              <Button
+                onPress={() => addSizeAndStock(color.name)}
+                className=" mr-auto"
+              >
+                <ButtonIcon as={AddIcon} />
+                <ButtonText>Ajouter une taille</ButtonText>
+              </Button>
+            </Box>
+          </VStack>
+        ))}
     </VStack>
   );
 };

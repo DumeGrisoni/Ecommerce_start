@@ -65,7 +65,7 @@ export type CategoryProps = {
 };
 
 export type VariantProps = {
-  id?: number;
+  id: number;
   productId: string;
   colors: Color[];
 };
@@ -80,6 +80,7 @@ export type UpdateCategoryData = {
 };
 
 interface VariantComposantProps {
+  variant?: VariantProps;
   onConfirm: (variant: VariantProps) => void;
 }
 

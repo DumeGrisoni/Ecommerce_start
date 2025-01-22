@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { Modal, Pressable, View } from 'react-native';
+import { Pressable } from 'react-native';
 
 // ----------------- Import de Personnels -----------------
 
@@ -20,17 +20,17 @@ import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
 import { EditIcon, TrashIcon } from '@/components/ui/icon';
 import { removeImage } from '@/utils/removeImage';
 import { useToastNotification } from '@/components/toast';
+import { useRouter } from 'next/navigation';
 
 export default function ProductDetails({ params }: { params: { id: number } }) {
   // ----------------- Hooks -----------------
-
+  const router = useRouter();
   const [product, setProduct] = useState<ProductWithVariant | null>(null);
   const [selectedImage, setSelectedImage] = useState<number>(0);
   const [categories, setCategories] = useState<CategoryProps[]>([]);
   const [productCategories, setProductCategories] = useState<CategoryProps[]>(
     []
   );
-  const [modifyModalVisible, setModifyModalVisible] = useState(false);
 
   const toast = useToastNotification();
 
@@ -77,6 +77,10 @@ export default function ProductDetails({ params }: { params: { id: number } }) {
     }
   };
 
+  const handleRedirectToEdit = () => {
+    router.push(`/dashboard/products/update/${product?.id}`);
+  };
+
   // ----------------- Effects -----------------
 
   useEffect(() => {
@@ -95,6 +99,10 @@ export default function ProductDetails({ params }: { params: { id: number } }) {
 
     fetchCategories();
   }, [params.id]);
+
+  useEffect(() => {
+    console.log(product?.description);
+  }, [product]);
 
   useEffect(() => {
     if (categories.length > 0 && product) {
@@ -132,7 +140,7 @@ export default function ProductDetails({ params }: { params: { id: number } }) {
               >
                 {product.image.map((img, index) => (
                   <Pressable
-                    key={index}
+                    key={index + img}
                     onPress={() => handleSelectedImage(index)}
                     className={`border border-slate-500 border-opacity-0 cursor-pointer hover:border-opacity-100 ${
                       selectedImage === index && 'border-opacity-100'
@@ -170,16 +178,14 @@ export default function ProductDetails({ params }: { params: { id: number } }) {
               </Text>
 
               <VStack>
-                {product.description.map((desc, index) => {
+                {product.description.map((desc, descIndex) => {
                   const [beforeColon, afterColon] = desc.split(':');
                   return (
-                    <>
-                      <Text size="md" key={index} className="text-right">
-                        <Text className="font-semibold">{beforeColon}</Text>
-                        {afterColon && `:${afterColon}`}
-                      </Text>
+                    <Text className="text-right" key={descIndex}>
+                      <Text className="font-semibold">{beforeColon}</Text>
+                      {afterColon && `:${afterColon}`}
                       <Box className="w-full h-[1px] bg-typography-200 my-2" />
-                    </>
+                    </Text>
                   );
                 })}
               </VStack>
@@ -198,9 +204,9 @@ export default function ProductDetails({ params }: { params: { id: number } }) {
               </Text>
               {productCategories.length > 0 && (
                 <HStack space="md" className="text-right">
-                  {productCategories.map((category, index) => (
+                  {productCategories.map((category, catIndex) => (
                     <Text
-                      key={index}
+                      key={catIndex}
                       size="md"
                       className="text-center text-typography-white bg-typography-900 border border-typography-white rounded-md p-2"
                     >
@@ -218,28 +224,28 @@ export default function ProductDetails({ params }: { params: { id: number } }) {
 
               {product.variant &&
                 product.variant.colors &&
-                product.variant.colors.map((color, index) => (
-                  <HStack space="md" key={index} className="ml-3">
+                product.variant.colors.map((color, colorIndex) => (
+                  <HStack
+                    space="md"
+                    key={colorIndex + color.name}
+                    className="ml-3"
+                  >
                     <Text size="md" className="text-left font-semibold ">
                       {color.name} :{' '}
                     </Text>
 
                     {color && (
-                      <VStack key={index} space="md" className="">
-                        {color.sizes.map((size, index) => (
-                          <HStack key={index} space="md" className=" w-full">
-                            <Text
-                              key={index}
-                              size="md"
-                              className="text-left font-semibold"
-                            >
+                      <VStack space="md" className="">
+                        {color.sizes.map((size, sizeIndex) => (
+                          <HStack
+                            key={sizeIndex + size.size}
+                            space="md"
+                            className=" w-full"
+                          >
+                            <Text size="md" className="text-left font-semibold">
                               {size.size} :
                             </Text>
-                            <Text
-                              key={index}
-                              size="md"
-                              className="text-center flex-1"
-                            >
+                            <Text size="md" className="text-center flex-1">
                               {size.stock}
                             </Text>
                           </HStack>
@@ -253,11 +259,8 @@ export default function ProductDetails({ params }: { params: { id: number } }) {
               space="xl"
               className=" justify-center items-center w-full mt-20 mx-auto"
             >
-              <Button>
-                <ButtonIcon
-                  as={EditIcon}
-                  onPress={() => setModifyModalVisible(!modifyModalVisible)}
-                />
+              <Button onPress={handleRedirectToEdit}>
+                <ButtonIcon as={EditIcon} />
                 <ButtonText>Modifier</ButtonText>
               </Button>
               <Button action="negative" onPress={handleDeleteProduct}>
@@ -268,27 +271,6 @@ export default function ProductDetails({ params }: { params: { id: number } }) {
           </VStack>
         </VStack>
       </Card>
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modifyModalVisible}
-        onRequestClose={() => {
-          setModifyModalVisible(!modifyModalVisible);
-        }}
-      >
-        <View
-          className="flex-1"
-          style={{
-            justifyContent: 'center',
-            alignItems: 'center',
-            backgroundColor: 'rgba(0,0,0,0.8)',
-          }}
-        >
-          <Box className="flex-1 h-full justify-center items-center my-auto">
-            <Heading>Modifier le produit</Heading>
-          </Box>
-        </View>
-      </Modal>
     </Box>
   );
 }
