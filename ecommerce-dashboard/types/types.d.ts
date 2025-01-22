@@ -69,10 +69,14 @@ export type VariantProps = {
   productId: string;
   colors: Color[];
 };
+
+export type ProductWithVariant = ProductType & {
+  variant: VariantProps;
+};
+
 export type UpdateCategoryData = {
   name?: string;
   productIds?: string[];
-  // Ajoutez d'autres champs que vous souhaitez mettre à jour
 };
 
 interface VariantComposantProps {

@@ -6,7 +6,7 @@ import { Text } from '../ui/text';
 import { Button, ButtonIcon, ButtonText } from '../ui/button';
 import { AddIcon, TrashIcon } from '../ui/icon';
 import { Box } from '../ui/box';
-import { Color, VariantComposantProps, VariantProps } from '@/types/types';
+import { Color, VariantComposantProps } from '@/types/types';
 
 const VariantComposant: React.FC<VariantComposantProps> = ({ onConfirm }) => {
   // ------------ Hooks ----------------
@@ -21,19 +21,12 @@ const VariantComposant: React.FC<VariantComposantProps> = ({ onConfirm }) => {
       ]);
       setNewColor('');
     }
-  };
-
-  const handleVariants = () => {
-    const newVariant: VariantProps = {
-      productId: '',
-      colors: colors,
-    };
-
-    onConfirm(newVariant);
+    onConfirm({ productId: '', colors: colors });
   };
 
   const removeColor = (colorName: string) => {
     setColors(colors.filter((c) => c.name !== colorName));
+    onConfirm({ productId: '', colors: colors });
   };
 
   const handleSizeChange = (
@@ -50,6 +43,7 @@ const VariantComposant: React.FC<VariantComposantProps> = ({ onConfirm }) => {
       return color;
     });
     setColors(newColors);
+    onConfirm({ productId: '', colors: colors });
   };
 
   const handleStockChange = (
@@ -68,6 +62,7 @@ const VariantComposant: React.FC<VariantComposantProps> = ({ onConfirm }) => {
         return color;
       });
       setColors(newColors);
+      onConfirm({ productId: '', colors: colors });
     }
   };
 
@@ -79,6 +74,7 @@ const VariantComposant: React.FC<VariantComposantProps> = ({ onConfirm }) => {
       return color;
     });
     setColors(newColors);
+    onConfirm({ productId: '', colors: colors });
   };
 
   const removeSizeAndStock = (colorName: string, index: number) => {
@@ -90,6 +86,7 @@ const VariantComposant: React.FC<VariantComposantProps> = ({ onConfirm }) => {
       return color;
     });
     setColors(newColors);
+    onConfirm({ productId: '', colors: colors });
   };
 
   // ------------ Effects ----------------
@@ -168,18 +165,6 @@ const VariantComposant: React.FC<VariantComposantProps> = ({ onConfirm }) => {
           </Box>
         </VStack>
       ))}
-      {colors.length > 0 && (
-        <>
-          <Button
-            className="w-[50%] mx-auto my-2"
-            action="secondary"
-            onPress={handleVariants}
-          >
-            <ButtonText>Confirmer les couleurs</ButtonText>
-          </Button>
-          <Box className="w-full h-[1px] bg-typography-200 mb-3" />
-        </>
-      )}
     </VStack>
   );
 };

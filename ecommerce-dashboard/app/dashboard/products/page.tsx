@@ -5,12 +5,12 @@ import Link from 'next/link';
 import { listProducts } from '@/api/products';
 import ProductListItem from '@/components/products/ProductListItem';
 import { Card } from '@/components/ui/card';
-import { ProductType } from '@/types/types';
+import { ProductWithVariant } from '@/types/types';
 import { AddIcon, Icon } from '@/components/ui/icon';
 import { useEffect, useState } from 'react';
 
 const ProductsPage = () => {
-  const [products, setProducts] = useState<ProductType[]>([]);
+  const [products, setProducts] = useState<ProductWithVariant[]>([]);
 
   const loadProducts = async () => {
     try {
@@ -24,6 +24,10 @@ const ProductsPage = () => {
   useEffect(() => {
     loadProducts();
   }, []);
+
+  useEffect(() => {
+    console.log(products);
+  }, [products]);
 
   return (
     <div className="flex flex-wrap gap-2 max-w-[1400px] my-6 w-full mx-auto h-full">

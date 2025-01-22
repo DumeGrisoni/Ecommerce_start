@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation';
 const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
 export const listProductVariants = async () => {
-  const response = await fetch(`${API_URL}/productVariants`, {
+  const response = await fetch(`${API_URL}/productVariant`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -41,12 +41,12 @@ export const getProductVariantByProductId = async (id: number) => {
   }
 };
 
-export async function deleteProduct(id: string) {
+export async function deleteProductVariant(id: string) {
   let redirectURL = '/dashboard/products';
   try {
     const token = cookies().get('token')?.value;
 
-    const response = await fetch(`${API_URL}/products/${id}`, {
+    const response = await fetch(`${API_URL}/productVariant/${id}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',

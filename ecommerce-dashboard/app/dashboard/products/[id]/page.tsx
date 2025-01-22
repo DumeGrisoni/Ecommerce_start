@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { Pressable } from 'react-native';
+import { Modal, Pressable, View } from 'react-native';
 
 // ----------------- Import de Personnels -----------------
 
@@ -13,27 +13,24 @@ import { HStack } from '@/components/ui/hstack';
 import { Image } from '@/components/ui/image';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
-import { CategoryProps, ProductType, VariantProps } from '@/types/types';
+import { CategoryProps, ProductWithVariant } from '@/types/types';
 import ImageMagnifier from '@/components/products/ImageMagnifier';
 import { listCategories } from '@/api/categories';
 import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
 import { EditIcon, TrashIcon } from '@/components/ui/icon';
 import { removeImage } from '@/utils/removeImage';
 import { useToastNotification } from '@/components/toast';
-import { listProductVariants } from '@/api/productVariants';
 
 export default function ProductDetails({ params }: { params: { id: number } }) {
   // ----------------- Hooks -----------------
 
-  const [product, setProduct] = useState<ProductType | null>(null);
+  const [product, setProduct] = useState<ProductWithVariant | null>(null);
   const [selectedImage, setSelectedImage] = useState<number>(0);
   const [categories, setCategories] = useState<CategoryProps[]>([]);
   const [productCategories, setProductCategories] = useState<CategoryProps[]>(
     []
   );
-  const [productVariants, setProductVariants] = useState<VariantProps>(
-    {} as VariantProps
-  );
+  const [modifyModalVisible, setModifyModalVisible] = useState(false);
 
   const toast = useToastNotification();
 
@@ -54,17 +51,6 @@ export default function ProductDetails({ params }: { params: { id: number } }) {
       setProductCategories(productCategories);
     }
   }, [categories, product]);
-
-  const fetchProductVariants = useCallback(() => {
-    if (product) {
-      listProductVariants().then((productVariants) => {
-        const productVariantsFiltered = productVariants.filter(
-          (variant: VariantProps) => variant.productId === product.productId
-        );
-        setProductVariants(productVariantsFiltered);
-      });
-    }
-  }, [product]);
 
   const handleDeleteProduct = async () => {
     if (product) {
@@ -111,20 +97,10 @@ export default function ProductDetails({ params }: { params: { id: number } }) {
   }, [params.id]);
 
   useEffect(() => {
-    fetchProductVariants();
-  }, [product, fetchProductVariants]);
-
-  useEffect(() => {
     if (categories.length > 0 && product) {
       filterCategories();
     }
   }, [categories, product, filterCategories]);
-
-  useEffect(() => {
-    if (product && productVariants) {
-      console.log('variant', productVariants);
-    }
-  }, [product, productVariants]);
 
   // ----------------- Rendu -----------------
 
@@ -234,17 +210,54 @@ export default function ProductDetails({ params }: { params: { id: number } }) {
                 </HStack>
               )}
             </HStack>
-            <HStack className=" w-[80%] justify-between items-center px-4 mx-auto">
+            <VStack className=" w-[80%] justify-between items-start px-4 mx-auto">
               <Text size="md" className="text-left font-semibold">
-                Tailles:
+                Couleurs et tailles (en stock) :
               </Text>
-            </HStack>
+              <Box className="w-full h-[1px] bg-typography-200 mt-2 mb-4" />
+
+              {product.variant &&
+                product.variant.colors &&
+                product.variant.colors.map((color, index) => (
+                  <HStack space="md" key={index} className="ml-3">
+                    <Text size="md" className="text-left font-semibold ">
+                      {color.name} :{' '}
+                    </Text>
+
+                    {color && (
+                      <VStack key={index} space="md" className="">
+                        {color.sizes.map((size, index) => (
+                          <HStack key={index} space="md" className=" w-full">
+                            <Text
+                              key={index}
+                              size="md"
+                              className="text-left font-semibold"
+                            >
+                              {size.size} :
+                            </Text>
+                            <Text
+                              key={index}
+                              size="md"
+                              className="text-center flex-1"
+                            >
+                              {size.stock}
+                            </Text>
+                          </HStack>
+                        ))}
+                      </VStack>
+                    )}
+                  </HStack>
+                ))}
+            </VStack>
             <HStack
               space="xl"
               className=" justify-center items-center w-full mt-20 mx-auto"
             >
               <Button>
-                <ButtonIcon as={EditIcon} />
+                <ButtonIcon
+                  as={EditIcon}
+                  onPress={() => setModifyModalVisible(!modifyModalVisible)}
+                />
                 <ButtonText>Modifier</ButtonText>
               </Button>
               <Button action="negative" onPress={handleDeleteProduct}>
@@ -255,6 +268,27 @@ export default function ProductDetails({ params }: { params: { id: number } }) {
           </VStack>
         </VStack>
       </Card>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modifyModalVisible}
+        onRequestClose={() => {
+          setModifyModalVisible(!modifyModalVisible);
+        }}
+      >
+        <View
+          className="flex-1"
+          style={{
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: 'rgba(0,0,0,0.8)',
+          }}
+        >
+          <Box className="flex-1 h-full justify-center items-center my-auto">
+            <Heading>Modifier le produit</Heading>
+          </Box>
+        </View>
+      </Modal>
     </Box>
   );
 }

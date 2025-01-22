@@ -11,7 +11,7 @@ import { Heading } from '@/components/ui/heading';
 import { Input, InputField } from '@/components/ui/input';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
-import { createProduct } from './actions';
+import { createProduct } from '../../create/actions';
 import { UploadDropzone } from '@/utils/uploadthing';
 import Image from 'next/image';
 import { HStack } from '@/components/ui/hstack';
@@ -24,7 +24,7 @@ import VariantComposant from '@/components/products/VariantComposant';
 import { v4 as uuidv4 } from 'uuid';
 import { useToastNotification } from '@/components/toast';
 
-const CreateProduct = () => {
+const UpdateProduct = () => {
   //--------------- States ---------------
   const [name, setName] = useState('');
   const [description, setDescription] = useState<string[]>([]);
@@ -121,15 +121,14 @@ const CreateProduct = () => {
   }, []);
 
   useEffect(() => {
-    console.log('variant', variant);
+    console.log('title', name);
+    console.log('description', description);
+    console.log('price', price);
+    console.log('images', images);
+    console.log('categories', categoryIds);
 
     console.log('screen', isSmallScreen);
-  }, [variant, isSmallScreen]);
-
-  useEffect(() => {
-    console.log('image key', imgKey);
-    console.log('imageUrl', images);
-  }, [imgKey, images]);
+  }, [name, description, price, images, categoryIds, isSmallScreen]);
 
   //--------------- Render ---------------
 
@@ -140,7 +139,7 @@ const CreateProduct = () => {
         className="lg:w-[40%] md:w-[50%] w-[90%] bg-typography-white border border-typography-100 h-auto rounded-lg"
       >
         <VStack space="xl" className="p-4">
-          <Heading className="text-typography-900">Créer un article</Heading>
+          <Heading className="text-typography-900">Modifier</Heading>
 
           <VStack space="xs">
             <Text className="text-typography-500">Nom</Text>
@@ -295,7 +294,7 @@ const CreateProduct = () => {
               }
             }}
           >
-            <ButtonText className="text-typography-0">Créer</ButtonText>
+            <ButtonText className="text-typography-0">Modifier</ButtonText>
           </Button>
         </VStack>
       </FormControl>
@@ -303,4 +302,4 @@ const CreateProduct = () => {
   );
 };
 
-export default CreateProduct;
+export default UpdateProduct;

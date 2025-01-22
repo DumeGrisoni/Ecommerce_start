@@ -1,6 +1,8 @@
 'use server';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { listProductVariants } from './productVariants';
+import { ProductType, ProductWithVariant, VariantProps } from '@/types/types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
@@ -12,39 +14,77 @@ export const listProducts = async () => {
     },
   });
   const products = await response.json();
+
+  const variants = await listProductVariants();
+
   if (!response.ok) {
     const errorMessage =
       'Une erreur est survenue lors de la récupération de la liste des produits';
     throw new Error(errorMessage);
+  } else {
+    const productsWithVariants: ProductWithVariant[] = products.map(
+      (product: ProductType) => {
+        const productVariant = variants.find(
+          (variant: VariantProps) => variant.productId === product.productId
+        );
+        return { ...product, variant: productVariant };
+      }
+    );
+
+    return productsWithVariants;
   }
-  return products;
 };
 
-export const getProductById = async (id: number) => {
+export const getProductById = async (
+  id: number
+): Promise<ProductWithVariant> => {
   const response = await fetch(`${API_URL}/products/${id}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
     },
   });
-  try {
-    const product = await response.json();
-    if (!response.ok) {
-      const errorMessage =
-        'Une erreur est survenue lors de la récupération du produit';
-      throw new Error(errorMessage);
-    } else {
-      return product;
-    }
-  } catch (error) {
-    console.log(error);
+
+  if (!response.ok) {
+    const errorMessage =
+      'Une erreur est survenue lors de la récupération du produit';
+    throw new Error(errorMessage);
   }
+
+  const product = await response.json();
+  const variants = await listProductVariants();
+
+  const productVariant = variants.find(
+    (variant: VariantProps) => variant.productId === product.productId
+  );
+
+  return { ...product, variant: productVariant };
 };
 
 export async function deleteProduct(id: string) {
   let redirectURL = '/dashboard/products';
   try {
     const token = cookies().get('token')?.value;
+
+    // Supprimer le variant associé au produit
+    const variantResponse = await fetch(`${API_URL}/productVariants/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `${token}`,
+      },
+    });
+
+    if (!variantResponse.ok) {
+      if (variantResponse.status === 401) {
+        // Remove Token from cookies
+        redirectURL = '/login';
+      } else {
+        const errorMessage =
+          'Une erreur est survenue lors de la suppression du variant';
+        throw new Error(errorMessage);
+      }
+    }
 
     const response = await fetch(`${API_URL}/products/${id}`, {
       method: 'DELETE',

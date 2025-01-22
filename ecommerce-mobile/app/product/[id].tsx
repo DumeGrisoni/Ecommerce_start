@@ -61,7 +61,7 @@ export default function ProductDetailScreen() {
     if (!product) return;
     addProduct(product, quantity);
     showNewToast({
-      title: 'Produit ajouté au panier',
+      title: 'Produit',
       description: `${quantity} ${product.name} ajouté au panier`,
     });
   };
