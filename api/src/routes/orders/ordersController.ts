@@ -1,7 +1,8 @@
-import { eq, ne } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { Request, Response } from 'express';
 import { db } from '../../db/index.js';
 import { orderItemsTable, ordersTable } from '../../db/ordersSchema.js';
+import { OrderItem } from '../../types/variants.js';
 
 // Recupérer la liste des commandes de l'user, si c'est un admin retourner toutes les commandes
 export async function listOrders(req: Request, res: Response) {
@@ -50,7 +51,7 @@ export async function createOrder(req: Request, res: Response) {
         .status(401)
         .json({ message: 'Vous devez être connecté pour créer une commande' });
     }
-    console.log(req.cleanBody);
+    console.log('body', req.cleanBody);
     const [newOrder] = await db
       .insert(ordersTable)
       //@ts-ignore
@@ -58,8 +59,11 @@ export async function createOrder(req: Request, res: Response) {
       .returning();
 
     //TODO: Valider les id des produits et prendre le prix dans la base de données
-    const orderItems = req.cleanBody.items.map((item: any) => ({
-      ...item,
+    const orderItems: OrderItem[] = req.cleanBody.items.map((item: any) => ({
+      productId: item.productId,
+      quantity: item.quantity,
+      price: item.price,
+      colors: [item.color], // Extraire la couleur et la taille
       orderId: newOrder.id,
     }));
     const newOrderItems = await db

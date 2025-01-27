@@ -7,10 +7,12 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useQuery } from '@tanstack/react-query';
+import RNPickerSelect from 'react-native-picker-select';
+import { ScanEye } from 'lucide-react-native';
 
 // ---------------- Imports personnels ---------------
 import { Text } from '@/components/ui/text';
@@ -31,8 +33,7 @@ import {
 } from '@/components/ui/icon';
 import { useToastNotification } from '@/components/toast';
 import ImageMagnifier from '@/components/ImageMagnifier';
-import { ProductType } from '@/types/types';
-import { ScanEye } from 'lucide-react-native';
+import { ProductWithVariant, VariantProps } from '@/types/types';
 
 export default function ProductDetailScreen() {
   // ----------------- Récupération de l'id du produit -----------------
@@ -44,7 +45,7 @@ export default function ProductDetailScreen() {
     data: product,
     isLoading,
     error,
-  } = useQuery<ProductType>({
+  } = useQuery<ProductWithVariant>({
     queryKey: ['product', id],
     queryFn: () => getProductById(Number(id)),
   });
@@ -55,11 +56,34 @@ export default function ProductDetailScreen() {
   const [quantity, setQuantity] = useState(1);
   const [selected, setSelected] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
+  const [selectedColor, setSelectedColor] = useState('');
+  const [selectedSize, setSelectedSize] = useState('');
+  const [selectedVariant, setSelectedVariant] = useState<VariantProps>(
+    {} as VariantProps
+  );
   const { showNewToast } = useToastNotification();
 
   const addToCart = () => {
     if (!product) return;
-    addProduct(product, quantity);
+    const updatedProduct = {
+      ...product,
+      variant: {
+        ...product.variant,
+        colors: [
+          {
+            name: selectedColor,
+            sizes: [
+              {
+                size: selectedSize,
+                stock: 1, // Vous pouvez ajuster cette valeur en fonction de votre logique
+              },
+            ],
+          },
+        ],
+      },
+    };
+
+    addProduct(updatedProduct, quantity);
     showNewToast({
       title: 'Produit',
       description: `${quantity} ${product.name} ajouté au panier`,
@@ -70,8 +94,109 @@ export default function ProductDetailScreen() {
   };
 
   const incrementQuantity = () => {
+    if (product && product.variant && product.variant.colors) {
+      if (!selectedColor || !selectedSize) {
+        showNewToast({
+          title: 'Erreur',
+          description: 'Veuillez sélectionner une couleur et une taille',
+        });
+        return;
+      }
+    }
+    if (product && product.variant && product.variant.colors) {
+      const selectedColorObj = product.variant.colors.find(
+        (color) => color.name === selectedColor
+      );
+      if (selectedColorObj) {
+        const selectedSizeObj = selectedColorObj.sizes.find(
+          (size) => size.size === selectedSize
+        );
+        if (selectedSizeObj) {
+          if (quantity >= selectedSizeObj.stock) {
+            showNewToast({
+              title: 'Erreur',
+              description: 'Stock insuffisant',
+            });
+            return;
+          }
+        }
+      }
+    }
     setQuantity((prev) => prev + 1);
   };
+
+  // ----------------- Fonction Variant -----------------
+
+  const ColorPicker = () => {
+    if (!product || !product.variant || !product.variant.colors) return null;
+    return (
+      <RNPickerSelect
+        placeholder={{ label: 'Couleur', value: null }}
+        style={{
+          viewContainer: {
+            width: 150,
+            borderWidth: 1,
+            borderColor: 'black',
+            borderRadius: 5,
+          },
+        }}
+        onValueChange={(value) => setSelectedColor(value)}
+        items={
+          product.variant.colors.length > 1
+            ? product.variant.colors.map((color) => ({
+                label: color.name,
+                value: color.name,
+              }))
+            : [
+                {
+                  label: product.variant.colors[0].name,
+                  value: product.variant.colors[0].name,
+                },
+              ]
+        }
+      />
+    );
+  };
+
+  const SizePicker = () => {
+    if (
+      !selectedColor ||
+      !product ||
+      !product.variant ||
+      !product.variant.colors
+    )
+      return null;
+    const selectedColorObj = product.variant.colors.find(
+      (color) => color.name === selectedColor
+    );
+    if (!selectedColorObj) return null;
+    const filteredSizes = selectedColorObj
+      ? selectedColorObj.sizes.filter((size) => size.stock > 0)
+      : [];
+    if (!filteredSizes.length) {
+      return null;
+    }
+    return (
+      <RNPickerSelect
+        placeholder={{ label: 'Taille', value: null }}
+        style={{
+          viewContainer: {
+            width: 120,
+            borderWidth: 1,
+            borderColor: 'black',
+            borderRadius: 5,
+          },
+        }}
+        onValueChange={(value) => setSelectedSize(value)}
+        items={filteredSizes.map((size) => ({
+          label: size.size,
+          value: size.size,
+        }))}
+      />
+    );
+  };
+
+  // ----------------- Effects -----------------
 
   // ----------------- Affichage -----------------
   if (isLoading) {
@@ -94,7 +219,7 @@ export default function ProductDetailScreen() {
     >
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         <Box className={`h-full w-full mt-6 relative`}>
-          <Card className="rounded-lg relative h-full lg:max-w-[960px] w-[90%] mx-auto items-center justify-center my-auto md:mt-[52px] lg:mt-[60px] ">
+          <Card className="rounded-lg relative h-full lg:max-w-[960px] w-[90%] mx-auto items-center justify-center my-auto md:mt-[52px] lg:mt-[60px] pb-6">
             <Stack.Screen options={{ title: product.name }} />
             <View className="w-full relative h-[50%] items-center mb-3 justify-center">
               <Image
@@ -117,7 +242,7 @@ export default function ProductDetailScreen() {
                   <Image
                     key={index}
                     source={{ uri: image }}
-                    className={`h-[100px] w-[100px] rounded-md ${selected === index && 'border border-slate-400'}`}
+                    className={`h-[60px] w-[60px] rounded-md ${selected === index && 'border border-slate-400'}`}
                     resizeMode="contain"
                     alt="Images du produit"
                   />
@@ -151,6 +276,10 @@ export default function ProductDetailScreen() {
                 <Icon as={AddIcon} />
               </Pressable>
             </HStack>
+            <HStack className="mb-6" space="sm">
+              {product.variant && product.variant.colors && ColorPicker()}
+              {selectedColor && SizePicker()}
+            </HStack>
             <Button className="mb-6" onPress={addToCart}>
               <ButtonText size="sm">Ajouter au panier</ButtonText>
             </Button>
@@ -158,9 +287,17 @@ export default function ProductDetailScreen() {
               <Heading size="lg" className="text-center">
                 Description
               </Heading>
-              <Text size="md" className="text-center">
-                {product.description}
-              </Text>
+              <VStack className="w-full justify-center mb-6">
+                {product.description.map((desc, index) => {
+                  const [beforeColon, afterColon] = desc.split(':');
+                  return (
+                    <Text key={index} size="md" className="text-start">
+                      <Text className="font-semibold">{beforeColon}: </Text>
+                      {afterColon}
+                    </Text>
+                  );
+                })}
+              </VStack>
             </VStack>
           </Card>
         </Box>

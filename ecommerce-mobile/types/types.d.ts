@@ -1,19 +1,44 @@
 export type ProductType = {
   id: number;
   name: string;
-  description: string;
+  description: string[];
   image: string[];
   price: number;
+  productId: string;
 };
 
+export type ProductWithVariant = ProductType & {
+  variant: VariantProps;
+};
+
+export type VariantProps = {
+  id: number;
+  productId: string;
+  colors: Color[];
+};
+
+interface VariantComposantProps {
+  variant?: VariantProps;
+  onConfirm: (variant: VariantProps) => void;
+}
+
+export interface Size {
+  size: string;
+  stock: number;
+}
+export interface Color {
+  name: string;
+  sizes: Size[];
+}
+
 export type CartItemType = {
-  product: ProductType;
+  product: ProductWithVariant;
   quantity: number;
 };
 
 export type CartStateType = {
   items: CartItemType[];
-  addProduct: (product: ProductType, quantity: number) => void;
+  addProduct: (product: ProductWithVariant, quantity: number) => void;
   resetCart: () => void;
   removeProduct: (productId: number) => void;
   incrementQuantity: (productId: number) => void;

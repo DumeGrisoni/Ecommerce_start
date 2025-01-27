@@ -1,0 +1,1 @@
+ALTER TABLE "order_items" ADD COLUMN "colors" jsonb[] DEFAULT '{}' NOT NULL;

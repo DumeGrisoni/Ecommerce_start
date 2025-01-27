@@ -1,4 +1,9 @@
-import { CartStateType, ProductType } from '@/types/types';
+import {
+  CartStateType,
+  Color,
+  ProductType,
+  ProductWithVariant,
+} from '@/types/types';
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -9,7 +14,7 @@ export const useCart = create<CartStateType>()(
       items: [],
 
       // Ajouter un produit au panier
-      addProduct: (product: ProductType, quantity: number) =>
+      addProduct: (product: ProductWithVariant, quantity: number) =>
         set((state) => {
           const existingItem = state.items.find(
             (item) => item.product.id === product.id

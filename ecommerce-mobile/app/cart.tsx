@@ -77,6 +77,7 @@ export default function CartScreen() {
           productId: item.product.id,
           quantity: item.quantity,
           price: item.product.price * item.quantity,
+          color: item.product.variant.colors[0],
         }))
       ),
 
@@ -165,7 +166,9 @@ export default function CartScreen() {
   );
 
   // ------------------Effects------------------
-
+  useEffect(() => {
+    console.log('cartItems', cartItems);
+  }, [cartItems]);
   // ------------------Rendu------------------
 
   if (totalQuantity === 0) {

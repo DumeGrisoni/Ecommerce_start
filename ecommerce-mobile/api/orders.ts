@@ -13,11 +13,11 @@ export async function createOrder(items: any[]) {
     },
     body: JSON.stringify({ order: {}, items }),
   });
+  console.log('body', JSON.stringify({ order: {}, items }));
 
   const data = await res.json();
 
   if (!res.ok) {
-    console.log('data', data);
     throw new Error('Error creating order');
   }
   return data;

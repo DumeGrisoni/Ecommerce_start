@@ -4,6 +4,7 @@ import {
   varchar,
   timestamp,
   doublePrecision,
+  jsonb,
 } from 'drizzle-orm/pg-core';
 import { usersTable } from './usersSchema.js';
 import { productsTable } from './productsSchema.js';
@@ -27,6 +28,7 @@ export const orderItemsTable = pgTable('order_items', {
   productId: integer()
     .notNull()
     .references(() => productsTable.id),
+  colors: jsonb('colors').array().notNull().default([]),
   quantity: integer().notNull(),
   price: doublePrecision().notNull(),
 });
