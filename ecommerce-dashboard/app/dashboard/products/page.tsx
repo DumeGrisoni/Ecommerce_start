@@ -24,6 +24,7 @@ const ProductsPage = () => {
   const [selectedMinPrice, setSelectedMinPrice] = useState<string>('');
   const [selectedMaxPrice, setSelectedMaxPrice] = useState<string>('');
   const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [searchResults, setSearchResults] = useState<ProductWithVariant[]>([]);
 
   // ---------- Functions ----------
 
@@ -32,6 +33,7 @@ const ProductsPage = () => {
       const products = await listProducts();
       setProducts(products);
       setFilteredData(products);
+      setSearchResults(products);
     } catch (error) {
       console.log('error', error);
     }
@@ -51,7 +53,13 @@ const ProductsPage = () => {
   };
 
   const handleSearch = (results: ProductWithVariant[]) => {
-    setFilteredData(results);
+    setSearchResults(results);
+    applyFilters(
+      selectedCategory,
+      Number(selectedMinPrice),
+      Number(selectedMaxPrice),
+      results
+    );
   };
   const handleCategoryChange = (
     event: React.ChangeEvent<HTMLSelectElement>
@@ -73,9 +81,10 @@ const ProductsPage = () => {
   const applyFilters = (
     category: string,
     minPrice: number,
-    maxPrice: number
+    maxPrice: number,
+    data: ProductWithVariant[] = searchResults
   ) => {
-    let filtered = products;
+    let filtered = data;
     if (category) {
       filtered = filtered.filter((product) =>
         product.categoryId.includes(category)
@@ -86,6 +95,7 @@ const ProductsPage = () => {
     );
     setFilteredData(filtered);
   };
+
   const resetCategoryFilter = () => {
     setSelectedCategory('');
     applyFilters('', Number(selectedMinPrice), Number(selectedMaxPrice));
