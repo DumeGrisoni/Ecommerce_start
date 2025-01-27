@@ -1,5 +1,5 @@
 export type ProductType = {
-  type?: 'product';
+  type: 'product';
   id: number;
   name: string;
   description: string[];
@@ -57,7 +57,7 @@ export type itemPerPageSelectorProps = {
 };
 
 export type CategoryProps = {
-  type?: 'category';
+  type: 'category';
   id: number;
   name: string;
   productsIds: string[];
@@ -93,4 +93,9 @@ export interface Color {
   sizes: Size[];
 }
 
-export type DataType = ProductType | CategoryProps;
+export type DataType = ProductWithVariant | CategoryProps;
+
+export interface SearchBarProps<T> {
+  data: T[];
+  onSearch: (filteredData: T[]) => void;
+}

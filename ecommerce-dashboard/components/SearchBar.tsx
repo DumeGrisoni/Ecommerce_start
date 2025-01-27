@@ -1,15 +1,12 @@
 import { useState } from 'react';
 import { Card } from './ui/card';
 import { Input, InputField } from './ui/input';
-import { DataType } from '@/types/types';
+import { SearchBarProps } from '@/types/types';
 
-const SearchBar = ({
+const SearchBar = <T extends { name: string }>({
   data,
   onSearch,
-}: {
-  data: DataType[];
-  onSearch: (results: DataType[]) => void;
-}) => {
+}: SearchBarProps<T>) => {
   //----------- State -----------
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -18,17 +15,12 @@ const SearchBar = ({
     // const value = event.target.value;
     setSearchTerm(search);
     const filtered = data.filter((item) => {
-      switch (item.type) {
-        case 'category':
-          return item.name.toLowerCase().includes(search.toLowerCase());
-        case 'product':
-          return item.name.toLowerCase().includes(search.toLowerCase());
-        default:
-          return false;
-      }
+      return item.name.toLowerCase().includes(search.toLowerCase());
     });
     onSearch(filtered); // Appeler la fonction de rappel avec les résultats filtrés
   };
+
+  //----------- Render -----------
 
   return (
     <Card className="flex items-center justify-between w-full p-3 border border-slate-200 rounded-md">

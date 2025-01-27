@@ -12,11 +12,20 @@ export default function ProductListItem({
 }: {
   product: ProductWithVariant;
 }) {
+  //---------Hooks-----------
+
+  //---------Variables-----------
+
+  //---------Functions-----------
+
+  // --------Effect----------
+
+  //---------Render-----------
   return (
     <Link
       href={`/dashboard/products/${product.id}`}
       key={product.id}
-      className="flex-1 inline-flex min-w-[296px]  md:min-w-[300px]"
+      className="flex-1 inline-flex min-w-[296px] mx-1 md:min-w-[300px]"
     >
       <Card
         className={`flex-1 hover:border-slate-400  border`}
