@@ -6,7 +6,7 @@ import { listProducts } from '@/api/products';
 import ProductListItem from '@/components/products/ProductListItem';
 import { Card } from '@/components/ui/card';
 import { CategoryProps, ProductWithVariant } from '@/types/types';
-import { AddIcon, Icon } from '@/components/ui/icon';
+import { AddIcon, CloseIcon, Icon } from '@/components/ui/icon';
 import { useEffect, useState } from 'react';
 import SearchBar from '@/components/SearchBar';
 import { Text } from '@/components/ui/text';
@@ -14,6 +14,7 @@ import { HStack } from '@/components/ui/hstack';
 import { listCategories } from '@/api/categories';
 import { Input, InputField } from '@/components/ui/input';
 import { Heading } from '@/components/ui/heading';
+import { Pressable } from 'react-native';
 
 const ProductsPage = () => {
   // ---------- Hooks ----------
@@ -75,23 +76,19 @@ const ProductsPage = () => {
     maxPrice: number
   ) => {
     let filtered = products;
-
-    // const retrievedCategorie = categories.find(
-    //   (searchCategory) => searchCategory.name === category
-    // );
     if (category) {
       filtered = filtered.filter((product) =>
         product.categoryId.includes(category)
       );
     }
-
     filtered = filtered.filter(
       (product) => product.price >= minPrice && product.price <= maxPrice
     );
-
-    console.log('filtered', filtered);
-
     setFilteredData(filtered);
+  };
+  const resetCategoryFilter = () => {
+    setSelectedCategory('');
+    applyFilters('', Number(selectedMinPrice), Number(selectedMaxPrice));
   };
 
   // ---------- Variables ----------
@@ -128,20 +125,27 @@ const ProductsPage = () => {
         className={`w-full justify-start items-center m-2 flex-col lg:flex-row`}
         space={'md'}
       >
-        {/* <Text className="text-typography-800 font-bold">Filtres :</Text> */}
-        <select
-          className="p-2 rounded border border-slate-300 text-typography-500"
-          onChange={handleCategoryChange}
-        >
-          <option value="" disabled selected>
-            Catégorie
-          </option>
-          {categories.map((category) => (
-            <option key={category.id} value={category.id}>
-              {category.name}
+        <HStack space="md" className={`items-center`}>
+          {selectedCategory !== '' && (
+            <Pressable onPress={resetCategoryFilter}>
+              <Icon as={CloseIcon} className="w-4 h-4 color-typography-800" />
+            </Pressable>
+          )}
+          <select
+            value={selectedCategory}
+            className="p-2 rounded border border-slate-300 text-typography-500"
+            onChange={handleCategoryChange}
+          >
+            <option value="" disabled selected>
+              Catégorie
             </option>
-          ))}
-        </select>
+            {categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
+        </HStack>
         <HStack className={`items-center`} space="md">
           <HStack className={`items-center`} space="xs">
             <Text className="text-typography-800">Prix mini:</Text>
