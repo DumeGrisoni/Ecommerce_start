@@ -1,9 +1,9 @@
 import express, { json, urlencoded } from 'express';
-import productsRouter from './routes/products/index';
-import ordersRouter from './routes/orders/index';
-import productVariantsRouter from './routes/productVariants/index';
-import categoriesRouter from './routes/categories/index';
-import authRouter from './routes/auth/index';
+import productsRouter from './routes/products/index.js';
+import ordersRouter from './routes/orders/index.js';
+import productVariantsRouter from './routes/productVariants/index.js';
+import categoriesRouter from './routes/categories/index.js';
+import authRouter from './routes/auth/index.js';
 import serverless from 'serverless-http';
 import stripeRouter from './routes/stripe/index.js';
 
@@ -30,7 +30,7 @@ app.use('/productVariant', productVariantsRouter);
 app.use('/auth', authRouter);
 
 // Utiliser le router de Stripe
-// app.use('/stripe', stripeRouter);
+app.use('/stripe', stripeRouter);
 
 // Reponse pour le lancement de l'API
 if (process.env.NODE_ENV === 'dev') {

@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
-import { db } from '../../db/index';
+import { db } from '../../db/index.js';
 import { eq } from 'drizzle-orm';
 import _ from 'lodash';
-import { categoriesTable } from '../../db/categoriesSchema';
+import { categoriesTable } from '../../db/categoriesSchema.js';
 
 // Recupérer la liste des produits
 export async function listCategories(req: Request, res: Response) {

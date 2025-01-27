@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
-import { db } from '../../db/index';
+import { db } from '../../db/index.js';
 import { eq } from 'drizzle-orm';
 import _ from 'lodash';
-import { productVariantsTable } from '../../db/productVariantSchema';
+import { productVariantsTable } from '../../db/productVariantSchema.js';
 
 // Recupérer la liste des produits
 export async function listProductVariants(req: Request, res: Response) {

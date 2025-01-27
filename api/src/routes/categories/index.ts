@@ -1,17 +1,17 @@
 import { Router } from 'express';
-import { validateData } from '../../middlewares/validationMiddleware';
+import { validateData } from '../../middlewares/validationMiddleware.js';
 import {
   insertCategorySchema,
   updateCategorySchema,
-} from '../../db/categoriesSchema';
-import { verifyRole, verifyToken } from '../../middlewares/authMiddleware';
+} from '../../db/categoriesSchema.js';
+import { verifyRole, verifyToken } from '../../middlewares/authMiddleware.js';
 import {
   createCategory,
   deleteCategory,
   getCategoryById,
   listCategories,
   updateCategory,
-} from './categoriesController';
+} from './categoriesController.js';
 
 // Endpoint pour la liste des produits
 const router = Router();

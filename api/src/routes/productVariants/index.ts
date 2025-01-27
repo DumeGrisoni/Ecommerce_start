@@ -5,16 +5,16 @@ import {
   createProductVariant,
   updateProductVariant,
   deleteProductVariant,
-} from './productVariantsController';
+} from './productVariantsController.js';
 import {
   asyncHandler,
   validateData,
-} from '../../middlewares/validationMiddleware';
+} from '../../middlewares/validationMiddleware.js';
 import {
   createProductVariantSchema,
   updateProductVariantSchema,
-} from '../../db/productVariantSchema';
-import { verifyRole, verifyToken } from '../../middlewares/authMiddleware';
+} from '../../db/productVariantSchema.js';
+import { verifyRole, verifyToken } from '../../middlewares/authMiddleware.js';
 
 // Endpoint pour la liste des produits
 const router = Router();
