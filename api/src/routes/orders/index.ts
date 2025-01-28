@@ -29,4 +29,6 @@ router.get('/:id', verifyToken, getOrderById);
 
 router.put('/:id', verifyToken, validateData(updateOrderSchema), updateOrder);
 
+router.delete('/:id', verifyToken, deleteOrder);
+
 export default router;

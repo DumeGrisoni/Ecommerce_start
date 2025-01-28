@@ -20,7 +20,7 @@ import { AddIcon, Icon, RemoveIcon } from '@/components/ui/icon';
 import { Image } from '@/components/ui/image';
 import { Text } from '@/components/ui/text';
 import { useCart } from '@/store/cartStore';
-import { CartItemType, CartStateType } from '@/types/types';
+import { CartItemType, CartStateType, VariantProps } from '@/types/types';
 import { useAuth } from '@/store/authStore';
 import { Heading } from '@/components/ui/heading';
 import { VStack } from '@/components/ui/vstack';
@@ -28,16 +28,21 @@ import { truncateText } from '@/utils/truncateText';
 import { useToastNotification } from '@/components/toast';
 
 import { useMutation } from '@tanstack/react-query';
-import { createOrder } from '@/api/orders';
+import { createOrder, deleteOrder } from '@/api/orders';
+import { updateStock, updateVariant } from '@/api/variants';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { createPaymentIntent } from '@/api/stripe';
 import { useStripe } from '@stripe/stripe-react-native';
-import { create } from 'zustand';
+import { listVariants } from '@/api/variants';
 
 export default function CartScreen() {
   // ------------------Hooks------------------
 
   const [modalVisible, setModalVisible] = React.useState(false);
+
+  const [variant, setVariant] = React.useState<VariantProps[]>([]);
+
+  const [orderId, setOrderId] = React.useState<number | null>(null);
 
   const cartItems: CartItemType[] = useCart((state) => state.items);
 
@@ -67,6 +72,7 @@ export default function CartScreen() {
     },
     onError: (error) => {
       console.log('error', error);
+      if (orderId) deleteOrder(orderId);
     },
   });
 
@@ -80,28 +86,26 @@ export default function CartScreen() {
           color: item.product.variant.colors[0],
         }))
       ),
-
     onSuccess: (data) => {
-      // resetCart();
-      // showNewToast({
-      //   title: 'Commande validée',
-      //   description: 'Votre commande a bien été validée',
-      // });
       paymentIntentMutation.mutate({ orderId: data.id });
+      setOrderId(data.id);
     },
-    onError: (error) => {
-      console.log(error);
-      showNewToast({
-        title: 'Erreur',
-        description:
-          'Une erreur est survenue lors de la validation de la commande',
-      });
+    onError: async (error) => {
+      if (orderId) {
+        await deleteOrder(orderId);
+        showNewToast({
+          title: 'Erreur',
+          description:
+            'Une erreur est survenue lors de la validation de la commande',
+        });
+      }
     },
   });
 
   const isLoggedIn = useAuth((state) => !!state.token);
 
   const router = useRouter();
+
   // ------------------Variables------------------
 
   const isWeb = Platform.OS === 'web' ? true : false;
@@ -117,11 +121,29 @@ export default function CartScreen() {
 
   // ------------------Fonctions------------------
 
+  const getVariant = async () => {
+    const variants = await listVariants();
+    if (variants) {
+      const cartVariantIds = cartItems.flatMap(
+        (item) => item.product.variant.id
+      );
+      const findedVariant = variants.filter((v) =>
+        cartVariantIds.includes(v.id)
+      );
+      setVariant(findedVariant as VariantProps[]);
+    }
+  };
+
   const openPaymentSheet = async () => {
     const { error } = await presentPaymentSheet();
     if (!error) {
       Alert.alert('Félicitations', 'Votre commande a bien été validée');
+      await updateStock(cartItems).then(() => {
+        resetCart();
+        router.replace('/orders');
+      });
     } else {
+      if (orderId) deleteOrder(orderId);
       Alert.alert(
         'Erreur',
         'Une erreur est survenue lors de la validation de la commande'
@@ -136,6 +158,62 @@ export default function CartScreen() {
     } else {
       setModalVisible(true);
     }
+  };
+
+  const verifyCart = () => {
+    // Vérifier si le stock est toujours disponible
+    if (cartItems.length > 0) {
+      for (const item of cartItems) {
+        const selectedVariant = variant.find(
+          (v) => v.id === item.product.variant.id
+        );
+        if (!selectedVariant) {
+          showNewToast({
+            title: 'Erreur',
+            description: ` ${item.product.name} n'est pas disponible`,
+          });
+
+          return false;
+        }
+
+        const selectedColor = selectedVariant.colors.find(
+          (color) => color.name === item.product.variant.colors[0].name
+        );
+        if (!selectedColor) {
+          showNewToast({
+            title: 'Erreur',
+            description: `La couleur sélectionnée pour ${item.product.name} n'est pas disponible`,
+          });
+          removeProduct(item.product.id);
+          return false;
+        }
+
+        const selectedSize = selectedColor.sizes.find(
+          (size) => size.size === item.product.variant.colors[0].sizes[0].size
+        );
+        if (!selectedSize) {
+          showNewToast({
+            title: 'Erreur',
+            description: `La taille sélectionnée pour ${item.product.name} n'est pas disponible`,
+          });
+          removeProduct(item.product.id);
+          return false;
+        }
+
+        if (
+          selectedSize.stock < item.product.variant.colors[0].sizes[0].stock
+        ) {
+          showNewToast({
+            title: 'Erreur',
+            description: `Le stock de ${item.product.name} est insuffisant`,
+          });
+          removeProduct(item.product.id);
+          return false;
+        }
+      }
+      return true;
+    }
+    return false;
   };
 
   const goToLogin = () => {
@@ -167,8 +245,13 @@ export default function CartScreen() {
 
   // ------------------Effects------------------
   useEffect(() => {
-    console.log('cartItems', cartItems);
-  }, [cartItems]);
+    if (variant.length > 0) verifyCart();
+  }, [cartItems, variant]);
+
+  useEffect(() => {
+    getVariant();
+  }, []);
+
   // ------------------Rendu------------------
 
   if (totalQuantity === 0) {

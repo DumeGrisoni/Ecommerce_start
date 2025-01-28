@@ -1,28 +1,37 @@
 import { ProductType, ProductWithVariant, VariantProps } from '@/types/types';
 import { listVariants } from './variants';
-import { Alert } from 'react-native';
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
-export const listProducts = async () => {
+export const listProducts = async (): Promise<ProductWithVariant[]> => {
   const response = await fetch(`${API_URL}/products`);
-  const products = await response.json();
   if (!response.ok) {
-    const errorMessage =
-      'Une erreur est survenue lors de la récupération de la liste des produits';
-    throw new Error(errorMessage);
+    throw new Error('Failed to fetch products');
   }
+  const products: ProductType[] = await response.json();
 
   const variants = await listVariants();
-  // Associer les variantes aux produits
-  const productsWithVariants = products.map((product: any) => {
-    const productVariants = variants.filter(
-      (variant: VariantProps) => variant.productId === product.id
+  if (variants.length > 0) {
+    // Associer les variantes aux produits
+    const productsWithVariants: ProductWithVariant[] = products.map(
+      (product: ProductType) => {
+        const productVariant = variants.find(
+          (variant: VariantProps) => variant.productId === product.productId
+        );
+        return {
+          ...product,
+          variant: productVariant || { id: 0, productId: '', colors: [] },
+        }; // Gérer le cas où variant est undefined
+      }
     );
-    return { ...product, variants: productVariants };
-  });
-
-  return productsWithVariants as ProductWithVariant[];
+    if (productsWithVariants.length === 0) {
+      console.log('No variants found for products');
+    }
+    return productsWithVariants;
+  } else {
+    console.log('No variants found');
+    return products as ProductWithVariant[];
+  }
 };
 
 export const getProductById = async (id: number) => {
@@ -39,4 +48,15 @@ export const getProductById = async (id: number) => {
     (variant: VariantProps) => variant.productId === product.productId
   );
   return { ...product, variant: productVariants } as ProductWithVariant;
+};
+
+export const deleteProduct = async (id: number) => {
+  const response = await fetch(`${API_URL}/products/${id}`, {
+    method: 'DELETE',
+  });
+  if (!response.ok) {
+    const errorMessage =
+      'Une erreur est survenue lors de la suppression du produit';
+    throw new Error(errorMessage);
+  }
 };

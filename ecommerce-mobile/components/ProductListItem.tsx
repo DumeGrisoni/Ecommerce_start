@@ -7,13 +7,37 @@ import { Card } from './ui/card';
 import { Image } from './ui/image';
 import { Heading } from './ui/heading';
 import { Text } from './ui/text';
-import { ProductType } from '@/types/types';
+import { ProductType, ProductWithVariant } from '@/types/types';
+import { HStack } from './ui/hstack';
+import { useEffect, useState } from 'react';
 
 // ---------------- Types ---------------
 
 const isWeb = Platform.OS === 'web' ? true : false;
 
-export default function ProductListItem({ product }: { product: ProductType }) {
+export default function ProductListItem({
+  product,
+}: {
+  product: ProductWithVariant;
+}) {
+  //---------Hooks-----------
+  const [checkStock, setCheckStock] = useState(false);
+  //---------Functions-----------
+
+  const checkAvailableProducts = (product: ProductWithVariant) => {
+    // Vérifier si tous les stocks des variants sont à 0
+    const allStocksZero = product.variant.colors.every((color) =>
+      color.sizes.every((size) => size.stock === 0)
+    );
+    setCheckStock(!allStocksZero);
+  };
+
+  //---------Effects-----------
+  useEffect(() => {
+    checkAvailableProducts(product);
+  }, [product]);
+  //------------Render---------------
+
   return (
     <Link href={`/product/${product.id}`} key={product.id} asChild>
       <Pressable className="flex-1" key={product.id + product.name}>
@@ -31,9 +55,20 @@ export default function ProductListItem({ product }: { product: ProductType }) {
           <Text size="md" className="flex-1 text-left">
             {product.name}
           </Text>
-          <Heading size="lg" className="mt-2 font-bold">
-            {product.price} €
-          </Heading>
+          <HStack className="justify-between items-center">
+            <Heading size="lg" className="mt-2 font-bold">
+              {product.price} €
+            </Heading>
+            {checkStock ? (
+              <Text size="sm" className="text-gray-500 font-normal">
+                En stock
+              </Text>
+            ) : (
+              <Text size="sm" className="text-red-500 font-normal">
+                Rupture de stock
+              </Text>
+            )}
+          </HStack>
         </Card>
       </Pressable>
     </Link>

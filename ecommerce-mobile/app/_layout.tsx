@@ -35,64 +35,64 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider className="flex-1">
       <QueryClientProvider client={queryClient}>
-        {/* <CustomStripeProvider> */}
-        <GluestackUIProvider mode="system">
-          <Stack
-            initialRouteName="index"
-            screenOptions={{
-              headerBackVisible: true,
-              headerShown: false,
-            }}
-          >
-            <Stack.Screen name="index" />
-            <Stack.Screen name="cart" />
-          </Stack>
-          <Box className=" border-typography-100 border-y h-[50px] md:h-[60px] absolute bottom-0 w-full bg-typography-50 px-2">
-            <HStack className="justify-around items-center h-full ">
-              <Link href="/" asChild className="flex-col ">
-                <Pressable onPress={() => setSelectedTab('index')}>
-                  <Icon
-                    as={House}
-                    size="xl"
-                    color={selectedTab === 'index' ? 'black' : 'gray'}
-                  />
-                </Pressable>
-              </Link>
-              <Link href="/cart" asChild className="flex-row">
-                <Pressable
-                  className="justify-center items-center"
-                  onPress={() => setSelectedTab('cart')}
-                >
-                  <HStack className="flex-row items-center justify-center">
+        <CustomStripeProvider>
+          <GluestackUIProvider mode="system">
+            <Stack
+              initialRouteName="index"
+              screenOptions={{
+                headerBackVisible: true,
+                headerShown: false,
+              }}
+            >
+              <Stack.Screen name="index" />
+              <Stack.Screen name="cart" />
+            </Stack>
+            <Box className=" border-typography-100 border-y h-[50px] md:h-[60px] absolute bottom-0 w-full bg-typography-50 px-2">
+              <HStack className="justify-around items-center h-full ">
+                <Link href="/" asChild className="flex-col ">
+                  <Pressable onPress={() => setSelectedTab('index')}>
                     <Icon
-                      as={ShoppingCart}
+                      as={House}
                       size="xl"
-                      color={selectedTab === 'cart' ? 'black' : 'gray'}
+                      color={selectedTab === 'index' ? 'black' : 'gray'}
                     />
-                    {cartItemProducts > 0 && (
-                      <Text className={`font-bold mx-1`}>
-                        {cartItemProducts}
-                      </Text>
-                    )}
-                  </HStack>
-                </Pressable>
-              </Link>
-              <Link href={isLoggedIn ? '/profil' : '/login'} asChild>
-                <Pressable
-                  className="justify-center items-center"
-                  onPress={() => setSelectedTab('profil')}
-                >
-                  <Icon
-                    as={User}
-                    size="xl"
-                    color={selectedTab === 'profil' ? 'black' : 'gray'}
-                  />
-                </Pressable>
-              </Link>
-            </HStack>
-          </Box>
-        </GluestackUIProvider>
-        {/* </CustomStripeProvider> */}
+                  </Pressable>
+                </Link>
+                <Link href="/cart" asChild className="flex-row">
+                  <Pressable
+                    className="justify-center items-center"
+                    onPress={() => setSelectedTab('cart')}
+                  >
+                    <HStack className="flex-row items-center justify-center">
+                      <Icon
+                        as={ShoppingCart}
+                        size="xl"
+                        color={selectedTab === 'cart' ? 'black' : 'gray'}
+                      />
+                      {cartItemProducts > 0 && (
+                        <Text className={`font-bold mx-1`}>
+                          {cartItemProducts}
+                        </Text>
+                      )}
+                    </HStack>
+                  </Pressable>
+                </Link>
+                <Link href={isLoggedIn ? '/profil' : '/login'} asChild>
+                  <Pressable
+                    className="justify-center items-center"
+                    onPress={() => setSelectedTab('profil')}
+                  >
+                    <Icon
+                      as={User}
+                      size="xl"
+                      color={selectedTab === 'profil' ? 'black' : 'gray'}
+                    />
+                  </Pressable>
+                </Link>
+              </HStack>
+            </Box>
+          </GluestackUIProvider>
+        </CustomStripeProvider>
       </QueryClientProvider>
     </SafeAreaProvider>
   );

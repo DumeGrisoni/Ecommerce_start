@@ -11,6 +11,8 @@ const OrderItemDetails: React.FC<OrderItemDetailsProps> = ({
   isSmallScreen,
   isLast,
 }) => {
+  console.log('item', item);
+  const color = item.colors[0];
   return (
     <VStack key={item.product.id} className="mt-3" space="lg">
       <HStack className="flex justify-between items-center">
@@ -18,7 +20,7 @@ const OrderItemDetails: React.FC<OrderItemDetailsProps> = ({
           <Image
             source={{ uri: item.product.image[0] }}
             alt="image du produit"
-            className={`h-20 w-20 border border-slate-300 hover:border-slate-500 rounded-md`}
+            className={`h-[60px] w-[60px]  md:h-20 md:w-20 border border-slate-300 hover:border-slate-500 rounded-md`}
             resizeMode="contain"
           />
         </Link>
@@ -50,6 +52,35 @@ const OrderItemDetails: React.FC<OrderItemDetailsProps> = ({
           Quantité:
         </Text>
         <Text size={isSmallScreen ? 'xs' : 'md'}>{item.quantity}</Text>
+      </HStack>
+      <HStack className="flex justify-between items-center">
+        <Text
+          size={isSmallScreen ? 'xs' : 'md'}
+          className="font-semibold text-typography-800"
+        >
+          Couleur:
+        </Text>
+        <Text
+          size={isSmallScreen ? 'xs' : 'md'}
+          className=" text-typography-800"
+        >
+          {item.colors[0].name}
+        </Text>
+      </HStack>
+      <HStack className="flex justify-between items-center">
+        <Text
+          size={isSmallScreen ? 'xs' : 'md'}
+          className="font-semibold text-typography-800"
+        >
+          Taille:
+        </Text>
+        <Text
+          size={isSmallScreen ? 'xs' : 'md'}
+          className=" text-typography-800"
+          key={color.sizes[0].size}
+        >
+          {color.sizes[0].size}
+        </Text>
       </HStack>
       <HStack className="flex justify-between items-center">
         <Text

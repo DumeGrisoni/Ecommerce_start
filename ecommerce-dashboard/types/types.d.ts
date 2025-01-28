@@ -32,6 +32,7 @@ export type OrderItem = {
   productId: number;
   quantity: number;
   product: ProductType;
+  colors: [{ name: string; sizes: [{ size: string; stock: number }] }];
 };
 
 type OrderItemDetailsProps = {

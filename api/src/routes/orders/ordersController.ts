@@ -102,14 +102,24 @@ export async function updateOrder(req: Request, res: Response) {
 export async function deleteOrder(req: Request, res: Response) {
   const id = Number(req.params.id);
   try {
-    const deletedOrder = await db
-      .delete(ordersTable)
-      .where(eq(ordersTable.id, id))
+    const deletedOrderItems = await db
+      .delete(orderItemsTable)
+      .where(eq(orderItemsTable.orderId, id))
       .returning();
-    if (!deletedOrder || deletedOrder === undefined) {
+
+    if (!deletedOrderItems || deletedOrderItems === undefined) {
       res.status(404).send('Aucune commande trouvée');
     } else {
       res.status(204).send();
+      const deletedOrder = await db
+        .delete(ordersTable)
+        .where(eq(ordersTable.id, id))
+        .returning();
+      if (!deletedOrder || deletedOrder === undefined) {
+        res.status(404).send('Aucune commande trouvée');
+      } else {
+        res.status(204).send();
+      }
     }
   } catch (error) {
     res.status(500).send(error);

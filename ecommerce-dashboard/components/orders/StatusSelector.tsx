@@ -32,7 +32,7 @@ const StatusSelector: React.FC<StatusSelectorProps> = ({
     <Box className="relative">
       <Button
         onPress={() => setIsOpen(!isOpen)}
-        className={`py-2 px-4 flex border rounded bg-typography-white`}
+        className={`py-2 px-2 md:px-4 flex border rounded bg-typography-white`}
         onPointerEnter={() => setIsHovered(true)}
         onPointerLeave={() => setIsHovered(false)}
       >

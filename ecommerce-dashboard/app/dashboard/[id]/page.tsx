@@ -68,6 +68,13 @@ const OrderDetails = ({ params }: { params: { id: number } }) => {
     };
   }, [fetchOrders]);
 
+  useEffect(() => {
+    console.log(
+      'product variant:',
+      order.items?.map((item) => item.colors)
+    );
+  }, [order.items]);
+
   return (
     <Box className="min-h-screen w-full my-auto mx-auto">
       <Card className="m-auto w-[95%] my-6  lg:w-[70%]">

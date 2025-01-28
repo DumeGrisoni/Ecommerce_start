@@ -7,9 +7,9 @@ export type ProductType = {
   productId: string;
 };
 
-export type ProductWithVariant = ProductType & {
+export interface ProductWithVariant extends ProductType {
   variant: VariantProps;
-};
+}
 
 export type VariantProps = {
   id: number;

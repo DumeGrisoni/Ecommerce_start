@@ -174,7 +174,11 @@ export default function ProductDetailScreen() {
       ? selectedColorObj.sizes.filter((size) => size.stock > 0)
       : [];
     if (!filteredSizes.length) {
-      return null;
+      return (
+        <Text size="md" className="text-red-500 font-normal">
+          Stock épuisé
+        </Text>
+      );
     }
     return (
       <RNPickerSelect
@@ -219,7 +223,7 @@ export default function ProductDetailScreen() {
     >
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         <Box className={`h-full w-full mt-6 relative`}>
-          <Card className="rounded-lg relative h-full lg:max-w-[960px] w-[90%] mx-auto items-center justify-center my-auto md:mt-[52px] lg:mt-[60px] pb-6">
+          <Card className="rounded-lg relative h-full lg:max-w-[960px] w-[90%] mx-auto items-center justify-center my-auto md:mt-[52px] lg:mt-[60px]">
             <Stack.Screen options={{ title: product.name }} />
             <View className="w-full relative h-[50%] items-center mb-3 justify-center">
               <Image
@@ -276,18 +280,18 @@ export default function ProductDetailScreen() {
                 <Icon as={AddIcon} />
               </Pressable>
             </HStack>
-            <HStack className="mb-6" space="sm">
+            <HStack className="mb-6 items-center" space="sm">
               {product.variant && product.variant.colors && ColorPicker()}
               {selectedColor && SizePicker()}
             </HStack>
             <Button className="mb-6" onPress={addToCart}>
               <ButtonText size="sm">Ajouter au panier</ButtonText>
             </Button>
-            <VStack className="w-full mb-5" space="xs">
+            <VStack className="w-full mb-20" space="xs">
               <Heading size="lg" className="text-center">
                 Description
               </Heading>
-              <VStack className="w-full justify-center mb-6">
+              <VStack className="w-full justify-center">
                 {product.description.map((desc, index) => {
                   const [beforeColon, afterColon] = desc.split(':');
                   return (

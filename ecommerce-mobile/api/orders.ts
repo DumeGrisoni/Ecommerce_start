@@ -1,4 +1,5 @@
 import { useAuth } from '@/store/authStore';
+import { OrderItem } from '@/types/types';
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
@@ -84,3 +85,19 @@ export async function getOrderItems(orderId: number) {
 
   return data;
 }
+
+export const deleteOrder = async (orderId: number) => {
+  const token = useAuth.getState().token;
+
+  const res = await fetch(`${API_URL}/orders/${orderId}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: token,
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error('Error deleting order');
+  }
+};

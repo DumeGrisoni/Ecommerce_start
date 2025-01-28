@@ -13,14 +13,14 @@ import ProductListItem from '../components/ProductListItem';
 import { listProducts } from '@/api/products';
 import { useBreakpointValue } from '@/components/ui/utils/use-break-point-value';
 import { useQuery } from '@tanstack/react-query';
-import { ProductType } from '@/types/types';
+import { ProductType, ProductWithVariant } from '@/types/types';
 import { CloseIcon, Icon, SearchIcon } from '@/components/ui/icon';
 import { HStack } from '@/components/ui/hstack';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text } from '@/components/ui/text';
-import { Box } from '@/components/ui/box';
 
 export default function HomeScreen() {
+  //---------Hooks-----------
   const [searchQuery, setSearchQuery] = React.useState('');
   const { data, isLoading, error } = useQuery({
     queryKey: ['products'],
@@ -30,15 +30,10 @@ export default function HomeScreen() {
   // Changer ici le nombre de colonnes en fonction de la largeur de l'écran
   const numColumns = useBreakpointValue({ default: 2, sm: 3, lg: 4 });
 
-  const filteredData = data?.filter((product: ProductType) =>
+  //---------Variables-----------
+  const filteredData = data?.filter((product: ProductWithVariant) =>
     product.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
-
-  const isWeb = Platform.OS === 'web';
-
-  useEffect(() => {
-    console.log('data', data);
-  });
 
   if (isLoading) {
     <View className=" flex-1 h-full w-full items-center justify-center">
